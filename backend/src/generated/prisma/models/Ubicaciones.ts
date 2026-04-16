@@ -174,8 +174,8 @@ export type UbicacionesWhereInput = {
   estante?: Prisma.StringFilter<"Ubicaciones"> | string
   nivel?: Prisma.StringFilter<"Ubicaciones"> | string
   almacenId?: Prisma.StringFilter<"Ubicaciones"> | string
-  almacen?: Prisma.XOR<Prisma.AlmacenesScalarRelationFilter, Prisma.AlmacenesWhereInput>
   inventario?: Prisma.InventarioListRelationFilter
+  almacen?: Prisma.XOR<Prisma.AlmacenesScalarRelationFilter, Prisma.AlmacenesWhereInput>
 }
 
 export type UbicacionesOrderByWithRelationInput = {
@@ -183,8 +183,8 @@ export type UbicacionesOrderByWithRelationInput = {
   estante?: Prisma.SortOrder
   nivel?: Prisma.SortOrder
   almacenId?: Prisma.SortOrder
-  almacen?: Prisma.AlmacenesOrderByWithRelationInput
   inventario?: Prisma.InventarioOrderByRelationAggregateInput
+  almacen?: Prisma.AlmacenesOrderByWithRelationInput
 }
 
 export type UbicacionesWhereUniqueInput = Prisma.AtLeast<{
@@ -195,8 +195,8 @@ export type UbicacionesWhereUniqueInput = Prisma.AtLeast<{
   estante?: Prisma.StringFilter<"Ubicaciones"> | string
   nivel?: Prisma.StringFilter<"Ubicaciones"> | string
   almacenId?: Prisma.StringFilter<"Ubicaciones"> | string
-  almacen?: Prisma.XOR<Prisma.AlmacenesScalarRelationFilter, Prisma.AlmacenesWhereInput>
   inventario?: Prisma.InventarioListRelationFilter
+  almacen?: Prisma.XOR<Prisma.AlmacenesScalarRelationFilter, Prisma.AlmacenesWhereInput>
 }, "ubicacion">
 
 export type UbicacionesOrderByWithAggregationInput = {
@@ -223,8 +223,8 @@ export type UbicacionesCreateInput = {
   ubicacion: string
   estante: string
   nivel: string
-  almacen: Prisma.AlmacenesCreateNestedOneWithoutUbicacionesInput
   inventario?: Prisma.InventarioCreateNestedManyWithoutUbicacionRelInput
+  almacen: Prisma.AlmacenesCreateNestedOneWithoutUbicacionesInput
 }
 
 export type UbicacionesUncheckedCreateInput = {
@@ -239,8 +239,8 @@ export type UbicacionesUpdateInput = {
   ubicacion?: Prisma.StringFieldUpdateOperationsInput | string
   estante?: Prisma.StringFieldUpdateOperationsInput | string
   nivel?: Prisma.StringFieldUpdateOperationsInput | string
-  almacen?: Prisma.AlmacenesUpdateOneRequiredWithoutUbicacionesNestedInput
   inventario?: Prisma.InventarioUpdateManyWithoutUbicacionRelNestedInput
+  almacen?: Prisma.AlmacenesUpdateOneRequiredWithoutUbicacionesNestedInput
 }
 
 export type UbicacionesUncheckedUpdateInput = {
@@ -519,8 +519,8 @@ export type UbicacionesSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   estante?: boolean
   nivel?: boolean
   almacenId?: boolean
-  almacen?: boolean | Prisma.AlmacenesDefaultArgs<ExtArgs>
   inventario?: boolean | Prisma.Ubicaciones$inventarioArgs<ExtArgs>
+  almacen?: boolean | Prisma.AlmacenesDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.UbicacionesCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["ubicaciones"]>
 
@@ -549,8 +549,8 @@ export type UbicacionesSelectScalar = {
 
 export type UbicacionesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"ubicacion" | "estante" | "nivel" | "almacenId", ExtArgs["result"]["ubicaciones"]>
 export type UbicacionesInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  almacen?: boolean | Prisma.AlmacenesDefaultArgs<ExtArgs>
   inventario?: boolean | Prisma.Ubicaciones$inventarioArgs<ExtArgs>
+  almacen?: boolean | Prisma.AlmacenesDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.UbicacionesCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UbicacionesIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -563,8 +563,8 @@ export type UbicacionesIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.
 export type $UbicacionesPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Ubicaciones"
   objects: {
-    almacen: Prisma.$AlmacenesPayload<ExtArgs>
     inventario: Prisma.$InventarioPayload<ExtArgs>[]
+    almacen: Prisma.$AlmacenesPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     ubicacion: string
@@ -965,8 +965,8 @@ readonly fields: UbicacionesFieldRefs;
  */
 export interface Prisma__UbicacionesClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  almacen<T extends Prisma.AlmacenesDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AlmacenesDefaultArgs<ExtArgs>>): Prisma.Prisma__AlmacenesClient<runtime.Types.Result.GetResult<Prisma.$AlmacenesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   inventario<T extends Prisma.Ubicaciones$inventarioArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Ubicaciones$inventarioArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventarioPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  almacen<T extends Prisma.AlmacenesDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AlmacenesDefaultArgs<ExtArgs>>): Prisma.Prisma__AlmacenesClient<runtime.Types.Result.GetResult<Prisma.$AlmacenesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
