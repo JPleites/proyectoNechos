@@ -1,0 +1,35 @@
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">
+      <img
+        src="nechologo1.png"
+        alt="Nechos Autoparts Logo"
+        width="150px"
+    /></a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      (click)="basicNav.toggle()"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav" mdbCollapse #basicNav="mdbCollapse">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" routerLink="consulta">Consultas</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="ingreso">Ingreso</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="nuevoproducto">Agregar Producto</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
