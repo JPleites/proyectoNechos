@@ -80,7 +80,8 @@ model Usuarios {
   codigo     Int     @id @default(autoincrement())
   contrasena String
   rol        String
-  perfil     Perfil?
+  perfilId   Int     @unique
+  perfil     Perfil  @relation(fields: [perfilId], references: [id])
 }
 
 model Perfil {
@@ -93,8 +94,7 @@ model Perfil {
   direccion          String
   fechaIngreso       DateTime
   fechaUltimoAscenso DateTime
-  usuarioCodigo      Int?      @unique
-  usuario            Usuarios? @relation(fields: [usuarioCodigo], references: [codigo])
+  usuario            Usuarios?
 }
 
 model Arqueo {
