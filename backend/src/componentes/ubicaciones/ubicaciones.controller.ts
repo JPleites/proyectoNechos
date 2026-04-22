@@ -22,13 +22,6 @@ export class UbicacionesController {
     return this.ubicacionesService.createUbicaciones(data);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.ubicacionesService.deleteUbicaciones({
-      ubicacion: id,
-    });
-  }
-
   @Put(':id')
   update(@Param('id') id: string, @Body() data: any) {
     return this.ubicacionesService.updateUbicaciones({

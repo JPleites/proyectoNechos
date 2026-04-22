@@ -24,6 +24,7 @@
     "mdb-angular-ui-kit": "^10.0.0",
     "mdb-ui-kit": "^9.3.0",
     "rxjs": "~7.8.0",
+    "sweetalert2": "^11.26.24",
     "tslib": "^2.3.0"
   },
   "devDependencies": {

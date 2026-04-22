@@ -1,42 +1,9 @@
 generator client {
-  provider     = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-}
-
-model Clientes {
-  id        String @id
-  nombre    String
-  correo    String @unique
-  telefono  String @unique
-  direccion String
-}
-
-model Productos {
-  codigo       String       @id
-  producto     String
-  costo        Float
-  precio       Float
-  descuento    Int
-  proveedor    String
-  marca        String
-  categoria    String
-  descripcion  String
-  inventario   Inventario[]
-  proveedorRel Proveedores  @relation(fields: [proveedor], references: [rtn])
-}
-
-model Inventario {
-  id               Int         @id @default(autoincrement())
-  productoCodigo   String
-  ubicacion        String
-  ultimoMovimiento DateTime
-  tipoMovimiento   String
-  ultimoUsuario    String
-  producto         Productos   @relation(fields: [productoCodigo], references: [codigo])
-  ubicacionRel     Ubicaciones @relation(fields: [ubicacion], references: [ubicacion])
 }
 
 model Almacenes {
@@ -45,13 +12,19 @@ model Almacenes {
   ubicaciones Ubicaciones[]
 }
 
-model Ubicaciones {
-  ubicacion  String       @id
-  estante    String
-  nivel      String
-  almacenId  String
-  inventario Inventario[]
-  almacen    Almacenes    @relation(fields: [almacenId], references: [id])
+model Arqueo {
+  id                  Int      @id @default(autoincrement())
+  usuarioCodigo       Int
+  fecha               DateTime
+  totalEfectivo       Decimal
+  totalBac            Decimal
+  totalFicohsa        Decimal
+  totalDavivienda     Decimal
+  totalTransferencias Decimal
+  totalRetiros        Decimal
+  totalDevoluciones   Decimal
+
+  usuario Usuarios @relation(fields: [usuarioCodigo], references: [codigo])
 }
 
 model Categoria {
@@ -60,28 +33,53 @@ model Categoria {
   CategoriaProveedores CategoriaProveedores[]
 }
 
-model Proveedores {
-  rtn                  String                 @id
-  proveedor            String
-  CategoriaProveedores CategoriaProveedores[]
-  productos            Productos[]
+model Cierres {
+  id                  Int      @id @default(autoincrement())
+  usuarioCodigo       Int
+  fecha               DateTime
+  totalEfectivo       Decimal
+  totalBac            Decimal
+  totalFicohsa        Decimal
+  totalDavivienda     Decimal
+  totalTransferencias Decimal
+  totalRetiros        Decimal
+  totalDevoluciones   Decimal
+  totalFacturado      Decimal
+  totalRecibido       Decimal
+  diferencia          Decimal
+
+  usuario Usuarios @relation(fields: [usuarioCodigo], references: [codigo])
 }
 
-model CategoriaProveedores {
-  categoriaId  String
-  proveedorRtn String
-  categoria    Categoria   @relation(fields: [categoriaId], references: [id])
-  proveedor    Proveedores @relation(fields: [proveedorRtn], references: [rtn])
-
-  @@id([categoriaId, proveedorRtn])
+model Clientes {
+  id        String   @id
+  nombre    String
+  correo    String   @unique
+  telefono  String   @unique
+  direccion String
+  ventas    Ventas[]
 }
 
-model Usuarios {
-  codigo     Int     @id @default(autoincrement())
-  contrasena String
-  rol        String
-  perfilId   Int     @unique
-  perfil     Perfil  @relation(fields: [perfilId], references: [id])
+model Inventario {
+  id               Int         @id @default(autoincrement())
+  productoCodigo   String
+  ubicacion        String
+  cantidad         Int
+  producto         Productos   @relation(fields: [productoCodigo], references: [codigo])
+  ubicacionRel     Ubicaciones @relation(fields: [ubicacion], references: [ubicacion])
+}
+
+model MovimientosInventario {
+  id               Int      @id @default(autoincrement())
+  productoCodigo   String
+  tipo             String   // "ENTRADA" | "SALIDA"
+  cantidad         Int
+  fecha            DateTime @default(now())
+  referencia       String?  // ventaId, compraId, ajuste, etc
+  usuarioCodigo    Int
+
+  producto Productos @relation(fields: [productoCodigo], references: [codigo])
+  usuario  Usuarios  @relation(fields: [usuarioCodigo], references: [codigo])
 }
 
 model Perfil {
@@ -94,34 +92,80 @@ model Perfil {
   direccion          String
   fechaIngreso       DateTime
   fechaUltimoAscenso DateTime
-  usuario            Usuarios?
+
+  usuario Usuarios?
 }
 
-model Arqueo {
-  id                  Int      @id @default(autoincrement())
-  usuarioCodigo       Int
-  fecha               DateTime
-  TotalEfectivo       Float
-  totalBac            Float
-  totalFicohsa        Float
-  totalDavivienda     Float
-  totalTransferencias Float
-  totalRetiros        Float
-  totalDevoluciones   Float
+model Productos {
+  codigo        String         @id
+  producto      String
+  costo         Decimal
+  precio        Decimal
+  descuento     Decimal
+  proveedor     String
+  marca         String
+  categoria     String
+  descripcion   String
+  inventario    Inventario[]
+  proveedorRel  Proveedores    @relation(fields: [proveedor], references: [rtn])
+  ventaDetalles VentaDetalle[]
+  movimientos   MovimientosInventario[]
 }
 
-model Cierres {
-  id                  Int      @id @default(autoincrement())
-  usuarioCodigo       Int
-  fecha               DateTime
-  TotalEfectivo       Float
-  totalBac            Float
-  totalFicohsa        Float
-  totalDavivienda     Float
-  totalTransferencias Float
-  totalRetiros        Float
-  totalDevoluciones   Float
-  totalFacturado      Float
-  totalRecibido       Float
-  diferencia          Float
+model Proveedores {
+  rtn                  String                 @id
+  proveedor            String
+  CategoriaProveedores CategoriaProveedores[]
+  productos            Productos[]
+}
+
+model Ubicaciones {
+  ubicacion  String       @id
+  estante    String
+  nivel      String
+  almacenId  String
+  inventario Inventario[]
+  almacen    Almacenes    @relation(fields: [almacenId], references: [id])
+}
+
+model Usuarios {
+  codigo     Int    @id @default(autoincrement())
+  contrasena String
+  rol        String
+  perfilId   Int    @unique
+  perfil     Perfil @relation(fields: [perfilId], references: [id])
+  arqueos    Arqueo[]
+  cierres    Cierres[]
+  movimientos MovimientosInventario[]
+}
+
+model CategoriaProveedores {
+  categoriaId  String
+  proveedorRtn String
+  categoria    Categoria   @relation(fields: [categoriaId], references: [id])
+  proveedor    Proveedores @relation(fields: [proveedorRtn], references: [rtn])
+
+  @@id([categoriaId, proveedorRtn])
+}
+
+model Ventas {
+  id        Int      @id @default(autoincrement())
+  clienteId String
+  fecha     DateTime
+  estado    String // "En proceso", "Finalizado", "Entregado"
+
+  cliente  Clientes       @relation(fields: [clienteId], references: [id])
+  detalles VentaDetalle[]
+}
+
+model VentaDetalle {
+  id             Int      @id @default(autoincrement())
+  ventaId        Int
+  productoCodigo String
+  cantidad       Int
+  precioUnitario Decimal
+  subtotal       Decimal
+
+  venta    Ventas    @relation(fields: [ventaId], references: [id])
+  producto Productos @relation(fields: [productoCodigo], references: [codigo])
 }

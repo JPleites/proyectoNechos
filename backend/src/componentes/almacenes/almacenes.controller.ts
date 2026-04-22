@@ -1,5 +1,11 @@
 import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
 import { AlmacenesService } from './almacenes.service';
+import { AuthGuard } from '../auth/auth.guard';
+import { UseGuards } from '@nestjs/common';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
+
+@UseGuards(AuthGuard, RolesGuard)
 
 @Controller('almacenes')
 export class AlmacenesController {
@@ -17,11 +23,13 @@ export class AlmacenesController {
         });
     }
 
+    @Roles('admin', 'supervisor')
     @Post()
     create(@Body() data: any) {
         return this.almacenesService.createAlmacenes(data);
     }
-
+    
+    @Roles('admin', 'supervisor')
     @Delete(':id')
     remove(@Param('id') id: string) {
         return this.almacenesService.deleteAlmacenes({

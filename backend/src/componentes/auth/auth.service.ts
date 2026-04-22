@@ -30,6 +30,7 @@ export class AuthService {
 
     return {
       access_token: token,
+      rol: user.rol,
     };
   }
 }

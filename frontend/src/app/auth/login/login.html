@@ -1,0 +1,50 @@
+<div class="container d-flex justify-content-center align-items-center vh-100">
+  <div class="card shadow-4 p-4" style="max-width: 400px; width: 100%; border-radius: 15px;">
+
+    <!-- Título -->
+    <div class="text-center mb-4">
+      <h3 class="fw-bold">Bienvenido</h3>
+      <p class="text-muted">Inicia sesión para continuar</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
+
+      <!-- Código -->
+      <div class="form-outline mb-4">
+        <input
+          type="number"
+          formControlName="codigo"
+          class="form-control"
+        />
+        <label class="form-label">Código</label>
+      </div>
+
+      <!-- Contraseña -->
+      <div class="form-outline mb-4">
+        <input
+          type="password"
+          formControlName="contrasena"
+          class="form-control"
+        />
+        <label class="form-label">Contraseña</label>
+      </div>
+
+      <!-- Botón -->
+      <button
+        type="submit"
+        class="btn btn-primary btn-block w-100 mb-3"
+        routerLink="admin"
+      >
+        <i class="fas fa-sign-in-alt me-2"></i>
+        Ingresar
+      </button>
+
+    </form>
+
+    <!-- Footer -->
+    <div class="text-center">
+      <small class="text-muted">© 2026 Tu Sistema</small>
+    </div>
+
+  </div>
+</div>

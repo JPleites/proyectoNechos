@@ -7,9 +7,16 @@ import {
   Put,
   Delete,
 } from '@nestjs/common';
-import { ProveedoresService } from './proveedores.service';
+import { ProveedoresService } from './proveedores.service';import { AuthGuard } from '../auth/auth.guard';
+import { UseGuards } from '@nestjs/common';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
+
+@UseGuards(AuthGuard, RolesGuard)
 
 @Controller('proveedores')
+
+@Roles('admin', 'supervisor')
 export class ProveedoresController {
   constructor(private readonly proveedoresService: ProveedoresService) {}
 

@@ -1,7 +1,13 @@
 import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
-import { PerfilService } from './perfil.service';
+import { PerfilService } from './perfil.service';import { AuthGuard } from '../auth/auth.guard';
+import { UseGuards } from '@nestjs/common';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
+
+@UseGuards(AuthGuard, RolesGuard)
 
 @Controller('perfil')
+@Roles('admin', 'supervisor')
 export class PerfilController {
     constructor(private readonly perfilService: PerfilService) {}
 
