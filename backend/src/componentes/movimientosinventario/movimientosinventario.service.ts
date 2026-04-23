@@ -38,15 +38,15 @@ export class MovimientosinventarioService {
     });
   }
 
-  async create(data: Prisma.MovimientosInventarioCreateInput) {
-    return this.prisma.movimientosInventario.create({
-      data,
-    });
-  }
+  // async create(data: Prisma.MovimientosInventarioCreateInput) {
+  //   return this.prisma.movimientosInventario.create({
+  //     data,
+  //   });
+  // }
 
-  async remove(id: number) {
-    return this.prisma.movimientosInventario.delete({
-      where: { id },
-    });
-  }
+  // async remove(id: number) {
+  //   return this.prisma.movimientosInventario.delete({
+  //     where: { id },
+  //   });
+  // }
 }

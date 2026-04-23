@@ -55,4 +55,17 @@ export class ProductosService {
       where,
     });
   }
+
+  async buscarProductos(q: string) {
+    return this.prisma.productos.findMany({
+      where: {
+        OR: [
+          { codigo: { contains: q } },
+          { producto: { contains: q, mode: 'insensitive' } },
+          { marca: { contains: q, mode: 'insensitive' } },
+          { categoria: { contains: q, mode: 'insensitive' } },
+        ],
+      },
+    });
+  }
 }

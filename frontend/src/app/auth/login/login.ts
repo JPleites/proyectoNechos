@@ -73,7 +73,7 @@ export class LoginComponent {
   // 🔥 Función limpia
   redirigirPorRol(rol: string) {
     const rutas: any = {
-      admin: '/admin',
+      admin: '/productos/nuevo',
       cajero: '/cajero',
       supervisor: '/supervisor',
       vendedor: '/vendedor',

@@ -1,0 +1,80 @@
+.erp-card {
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.erp-header {
+  border-bottom: 1px solid #eee;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+}
+
+.erp-title {
+  font-weight: 600;
+  margin: 0;
+}
+
+.erp-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: #6c757d;
+}
+
+.erp-section {
+  margin-bottom: 20px;
+}
+
+.erp-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.erp-label {
+  font-size: 12px;
+  color: #6c757d;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.erp-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s;
+  background: #fff;
+}
+
+.erp-input:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 2px rgba(13,110,253,0.1);
+}
+
+.erp-image {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #e9ecef;
+}
+
+.erp-btn {
+  background: #198754;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.erp-btn:hover {
+  background: #157347;
+}

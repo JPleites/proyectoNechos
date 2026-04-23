@@ -13,9 +13,4 @@ export class ApiService {
   login(data: any) {
     return this.http.post(`${this.baseUrl}/auth/login`, data);
   }
-
-  // 🔹 PRODUCTOS
-  getProductos() {
-    return this.http.get(`${this.baseUrl}/productos`);
-  }
 }

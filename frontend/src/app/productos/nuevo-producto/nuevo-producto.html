@@ -1,0 +1,145 @@
+<div class="container py-4">
+
+  <div class="erp-card">
+
+    <!-- HEADER -->
+    <div class="erp-header">
+      <h4 class="erp-title">Nuevo Producto</h4>
+      <p class="erp-subtitle">Registro de información del inventario</p>
+    </div>
+
+    <div class="row g-4">
+
+      <!-- IMAGEN -->
+      <div class="col-lg-4">
+
+        <div class="erp-section text-center">
+
+          <img
+            [src]="imagePreview || 'https://via.placeholder.com/220x220?text=Producto'"
+            class="erp-image mb-3"
+          />
+
+          <input
+            type="file"
+            class="form-control erp-input"
+            (change)="onImageSelected($event)"
+            accept="image/*"
+          />
+
+          <small class="text-muted d-block mt-2">
+            Imagen del producto
+          </small>
+
+        </div>
+
+      </div>
+
+      <!-- FORM -->
+      <div class="col-lg-8">
+
+        <form [formGroup]="form" (ngSubmit)="guardar()">
+
+          <!-- SECCIÓN: BÁSICOS -->
+          <div class="erp-section">
+
+            <h6 class="erp-section-title">Información básica</h6>
+
+            <div class="row g-3">
+
+              <div class="col-md-4">
+                <label class="erp-label">Código *</label>
+                <input formControlName="codigo" class="erp-input" />
+              </div>
+
+              <div class="col-md-8">
+                <label class="erp-label">Nombre del producto *</label>
+                <input formControlName="producto" class="erp-input" />
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- SECCIÓN: PRECIOS -->
+          <div class="erp-section">
+
+            <h6 class="erp-section-title">Precios</h6>
+
+            <div class="row g-3">
+
+              <div class="col-md-4">
+                <label class="erp-label">Costo *</label>
+                <input type="number" formControlName="costo" class="erp-input" />
+              </div>
+
+              <div class="col-md-4">
+                <label class="erp-label">Precio *</label>
+                <input type="number" formControlName="precio" class="erp-input" />
+              </div>
+
+              <div class="col-md-4">
+                <label class="erp-label">Descuento</label>
+                <input type="number" formControlName="descuento" class="erp-input" />
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- SECCIÓN: LOGÍSTICA -->
+          <div class="erp-section">
+
+            <h6 class="erp-section-title">Logística</h6>
+
+            <div class="row g-3">
+
+              <div class="col-md-6">
+                <label class="erp-label">Proveedor *</label>
+                <input formControlName="proveedor" class="erp-input" />
+              </div>
+
+              <div class="col-md-6">
+                <label class="erp-label">Marca</label>
+                <input formControlName="marca" class="erp-input" />
+              </div>
+
+              <div class="col-md-6">
+                <label class="erp-label">Categoría</label>
+                <input formControlName="categoria" class="erp-input" />
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- SECCIÓN: DESCRIPCIÓN -->
+          <div class="erp-section">
+
+            <h6 class="erp-section-title">Descripción</h6>
+
+            <textarea
+              formControlName="descripcion"
+              rows="3"
+              class="erp-input"
+            ></textarea>
+
+          </div>
+
+          <!-- BOTÓN -->
+          <div class="text-end mt-3">
+            <button type="submit" class="erp-btn">
+              <i class="fas fa-save me-2"></i>
+              Guardar producto
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

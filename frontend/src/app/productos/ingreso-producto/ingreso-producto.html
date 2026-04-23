@@ -1,0 +1,11 @@
+<h2>Ingreso de Inventario</h2>
+
+<form [formGroup]="form" (ngSubmit)="ingresar()">
+
+  <input formControlName="productoCodigo" placeholder="Código producto" />
+  <input formControlName="ubicacion" placeholder="Ubicación (A1, B2...)" />
+  <input type="number" formControlName="cantidad" placeholder="Cantidad" />
+
+  <button type="submit">Ingresar</button>
+
+</form>

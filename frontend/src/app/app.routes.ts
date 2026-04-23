@@ -36,5 +36,21 @@ export const routes: Routes = [
         path: 'vendedor',
         loadComponent: () => import('./home/vendedor/vendedor').then(m => m.Vendedor),
         canActivate: [authGuard, vendedorGuard]
+    },
+    {
+        path: 'productos/consulta',
+        loadComponent: () => import('./productos/consulta-producto/consulta-producto').then(m => m.ConsultaProducto)
+    },
+    {
+        path: 'productos/nuevo',
+        loadComponent: () => import('./productos/nuevo-producto/nuevo-producto').then(m => m.NuevoProducto)
+    },
+    {
+        path: 'productos/ingreso',
+        loadComponent: () => import('./productos/ingreso-producto/ingreso-producto').then(m => m.IngresoProducto)
+    },
+    {
+        path: 'productos/salida',
+        loadComponent: () => import('./productos/salida-producto/salida-producto').then(m => m.SalidaProducto)
     }
 ];

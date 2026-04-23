@@ -33,13 +33,8 @@ export class MovimientosinventarioController {
     return this.movimientosService.findOne(Number(id));
   }
 
-  @Post()
-  create(@Body() data: any) {
-    return this.movimientosService.create(data);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.movimientosService.remove(Number(id));
-  }
+  // @Post()
+  // create(@Body() data: any) {
+  //   return this.movimientosService.create(data);
+  // }
 }

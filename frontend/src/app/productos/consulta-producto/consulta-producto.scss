@@ -1,0 +1,66 @@
+.erp-card {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+/* BOTÓN PRINCIPAL */
+.erp-btn {
+  background: #0d6efd;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.erp-btn:hover {
+  background: #0b5ed7;
+  color: #fff;
+}
+
+/* TABLA */
+.erp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.erp-table thead {
+  background: #f8f9fa;
+}
+
+.erp-table th {
+  text-align: left;
+  padding: 12px;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #6c757d;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.erp-table td {
+  padding: 12px;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.erp-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+/* BOTÓN ELIMINAR */
+.erp-btn-danger {
+  background: transparent;
+  border: 1px solid #dc3545;
+  color: #dc3545;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+
+.erp-btn-danger:hover {
+  background: #dc3545;
+  color: #fff;
+}

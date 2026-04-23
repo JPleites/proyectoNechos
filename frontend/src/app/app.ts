@@ -8,12 +8,6 @@ import { ApiService } from './services/api';
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App implements OnInit {
-  constructor(private api: ApiService) {}
-  ngOnInit() {
-    this.api.getProductos().subscribe({
-      next: (data) => console.log('Productos:', data),
-      error: (err) => console.error(err)
-    });
-  }
+export class App {
+  
 }

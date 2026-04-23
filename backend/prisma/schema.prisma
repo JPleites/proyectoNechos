@@ -63,7 +63,7 @@ model Clientes {
 model Inventario {
   id               Int         @id @default(autoincrement())
   productoCodigo   String
-  ubicacion        String
+  ubicacion        String @unique
   cantidad         Int
   producto         Productos   @relation(fields: [productoCodigo], references: [codigo])
   ubicacionRel     Ubicaciones @relation(fields: [ubicacion], references: [ubicacion])

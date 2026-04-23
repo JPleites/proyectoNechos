@@ -1,0 +1,11 @@
+<h2>Salida de Inventario</h2>
+
+<form [formGroup]="form" (ngSubmit)="salir()">
+
+  <input formControlName="productoCodigo" placeholder="Código producto" />
+  <input formControlName="ubicacion" placeholder="Ubicación" />
+  <input type="number" formControlName="cantidad" placeholder="Cantidad" />
+
+  <button type="submit">Registrar salida</button>
+
+</form>
