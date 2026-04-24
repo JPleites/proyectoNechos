@@ -1,1 +1,44 @@
-<p>cajero works!</p>
+<div class="container-fluid overflow-hidden" style="height: 100vh; display: flex; flex-direction: column; padding: 12px; box-sizing: border-box; background-color: #f8f9fa;">
+  
+  <div class="d-flex justify-content-between align-items-center mb-3" style="padding: 0 10px; background: #fff; border: 1px solid #dee2e6; border-radius: 15px; height: 60px;">
+    
+    <div class="fw-bold" style="font-size: 14px; color: #555;">
+      Rol: <span style="color: #f39c12;">Cajero</span>
+    </div>
+
+    <div class="fw-bold text-dark" style="font-size: 16px;">
+      Bienvenido: <span class="text-secondary">[Nombre de Usuario]</span>
+    </div>
+
+    <div class="d-flex align-items-center" style="cursor: pointer; padding: 5px 12px; border-radius: 10px; transition: 0.3s;" 
+         onmouseover="this.style.background='#fff0f0'" onmouseout="this.style.background='transparent'">
+      <span class="me-2 fw-bold" style="font-size: 14px; color: #dc3545;">Cerrar Sesión</span>
+      <img src="/logout.png" alt="Logout" style="width: 24px; height: 24px; object-fit: contain;">
+    </div>
+
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); gap: 15px; flex-grow: 1;">
+
+    <div class="text-center fw-bold d-flex flex-column align-items-center justify-content-center" style="background: #fff; border: 1px solid #dee2e6; border-radius: 20px; cursor: pointer; padding: 10px; transition: 0.3s;" onmouseover="this.style.boxShadow='0 4px 15px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
+      <img src="/facturacion.png" alt="Facturación" style="width: 80px; height: 80px; object-fit: contain;">
+      <div class="mt-3" style="font-size: 18px;">Facturación</div>
+    </div>
+
+    <div class="text-center fw-bold d-flex flex-column align-items-center justify-content-center" style="background: #fff; border: 1px solid #dee2e6; border-radius: 20px; cursor: pointer; padding: 10px; transition: 0.3s;" onmouseover="this.style.boxShadow='0 4px 15px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
+      <img src="/productos.png" alt="Productos" style="width: 80px; height: 80px; object-fit: contain;">
+      <div class="mt-3" style="font-size: 18px;">Consulta de Productos</div>
+    </div>
+
+    <div class="text-center fw-bold d-flex flex-column align-items-center justify-content-center" style="background: #fff; border: 1px solid #dee2e6; border-radius: 20px; cursor: pointer; padding: 10px; transition: 0.3s;" onmouseover="this.style.boxShadow='0 4px 15px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
+      <img src="/clientes.png" alt="Clientes" style="width: 80px; height: 80px; object-fit: contain;">
+      <div class="mt-3" style="font-size: 18px;">Clientes</div>
+    </div>
+
+    <div class="text-center fw-bold d-flex flex-column align-items-center justify-content-center" style="background: #fff; border: 1px solid #dee2e6; border-radius: 20px; cursor: pointer; padding: 10px; transition: 0.3s;" onmouseover="this.style.boxShadow='0 4px 15px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
+      <img src="/cierre.png" alt="Cierres" style="width: 80px; height: 80px; object-fit: contain;">
+      <div class="mt-3" style="font-size: 18px;">Realizar Cierre</div>
+    </div>
+
+  </div>
+</div>
