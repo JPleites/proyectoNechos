@@ -1,0 +1,63 @@
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h3 class="mb-0">Colaboradores</h3>
+      <small class="text-muted">Gestión de perfiles y accesos</small>
+    </div>
+
+    <a  class="btn btn-primary" (click)="crearPerfil()"> + Nuevo colaborador </a>
+    <button class="btn btn-secondary" (click)="cargar()">Actualizar</button>
+  </div>
+
+  <!-- TABLE -->
+  <div class="card shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>ID</th>
+            <th>DNI</th>
+            <th>Nombre</th>
+            <th>Cargo</th>
+            <th>Departamento</th>
+            <th>Usuario</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let p of perfiles">
+            <td>{{ p.id }}</td>
+            <td>{{ p.dni }}</td>
+            <td>{{ p.nombre }}</td>
+            <td>{{ p.cargo }}</td>
+            <td>{{ p.departamento }}</td>
+
+            <!-- USUARIO STATUS -->
+            <td>
+              <span *ngIf="p.usuario; else sinUser" class="badge bg-success"> Activo </span>
+
+              <ng-template #sinUser>
+                <span class="badge bg-secondary">Sin usuario</span>
+              </ng-template>
+            </td>
+
+            <!-- ACCIONES -->
+            <td class="d-flex gap-2">
+              <button class="btn btn-sm btn-info" (click)="verDetalle(p.id)">Ver</button>
+
+              <button class="btn btn-sm btn-warning" (click)="editar(p.id)">Editar</button>
+
+              <button class="btn btn-sm btn-danger" (click)="eliminar(p.id)">Eliminar</button>
+
+              <!-- SOLO SI NO TIENE USUARIO -->
+              <button *ngIf="!p.usuario" class="btn btn-sm btn-success" (click)="crearUsuario(p)">
+                Crear usuario
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,11 +1,75 @@
-<h2>Ingreso de Inventario</h2>
+<div class="container py-4">
 
-<form [formGroup]="form" (ngSubmit)="ingresar()">
+  <div class="card">
 
-  <input formControlName="productoCodigo" placeholder="Código producto" />
-  <input formControlName="ubicacion" placeholder="Ubicación (A1, B2...)" />
-  <input type="number" formControlName="cantidad" placeholder="Cantidad" />
+    <!-- HEADER -->
+    <div class="card-body">
+      <h4 class="mb-0">Ingreso de Inventario</h4>
+      <small class="text-muted">Registrar stock en ubicaciones</small>
+    </div>
 
-  <button type="submit">Ingresar</button>
+    <div class="card-body pt-0">
 
-</form>
+      <form [formGroup]="form" (ngSubmit)="ingresar()">
+
+        <div class="row g-3">
+
+          <!-- Código producto -->
+          <div class="col-md-4">
+
+            <div class="form-outline">
+              <input
+                formControlName="productoCodigo"
+                class="form-control"
+              />
+              <label class="form-label">Código producto *</label>
+            </div>
+
+          </div>
+
+          <!-- Ubicación -->
+          <div class="col-md-4">
+
+            <div class="form-outline">
+              <input
+                formControlName="ubicacion"
+                class="form-control"
+              />
+              <label class="form-label">Ubicación (A1, B2...) *</label>
+            </div>
+
+          </div>
+
+          <!-- Cantidad -->
+          <div class="col-md-4">
+
+            <div class="form-outline">
+              <input
+                type="number"
+                formControlName="cantidad"
+                class="form-control"
+              />
+              <label class="form-label">Cantidad *</label>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- BOTÓN -->
+        <div class="text-end mt-4">
+
+          <button type="submit" class="btn btn-success">
+            <i class="fas fa-box me-2"></i>
+            Ingresar inventario
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>

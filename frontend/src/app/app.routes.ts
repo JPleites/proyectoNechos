@@ -52,5 +52,21 @@ export const routes: Routes = [
     {
         path: 'productos/salida',
         loadComponent: () => import('./productos/salida-producto/salida-producto').then(m => m.SalidaProducto)
+    },
+    {
+        path: 'productos/kardex',
+        loadComponent: () => import('./productos/kardex/kardex').then(m => m.Kardex)
+    },
+    {
+        path: 'usuarios/crear-perfil',
+        loadComponent: () => import('./personas/crear-perfil/crear-perfil').then(m => m.CrearPerfil)
+    },
+    {
+        path: 'usuarios/editar-perfil/:id',
+        loadComponent: () => import('./personas/crear-perfil/crear-perfil').then(m => m.CrearPerfil)
+    },
+    {
+        path: 'usuarios/lista-perfil',
+        loadComponent: () => import('./personas/lista-perfil/lista-perfil').then(m => m.ListaPerfil)
     }
 ];

@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class InventarioService {
-    private apiUrl = 'http://localhost:3000/';
+  private apiUrl = 'http://localhost:3000/';
 
   constructor(private http: HttpClient) {}
 
@@ -19,5 +19,13 @@ export class InventarioService {
 
   getInventario() {
     return this.http.get(`${this.apiUrl}inventario`);
+  }
+
+  getInventarioPorProducto(codigo: string) {
+    return this.http.get(`${this.apiUrl}productos/${codigo}/inventario`);
+  }
+
+  getKardex(codigo: string) {
+    return this.http.get(`${this.apiUrl}inventario/kardex/${codigo}`);
   }
 }

@@ -60,4 +60,10 @@ export class ProductosController {
   buscar(@Query('q') q: string) {
     return this.productosService.buscarProductos(q);
   }
+
+  // Nuevo endpoint para obtener el inventario de un producto
+  @Get(':id/inventario')
+  getInventario(@Param('id') id: string) {
+    return this.productosService.productoConInventario(id);
+  }
 }

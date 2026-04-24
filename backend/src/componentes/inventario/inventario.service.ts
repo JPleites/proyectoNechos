@@ -238,6 +238,8 @@ export class InventarioService {
       return {
         fecha: mov.fecha,
         tipo: mov.tipo,
+        cantidad: mov.cantidad,
+        codigoUsuario: mov.usuarioCodigo,
         entrada,
         salida,
         stock,

@@ -29,47 +29,59 @@ export class PerfilService {
       cursor,
       where,
       orderBy,
+      include: {
+        usuario: true,
+      },
     });
   }
 
-//   async createPerfil(data: Prisma.PerfilCreateInput): Promise<Perfil> {
-//     return this.prisma.perfil.create({
-//       data,
-//     });
-//   }
+  //   async createPerfil(data: Prisma.PerfilCreateInput): Promise<Perfil> {
+  //     return this.prisma.perfil.create({
+  //       data,
+  //     });
+  //   }
 
   async createPerfil(data: any) {
-    // 1. Crear perfil
-    const perfil = await this.prisma.perfil.create({
-      data: {
-        dni: data.dni,
-        nombre: data.nombre,
-        telefono: data.telefono,
-        cargo: data.cargo,
-        departamento: data.departamento,
-        direccion: data.direccion,
-        fechaIngreso: new Date(data.fechaIngreso),
-        fechaUltimoAscenso: new Date(data.fechaUltimoAscenso),
-      },
-    });
-
-    // 2. Si quiere usuario
-    if (data.crearUsuario) {
-      const hashedPassword = await bcrypt.hash(data.contrasena, 10);
-
-      await this.prisma.usuarios.create({
+    return this.prisma.$transaction(async (prisma) => {
+      // 1. Crear perfil
+      const perfil = await this.prisma.perfil.create({
         data: {
-          contrasena: hashedPassword,
-          rol: data.rol,
-          perfilId: perfil.id,
+          dni: data.dni,
+          nombre: data.nombre,
+          telefono: data.telefono,
+          cargo: data.cargo,
+          departamento: data.departamento,
+          direccion: data.direccion,
+          fechaIngreso: new Date(data.fechaIngreso),
+          fechaUltimoAscenso: new Date(data.fechaUltimoAscenso),
         },
       });
-    }
 
-    return {
-      mensaje: 'Perfil creado correctamente',
-      perfil,
-    };
+      // 2. Si quiere usuario
+      if (data.crearUsuario) {
+        const hashedPassword = await bcrypt.hash(data.contrasena, 10);
+
+        await this.prisma.usuarios.create({
+          data: {
+            contrasena: hashedPassword,
+            rol: data.rol,
+            perfilId: perfil.id,
+          },
+        });
+      }
+
+      return perfil;
+    });
+  }
+
+  createUsuarioDesdePerfil(perfilId: number) {
+    return this.prisma.usuarios.create({
+      data: {
+        contrasena: '123456', // luego lo mejoras
+        rol: 'vendedor',
+        perfilId: perfilId,
+      },
+    });
   }
 
   async updatePerfil(params: {

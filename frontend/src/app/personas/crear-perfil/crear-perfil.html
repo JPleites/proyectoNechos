@@ -1,0 +1,54 @@
+<div class="container py-4">
+
+  <h3>Registro de Colaborador</h3>
+
+  <form [formGroup]="form" (ngSubmit)="guardar()">
+
+    <!-- PERFIL -->
+    <div class="card p-3 mb-3">
+
+      <h5>Datos del perfil</h5>
+
+      <input class="form-control mb-2" placeholder="DNI" formControlName="dni" />
+      <input class="form-control mb-2" placeholder="Nombre" formControlName="nombre" />
+      <input class="form-control mb-2" placeholder="Teléfono" formControlName="telefono" />
+      <input class="form-control mb-2" placeholder="Cargo" formControlName="cargo" />
+      <input class="form-control mb-2" placeholder="Departamento" formControlName="departamento" />
+      <input class="form-control mb-2" placeholder="Dirección" formControlName="direccion" />
+
+      <input type="date" class="form-control mb-2" formControlName="fechaIngreso" />
+      <input type="date" class="form-control mb-2" formControlName="fechaUltimoAscenso" />
+
+    </div>
+
+    <!-- CHECK USUARIO -->
+    <div class="form-check mb-3">
+      <input type="checkbox" class="form-check-input" formControlName="crearUsuario" />
+      <label class="form-check-label">
+        Crear usuario de acceso
+      </label>
+    </div>
+
+    <!-- USUARIO (CONDICIONAL) -->
+    <div class="card p-3 mb-3" *ngIf="form.get('crearUsuario')?.value">
+
+      <h5>Datos de usuario</h5>
+
+      <select class="form-select mb-2" formControlName="rol">
+        <option value="" disabled>Seleccionar rol</option>
+        <option value="admin">Administrador</option>
+        <option value="vendedor">Vendedor</option>
+        <option value="supervisor">Supervisor</option>
+        <option value="cajero">Cajero</option>
+      </select>
+      <input type="password" class="form-control mb-2" placeholder="Contraseña" formControlName="contrasena" />
+
+    </div>
+
+    <button class="btn btn-primary" type="submit">
+      Guardar colaborador
+    </button>
+
+  </form>
+
+</div>

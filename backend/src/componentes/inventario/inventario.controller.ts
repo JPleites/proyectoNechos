@@ -16,7 +16,7 @@ import { Roles } from '../auth/roles.decorator';
 
 @UseGuards(AuthGuard, RolesGuard)
 @Controller('inventario')
-@Roles('admin', 'supervisor', 'vendedor', 'cajero')
+//@Roles('admin', 'supervisor', 'vendedor', 'cajero')
 export class InventarioController {
   constructor(private readonly inventarioService: InventarioService) {}
 
@@ -25,6 +25,10 @@ export class InventarioController {
     return this.inventarioService.inventarios({});
   }
 
+  @Get('kardex/:codigo')
+  kardex(@Param('codigo') codigo: string) {
+    return this.inventarioService.kardexProducto(codigo);
+  }
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.inventarioService.inventario({
@@ -32,16 +36,12 @@ export class InventarioController {
     });
   }
 
-  @Get('kardex/:codigo')
-  kardex(@Param('codigo') codigo: string) {
-    return this.inventarioService.kardexProducto(codigo);
-  }
-
+  //ingreso al inventario
   @Post('ingreso')
   ingreso(@Body() data: any, @Req() req: any) {
     return this.inventarioService.ingresoProducto(data, req.user.sub);
   }
-
+  // salida del inventario
   @Post('salida')
   salida(@Body() data: any, @Req() req: any) {
     return this.inventarioService.salidaProducto(data, req.user.sub);

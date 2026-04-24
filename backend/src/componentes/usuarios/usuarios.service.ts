@@ -47,6 +47,9 @@ export class UsuariosService {
     data: Prisma.UsuariosUpdateInput;
   }): Promise<Usuarios> {
     const { where, data } = params;
+    if (data.contrasena) {
+      data.contrasena = await bcrypt.hash(data.contrasena, 10);
+    }
     return this.prisma.usuarios.update({
       data,
       where,
