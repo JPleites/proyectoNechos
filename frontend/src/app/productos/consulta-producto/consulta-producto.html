@@ -1,49 +1,146 @@
 <div class="container py-4">
-  <div class="erp-card">
+
+  <div class="card">
+
     <!-- HEADER -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="card-body d-flex justify-content-between align-items-center">
+
       <div>
         <h4 class="mb-0">Productos</h4>
         <small class="text-muted">Gestión de inventario</small>
       </div>
 
-      <a routerLink="/productos/nuevo" class="erp-btn">
+      <a routerLink="/productos/nuevo" class="btn btn-primary">
         <i class="fas fa-plus me-2"></i>
-        Nuevo Producto
+        Nuevo
       </a>
+
     </div>
-    <input type="text" [(ngModel)]="busqueda" (input)="buscar()" placeholder="Buscar producto..." />
 
-    <button (click)="buscar()">Buscar</button>
+    <div class="card-body pt-0">
 
-    <!-- TABLE -->
-    <div class="table-responsive">
-      <table class="erp-table">
-        <thead>
-          <tr>
-            <th>Código</th>
-            <th>Nombre</th>
-            <th>Precio</th>
-            <th>Marca</th>
-            <th class="text-center">Acciones</th>
-          </tr>
-        </thead>
+      <!-- SEARCH MDB -->
+      <div class="input-group mb-3">
 
-        <tbody>
-          <tr *ngFor="let p of productos">
-            <td class="fw-semibold">{{ p.codigo }}</td>
-            <td>{{ p.producto }}</td>
-            <td>${{ p.precio }}</td>
-            <td>{{ p.marca || '-' }}</td>
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="busqueda"
+          (input)="buscar()"
+          placeholder="Buscar producto..."
+        />
 
-            <td class="text-center">
-              <button class="erp-btn-danger" (click)="eliminar(p.codigo)">
-                <i class="fas fa-trash"></i>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+        <button class="btn btn-outline-primary" (click)="buscar()">
+          <i class="fas fa-search"></i>
+        </button>
+
+      </div>
+
+      <!-- TABLE MDB -->
+      <div class="table-responsive">
+
+        <table class="table align-middle table-hover">
+
+          <thead class="table-light">
+            <tr>
+              <th>Código</th>
+              <th>Nombre</th>
+              <th>Precio</th>
+              <th>Marca</th>
+              <th>Stock</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <ng-container *ngFor="let p of productos">
+
+              <tr>
+
+                <td class="fw-bold">{{ p.codigo }}</td>
+                <td>{{ p.producto }}</td>
+                <td>${{ p.precio }}</td>
+                <td>{{ p.marca || '-' }}</td>
+
+                <!-- STOCK MDB BADGE -->
+                <td>
+
+                  <span *ngIf="stockMap[p.codigo] > 10" class="badge badge-success">
+                    {{ stockMap[p.codigo] }} OK
+                  </span>
+
+                  <span *ngIf="stockMap[p.codigo] <= 10 && stockMap[p.codigo] > 0" class="badge badge-warning">
+                    {{ stockMap[p.codigo] }} bajo
+                  </span>
+
+                  <span *ngIf="stockMap[p.codigo] === 0" class="badge badge-danger">
+                    sin stock
+                  </span>
+
+                  <span *ngIf="stockMap[p.codigo] === undefined" class="badge badge-secondary">
+                    ...
+                  </span>
+
+                </td>
+
+                <!-- ACTIONS -->
+                <td class="text-center">
+
+                  <button
+                    class="btn btn-sm btn-outline-primary"
+                    (click)="verInventario(p.codigo)"
+                  >
+                    <i class="fas fa-box"></i>
+                  </button>
+
+                </td>
+
+              </tr>
+
+              <!-- DETALLE -->
+              <tr *ngIf="inventarioVisible === p.codigo">
+
+                <td colspan="6">
+
+                  <div class="p-3 bg-light rounded">
+
+                    <h6 class="mb-2">Inventario por ubicación</h6>
+
+                    <table class="table table-sm">
+
+                      <thead>
+                        <tr>
+                          <th>Ubicación</th>
+                          <th>Cantidad</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr *ngFor="let inv of inventarios[p.codigo]">
+                          <td>{{ inv.ubicacion }}</td>
+                          <td>{{ inv.cantidad }}</td>
+                        </tr>
+                      </tbody>
+
+                    </table>
+
+                  </div>
+
+                </td>
+
+              </tr>
+
+            </ng-container>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
     </div>
+
   </div>
+
 </div>

@@ -3,10 +3,11 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { ProductosService } from '../../services/productos.service';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-nuevo-producto',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './nuevo-producto.html',
   styleUrl: './nuevo-producto.scss',
 })
@@ -23,12 +24,12 @@ export class NuevoProducto {
     this.form = this.fb.group({
       codigo: ['', Validators.required],
       producto: ['', Validators.required],
-      costo: [, Validators.required],
-      precio: [, Validators.required],
-      descuento: [],
+      costo: [0, Validators.required],
+      precio: [0, Validators.required],
+      descuento: [0],
       proveedor: ['', Validators.required],
-      marca: [''],
-      categoria: [''],
+      marca: ['', Validators.required],
+      categoria: ['', Validators.required],
       descripcion: [''],
     });
   }

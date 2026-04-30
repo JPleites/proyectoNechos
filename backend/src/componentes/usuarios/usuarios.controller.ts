@@ -1,5 +1,6 @@
 import {
-  Controller, Get,Post, Body, Param, Delete, Put, UseGuards
+  Controller, Get,Post, Body, Param, Delete, Put, UseGuards,
+  ForbiddenException
 } from '@nestjs/common';
 import { UsuariosService } from './usuarios.service';
 import { AuthGuard } from '../auth/auth.guard';
@@ -27,7 +28,7 @@ export class UsuariosController {
 
   @Post()
   create(@Body() data: any) {
-    return this.usuariosService.createUsuarios(data);
+    throw new ForbiddenException('Use Perfil para crear usuarios');
   }
 
   @Delete(':id')

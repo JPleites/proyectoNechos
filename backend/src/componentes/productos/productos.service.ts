@@ -68,4 +68,13 @@ export class ProductosService {
       },
     });
   }
+
+  async productoConInventario(codigo: string) {
+    return this.prisma.productos.findUnique({
+      where: { codigo },
+      include: {
+        inventario: true,
+      },
+    });
+  }
 }

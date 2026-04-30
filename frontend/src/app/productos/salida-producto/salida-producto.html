@@ -1,11 +1,80 @@
-<h2>Salida de Inventario</h2>
+<div class="container py-4">
 
-<form [formGroup]="form" (ngSubmit)="salir()">
+  <div class="card">
 
-  <input formControlName="productoCodigo" placeholder="Código producto" />
-  <input formControlName="ubicacion" placeholder="Ubicación" />
-  <input type="number" formControlName="cantidad" placeholder="Cantidad" />
+    <!-- HEADER -->
+    <div class="card-body">
+      <h4 class="mb-0">Salida de Inventario</h4>
+      <small class="text-muted">Registro de egresos de stock</small>
+    </div>
 
-  <button type="submit">Registrar salida</button>
+    <div class="card-body pt-0">
 
-</form>
+      <form [formGroup]="form" (ngSubmit)="salir()">
+
+        <div class="row g-3">
+
+          <!-- Código producto -->
+          <div class="col-md-4">
+
+            <div class="form-outline">
+              <input
+                formControlName="productoCodigo"
+                class="form-control"
+              />
+              <label class="form-label">Código producto *</label>
+            </div>
+
+          </div>
+
+          <!-- Ubicación -->
+          <div class="col-md-4">
+
+            <div class="form-outline">
+              <input
+                formControlName="ubicacion"
+                class="form-control"
+              />
+              <label class="form-label">Ubicación *</label>
+            </div>
+
+          </div>
+
+          <!-- Cantidad -->
+          <div class="col-md-4">
+
+            <div class="form-outline">
+              <input
+                type="number"
+                formControlName="cantidad"
+                class="form-control"
+              />
+              <label class="form-label">Cantidad a retirar *</label>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- ALERTA VISUAL (opcional UX ERP) -->
+        <div class="alert alert-warning mt-3 mb-0 small">
+          Verifica que exista suficiente stock antes de realizar la salida.
+        </div>
+
+        <!-- BOTÓN -->
+        <div class="text-end mt-4">
+
+          <button type="submit" class="btn btn-danger">
+            <i class="fas fa-arrow-down me-2"></i>
+            Registrar salida
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>
