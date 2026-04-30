@@ -6,6 +6,7 @@ import { vendedorGuard } from './guards/rol/vendedor-guard';
 import { supervisorGuard } from './guards/rol/supervisor-guard';
 import { cajeroGuard } from './guards/rol/cajero-guard';
 import { adminGuard } from './guards/rol/admin-guard';
+import { ArqueosComponent } from './seccion/arqueos/arqueos';
 
 export const routes: Routes = [
     {
@@ -52,21 +53,5 @@ export const routes: Routes = [
     {
         path: 'productos/salida',
         loadComponent: () => import('./productos/salida-producto/salida-producto').then(m => m.SalidaProducto)
-    },
-    {
-        path: 'productos/kardex',
-        loadComponent: () => import('./productos/kardex/kardex').then(m => m.Kardex)
-    },
-    {
-        path: 'usuarios/crear-perfil',
-        loadComponent: () => import('./personas/crear-perfil/crear-perfil').then(m => m.CrearPerfil)
-    },
-    {
-        path: 'usuarios/editar-perfil/:id',
-        loadComponent: () => import('./personas/crear-perfil/crear-perfil').then(m => m.CrearPerfil)
-    },
-    {
-        path: 'usuarios/lista-perfil',
-        loadComponent: () => import('./personas/lista-perfil/lista-perfil').then(m => m.ListaPerfil)
     }
 ];

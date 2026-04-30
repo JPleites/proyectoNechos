@@ -1,0 +1,32 @@
+ /* Estándar de Necho's Auto Parts para Vendedores */
+    :host {
+      --size-icon-vendedor: 86px; 
+    }
+
+    .img-necho {
+      width: var(--size-icon-vendedor);
+      height: var(--size-icon-vendedor);
+      object-fit: contain;
+    }
+
+    .modulo-card {
+      background: #fff;
+      border: 1px solid #dee2e6;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      height: 100%;
+    }
+
+    /* Hoover azulito/cian para Vendedor */
+    .modulo-card:hover {
+      transform: translateY(-8px); /* Elevación un poco más pronunciada por ser pocos botones */
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      border-color: #17a2b8; 
+      background-color: #f0fbfc; 
+    }
