@@ -1,0 +1,32 @@
+/* El truco del :host para que Angular no lo bloquee */
+    :host {
+      --size-icon-cajero: 86px; /* Ajustado a 64px para que se vea bien pero no enorme */
+    }
+
+    .img-necho {
+      width: var(--size-icon-cajero);
+      height: var(--size-icon-cajero);
+      object-fit: contain;
+    }
+
+    .modulo-card {
+      background: #fff;
+      border: 1px solid #dee2e6;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      height: 100%;
+    }
+
+    /* Efecto Hoover mejorado */
+    .modulo-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+      border-color: #f39c12; /* Color naranja de Cajero */
+      background-color: #fffaf0; /* Fondo sutilmente naranja al pasar el mouse */
+    }

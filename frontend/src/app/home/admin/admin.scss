@@ -1,0 +1,32 @@
+/* Variable global para controlar el tamaño desde un solo lugar */
+    :host {
+      --size-icon-necho: 86px; 
+    }
+
+    /* Clase para las imágenes */
+    .img-necho {
+      width: var(--size-icon-necho);
+      height: var(--size-icon-necho);
+      object-fit: contain;
+    }
+
+    /* Efecto Hover para las tarjetas */
+    .modulo-card {
+      background: #fff;
+      border: 1px solid #dee2e6;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+    }
+
+    .modulo-card:hover {
+      transform: translateY(-4px); /* Sube un poquito */
+      box-shadow: 0 6px 12px rgba(0,0,0,0.08); /* Sombra suave */
+      border-color: #0d6efd; /* Cambia el borde a azul (Admin) */
+       background-color: #eefffe;
+    }

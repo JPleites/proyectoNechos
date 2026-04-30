@@ -1,0 +1,26 @@
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common'; // Necesario para que funcione el HTML
+
+@Component({
+  selector: 'app-inventario',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './inventario.html',
+  styleUrls: ['./inventario.scss']
+})
+export class InventarioComponent {
+  sidebarOpen = true;
+
+  // Funciones simplificadas
+  onBack() { 
+    console.log('Regresando...');
+    // Aquí podrías usar el router.navigate si lo inyectas
+  }
+
+  onExample1() { console.log('Acción 1 ejecutada'); }
+  onExample2() { console.log('Acción 2 ejecutada'); }
+  
+  navigate(modulo: any) {
+    console.log('Navegando a:', modulo.label);
+  }
+}
