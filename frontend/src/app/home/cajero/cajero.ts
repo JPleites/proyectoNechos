@@ -6,4 +6,9 @@ import { Component } from '@angular/core';
   templateUrl: './cajero.html',
   styleUrl: './cajero.scss',
 })
-export class Cajero {}
+export class Cajero {
+  logout() {
+    localStorage.clear();
+    location.href = '/login';
+  }
+}

@@ -6,4 +6,9 @@ import { Component } from '@angular/core';
   templateUrl: './supervisor.html',
   styleUrl: './supervisor.scss',
 })
-export class Supervisor {}
+export class Supervisor {
+  logout() {
+    localStorage.clear();
+    location.href = '/login';
+  }
+}

@@ -6,4 +6,9 @@ import { Component } from '@angular/core';
   templateUrl: './vendedor.html',
   styleUrl: './vendedor.scss',
 })
-export class Vendedor {}
+export class Vendedor {
+  logout() {
+    localStorage.clear();
+    location.href = '/login';
+  }
+}

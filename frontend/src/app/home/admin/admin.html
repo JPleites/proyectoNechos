@@ -12,7 +12,7 @@
 
     <div class="d-flex align-items-center" style="cursor: pointer; padding: 5px 12px; border-radius: 10px; transition: 0.3s;" 
          onmouseover="this.style.background='#fff0f0'" onmouseout="this.style.background='transparent'">
-      <span class="me-2 fw-bold" style="font-size: 14px; color: #dc3545;">Cerrar Sesión</span>
+      <span class="me-2 fw-bold" style="font-size: 14px; color: #dc3545;" (click)="logout()">Cerrar Sesión</span>
       <img src="/logout.png" alt="Logout" style="width: 24px; height: 24px; object-fit: contain;">
     </div>
 
@@ -21,8 +21,8 @@
 <div class="container-fluid overflow-hidden" style="height: 100vh; display: flex; flex-direction: column; padding: 12px; box-sizing: border-box;">
   <div style="display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(3, 1fr); gap: 10px; height: 100%;">
 
-    <div class="text-center fw-bold d-flex flex-column align-items-center justify-content-center" style="background: #fff; border: 1px solid #dee2e6; border-radius: 12px; cursor: pointer; padding: 10px;">
-      <img src="/usuario.png" alt="Usuario" style="width: 48px; height: 48px; object-fit: contain;">
+    <div class=" text-center fw-bold d-flex flex-column align-items-center justify-content-center" style="background: #fff; border: 1px solid #dee2e6; border-radius: 12px; cursor: pointer; padding: 10px;">
+      <img src="/usuario.png" alt="Usuario"; object-fit: contain; class="imagen">
       <div class="mt-2" style="font-size: 13px;">Usuarios</div>
     </div>
 

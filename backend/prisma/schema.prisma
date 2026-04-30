@@ -95,7 +95,7 @@ model Perfil {
 
   usuario Usuarios?
 }
-
+  
 model Productos {
   codigo        String         @id
   producto      String
