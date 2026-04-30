@@ -20,17 +20,17 @@
 
   <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; flex-grow: 1;">
 
-    <div class="modulo-card">
+    <div class="modulo-card" (click)="navigateTo('pedido')">
       <img src="/facturacion.png" alt="Ventas" class="img-necho">
       <div class="mt-3" style="font-size: 20px; font-weight: bold;">Realizar Venta</div>
     </div>
 
-    <div class="modulo-card">
+    <div class="modulo-card" (click)="navigateTo('productos')">
       <img src="/productos.png" alt="Productos" class="img-necho">
       <div class="mt-3" style="font-size: 20px; font-weight: bold;">Ver Productos</div>
     </div>
 
-    <div class="modulo-card">
+    <div class="modulo-card" (click)="navigateTo('clientes')">
       <img src="/clientes.png" alt="Clientes" class="img-necho">
       <div class="mt-3" style="font-size: 20px; font-weight: bold;">Gestionar Clientes</div>
     </div>

@@ -7,6 +7,11 @@ import { Component } from '@angular/core';
   styleUrl: './admin.scss',
 })
 export class Admin {
+  navigateTo(modulo: string) {
+    if (modulo) {
+      window.location.href = modulo;
+    }
+  }
   logout() {
     localStorage.clear();
     location.href = '/login';

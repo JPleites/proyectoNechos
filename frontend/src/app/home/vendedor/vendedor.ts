@@ -7,6 +7,12 @@ import { Component } from '@angular/core';
   styleUrl: './vendedor.scss',
 })
 export class Vendedor {
+  navigateTo(modulo: string) {
+    if (modulo) {
+      window.location.href = modulo;
+    }
+  }
+  
   logout() {
     localStorage.clear();
     location.href = '/login';

@@ -7,6 +7,11 @@ import { Component } from '@angular/core';
   styleUrl: './cajero.scss',
 })
 export class Cajero {
+  navigateTo(modulo: string) {
+    if (modulo) {
+      window.location.href = modulo;
+    }
+  }
   logout() {
     localStorage.clear();
     location.href = '/login';

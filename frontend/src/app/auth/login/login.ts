@@ -24,6 +24,15 @@ export class LoginComponent {
     });
   }
 
+  ngOnInit() {
+    const token = localStorage.getItem('token');
+    const rol = localStorage.getItem('rol');
+
+    if (token && rol) {
+      this.redirigirPorRol(rol);
+    }
+  }
+
   login() {
     if (this.loginForm.invalid) {
       Swal.fire({
@@ -79,6 +88,18 @@ export class LoginComponent {
       vendedor: '/vendedor',
     };
 
-    this.router.navigate([rutas[rol] || '/login']);
+    const ruta = rutas[rol];
+
+    if (!ruta) {
+      console.error('Rol inválido:', rol);
+
+      localStorage.removeItem('token');
+      localStorage.removeItem('rol');
+
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.router.navigate([ruta]);
   }
 }

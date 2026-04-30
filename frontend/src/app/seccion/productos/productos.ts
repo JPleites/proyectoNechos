@@ -1,26 +1,32 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Necesario para que funcione el HTML
+import { CommonModule } from '@angular/common';
+import { RouterLink, Router, RouterOutlet } from "@angular/router";
 
 @Component({
   selector: 'app-productos',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink, RouterOutlet],
   templateUrl: './productos.html',
   styleUrls: ['./productos.scss']
 })
 export class ProductosComponent {
   sidebarOpen = true;
+  rol = localStorage.getItem('rol');
 
-  // Funciones simplificadas
-  onBack() { 
-    console.log('Regresando...');
-    // Aquí podrías usar el router.navigate si lo inyectas
+  constructor(private router: Router) {}
+
+  onBack() {
+    this.redirigirPorRol(this.rol || '');
   }
 
-  onExample1() { console.log('Acción 1 ejecutada'); }
-  onExample2() { console.log('Acción 2 ejecutada'); }
-  
-  navigate(modulo: any) {
-    console.log('Navegando a:', modulo.label);
+  redirigirPorRol(rol: string) {
+    const rutas: any = {
+      admin: '/admin',
+      cajero: '/cajero',
+      supervisor: '/supervisor',
+      vendedor: '/vendedor',
+    };
+
+    this.router.navigate([rutas[rol] || '/login']);
   }
 }

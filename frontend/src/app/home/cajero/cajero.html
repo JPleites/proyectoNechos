@@ -11,7 +11,7 @@
     </div>
 
     <div class="d-flex align-items-center" style="cursor: pointer; padding: 5px 12px; border-radius: 10px; transition: 0.3s;" 
-         onmouseover="this.style.background='#fff0f0'" onmouseout="this.style.background='transparent'">
+         onmouseover="this.style.background='#fff0f0'" onmouseout="this.style.background='transparent'" >
       <span class="me-2 fw-bold" style="font-size: 14px; color: #dc3545;" (click)="logout()">Cerrar Sesión</span>
       <img src="/logout.png" alt="Logout" style="width: 24px; height: 24px; object-fit: contain;">
     </div>
@@ -20,22 +20,22 @@
 
   <div style="display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); gap: 15px; flex-grow: 1;">
 
-    <div class="modulo-card">
+    <div class="modulo-card" (click)="navigateTo('ventas')">
       <img src="/facturacion.png" alt="Facturación" class="img-necho">
       <div class="mt-3" style="font-size: 18px; font-weight: bold;">Facturación</div>
     </div>
 
-    <div class="modulo-card">
+    <div class="modulo-card" (click)="navigateTo('productos')">
       <img src="/productos.png" alt="Productos" class="img-necho">
       <div class="mt-3" style="font-size: 18px; font-weight: bold;">Consulta de Productos</div>
     </div>
 
-    <div class="modulo-card">
+    <div class="modulo-card" (click)="navigateTo('clientes')">
       <img src="/clientes.png" alt="Clientes" class="img-necho">
       <div class="mt-3" style="font-size: 18px; font-weight: bold;">Clientes</div>
     </div>
 
-    <div class="modulo-card">
+    <div class="modulo-card" (click)="navigateTo('cierres')">
       <img src="/cierre.png" alt="Cierres" class="img-necho">
       <div class="mt-3" style="font-size: 18px; font-weight: bold;">Realizar Cierre</div>
     </div>

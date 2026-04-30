@@ -25,7 +25,20 @@ export class Kardex {
 
     this.inventarioService.getKardex(codigo).subscribe({
       next: (data: any) => {
-        this.movimientos = data.kardex || [];
+        let saldo = 0;
+
+        this.movimientos = data.kardex.map((m: any) => {
+          if (m.tipo === 'ENTRADA') {
+            saldo += m.cantidad;
+          } else {
+            saldo -= m.cantidad;
+          }
+
+          return {
+            ...m,
+            saldo,
+          };
+        });
       },
       error: (err) => {
         console.error(err);
