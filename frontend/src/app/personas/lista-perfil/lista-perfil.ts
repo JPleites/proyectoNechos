@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { PerfilService } from '../../services/perfil.service';
 import Swal from 'sweetalert2';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-lista-perfil',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './lista-perfil.html',
   styleUrl: './lista-perfil.scss',
 })

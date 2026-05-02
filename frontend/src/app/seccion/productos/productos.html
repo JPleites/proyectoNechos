@@ -3,31 +3,58 @@
   <aside class="nap-sidebar" [class.collapsed]="!sidebarOpen">
     <div class="sidebar-inner">
 
+      <!-- TOGGLE -->
       <button class="sidebar-toggle" (click)="sidebarOpen = !sidebarOpen" title="Menú">
-        <span class="toggle-icon">☰</span>
+        <i class="fas fa-bars"></i>
       </button>
 
+      <!-- BRAND -->
       <div class="sidebar-brand" *ngIf="sidebarOpen">
         <span class="brand-text">Necho's</span>
         <span class="brand-sub">Auto Parts</span>
       </div>
 
+      <!-- NAV -->
       <nav class="sidebar-nav">
-        <button class="nav-item" (click)="onExample1()">
-          <img src="/usuario.png" class="nav-icon" alt="Example 1">
-          <span class="nav-label" *ngIf="sidebarOpen">Example 1</span>
+
+        <button class="nav-item" routerLink="consulta" routerLinkActive="active">
+          <i class="fas fa-boxes nav-icon"></i>
+          <span class="nav-label" *ngIf="sidebarOpen">Productos</span>
         </button>
-        <button class="nav-item" (click)="onExample2()">
-          <img src="/productos.png" class="nav-icon" alt="Example 2">
-          <span class="nav-label" *ngIf="sidebarOpen">Example 2</span>
+
+        <button class="nav-item" routerLink="nuevo" routerLinkActive="active">
+          <i class="fas fa-plus-circle nav-icon"></i>
+          <span class="nav-label" *ngIf="sidebarOpen">Nuevo Producto</span>
         </button>
+
+        <button class="nav-item" routerLink="ingreso" routerLinkActive="active">
+          <i class="fas fa-arrow-down nav-icon text-success"></i>
+          <span class="nav-label" *ngIf="sidebarOpen">Ingreso</span>
+        </button>
+
+        <button class="nav-item" routerLink="salida" routerLinkActive="active">
+          <i class="fas fa-arrow-up nav-icon text-danger"></i>
+          <span class="nav-label" *ngIf="sidebarOpen">Salida</span>
+        </button>
+
+        <button class="nav-item" routerLink="kardex" routerLinkActive="active">
+          <i class="fas fa-clipboard-list nav-icon"></i>
+          <span class="nav-label" *ngIf="sidebarOpen">Kardex</span>
+        </button>
+
       </nav>
 
+      <!-- BACK -->
       <button class="btn-back" (click)="onBack()">
-        <img src="/logout.png" class="nav-icon" alt="Regresar">
-        <span class="nav-label" *ngIf="sidebarOpen">Regresar</span>
+        <i class="fas fa-sign-out-alt nav-icon"></i>
+        <span class="nav-label" *ngIf="sidebarOpen">Salir</span>
       </button>
 
     </div>
   </aside>
+
+  <main>
+    <router-outlet></router-outlet>
+  </main>
+
 </div>

@@ -1,7 +1,5 @@
 <div class="container py-4">
-
   <div class="card">
-
     <!-- HEADER -->
     <div class="card-body">
       <h4 class="mb-0">Kardex de Inventario</h4>
@@ -9,47 +7,35 @@
     </div>
 
     <div class="card-body pt-0">
-
       <!-- SEARCH -->
       <form (ngSubmit)="buscar()">
-
         <div class="input-group mb-3">
-
           <div class="form-outline flex-grow-1">
-            <input
-              name="codigo"
-              [(ngModel)]="codigo"
-              class="form-control"
-            />
+            <input name="codigo" [(ngModel)]="codigo" class="form-control" />
             <label class="form-label">Código de producto</label>
           </div>
 
           <button type="submit" class="btn btn-primary">
             <i class="fas fa-search"></i>
           </button>
-
         </div>
-
       </form>
 
       <!-- TABLE -->
       <div class="table-responsive">
-
         <table class="table table-hover align-middle">
-
           <thead class="table-light">
             <tr>
               <th>Fecha</th>
               <th>Tipo</th>
               <th>Cantidad</th>
               <th>Usuario</th>
+              <th>Stock</th>
             </tr>
           </thead>
 
           <tbody>
-
             <tr *ngFor="let m of movimientos">
-
               <!-- FECHA -->
               <td>
                 <span class="text-muted">
@@ -63,7 +49,7 @@
                   class="badge"
                   [ngClass]="{
                     'bg-info': m.tipo === 'ENTRADA',
-                    'bg-danger': m.tipo === 'SALIDA'
+                    'bg-danger': m.tipo === 'SALIDA',
                   }"
                 >
                   {{ m.tipo }}
@@ -81,16 +67,14 @@
                 {{ m.codigoUsuario }}
               </td>
 
+              <!-- STOCK -->
+              <td class="fw-semibold">
+                {{ m.saldo }}
+              </td>
             </tr>
-
           </tbody>
-
         </table>
-
       </div>
-
     </div>
-
   </div>
-
 </div>
