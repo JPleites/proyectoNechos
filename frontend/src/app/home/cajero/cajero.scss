@@ -1,32 +1,39 @@
-/* El truco del :host para que Angular no lo bloquee */
-    :host {
-      --size-icon-cajero: 86px; /* Ajustado a 64px para que se vea bien pero no enorme */
-    }
+/* Variable global para controlar el tamaño de los iconos */
+:host {
+  --size-icon-cajero: 90px; 
+}
 
-    .img-necho {
-      width: var(--size-icon-cajero);
-      height: var(--size-icon-cajero);
-      object-fit: contain;
-    }
+.icon-necho {
+  font-size: var(--size-icon-cajero);
+  height: var(--size-icon-cajero);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #444;
+  transition: all 0.3s ease;
+}
 
-    .modulo-card {
-      background: #fff;
-      border: 1px solid #dee2e6;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: all 0.2s ease-in-out;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 10px;
-      height: 100%;
-    }
+.modulo-card {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 20px; /* Bordes un poco más redondeados para cajeros */
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
 
-    /* Efecto Hoover mejorado */
-    .modulo-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 15px rgba(0,0,0,0.1);
-      border-color: #f39c12; /* Color naranja de Cajero */
-      background-color: #fffaf0; /* Fondo sutilmente naranja al pasar el mouse */
+  &:hover {
+    transform: translateY(-8px); /* Salta un poco más al ser botones grandes */
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    border-color: #f39c12; /* Color naranja (Cajero) */
+    background-color: #fffaf0;
+
+    .icon-necho {
+      color: #f39c12;
+      transform: scale(1.1);
     }
+  }
+}
