@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-categorias',
   standalone: true,
-  imports: [CommonModule, RouterOutlet],
+  imports: [CommonModule, RouterOutlet, RouterLink],
   templateUrl: './categorias.html',
   styleUrls: ['./categorias.scss']
 })
@@ -30,7 +30,4 @@ export class CategoriasComponent {
 
     this.router.navigate([rutas[rol] || '/login']);
   }
-
-  onExample1() { console.log('Acción 1 ejecutada'); }
-  onExample2() { console.log('Acción 2 ejecutada'); }
 }

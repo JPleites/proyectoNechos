@@ -6,49 +6,46 @@ import {
   Param,
   Put,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
-import { ProveedoresService } from './proveedores.service';import { AuthGuard } from '../auth/auth.guard';
-import { UseGuards } from '@nestjs/common';
+import { ProveedoresService } from './proveedores.service';
+import { AuthGuard } from '../auth/auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 
 @UseGuards(AuthGuard, RolesGuard)
-
 @Controller('proveedores')
-
-@Roles('admin', 'supervisor')
 export class ProveedoresController {
-  constructor(private readonly proveedoresService: ProveedoresService) {}
+  constructor(private readonly service: ProveedoresService) {}
 
   @Get()
   findAll() {
-    return this.proveedoresService.proveedores({});
+    return this.service.proveedores();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.proveedoresService.proveedor({
-      rtn: id,
-    });
+  @Get(':rtn')
+  findOne(@Param('rtn') rtn: string) {
+    return this.service.proveedor({ rtn });
   }
 
+  @Roles('admin', 'supervisor')
   @Post()
   create(@Body() data: any) {
-    return this.proveedoresService.createProveedores(data);
+    return this.service.create(data);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() data: any) {
-    return this.proveedoresService.updateProveedores({
-        where: { rtn: id },
-        data,
+  @Roles('admin', 'supervisor')
+  @Put(':rtn')
+  update(@Param('rtn') rtn: string, @Body() data: any) {
+    return this.service.update({
+      where: { rtn },
+      data,
     });
   }
 
-    @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.proveedoresService.deleteProveedores({
-            rtn: id,
-        });
-    }
+  @Roles('admin', 'supervisor')
+  @Delete(':rtn')
+  delete(@Param('rtn') rtn: string) {
+    return this.service.delete({ rtn });
+  }
 }

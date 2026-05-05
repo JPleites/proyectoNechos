@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './guards/auth-guard';
-import { vendedorGuard } from './guards/rol/vendedor-guard';
-import { supervisorGuard } from './guards/rol/supervisor-guard';
-import { cajeroGuard } from './guards/rol/cajero-guard';
-import { adminGuard } from './guards/rol/admin-guard';
+import { authGuard } from './auth/guards/auth-guard';
+import { vendedorGuard } from './auth/guards/rol/vendedor-guard';
+import { supervisorGuard } from './auth/guards/rol/supervisor-guard';
+import { cajeroGuard } from './auth/guards/rol/cajero-guard';
+import { adminGuard } from './auth/guards/rol/admin-guard';
 
 export const routes: Routes = [
   {
@@ -42,6 +42,31 @@ export const routes: Routes = [
 
       // RUTAS DE SECCION
       {
+        path: 'almacenes',
+        loadComponent: () => import('./seccion/almacenes/almacenes').then((m) => m.AlmacenesComponent),
+        children: [
+          {
+            path: '',
+            redirectTo: 'consulta',
+            pathMatch: 'full',
+          },
+          {
+            path: 'consulta',
+            loadComponent: () =>
+              import('./modulo/almacenes/consulta-almacen/consulta-almacen').then(
+                (m) => m.ConsultaAlmacen,
+              ),
+          },
+          {
+            path: 'crear',
+            loadComponent: () =>
+              import('./modulo/almacenes/crear-almacen/crear-almacen').then(
+                (m) => m.CrearAlmacen,
+              ),
+          }
+        ]
+      },
+      {
         path: 'arqueos',
         loadComponent: () => import('./seccion/arqueos/arqueos').then((m) => m.ArqueosComponent),
       },
@@ -52,6 +77,27 @@ export const routes: Routes = [
       {
         path: 'categorias',
         loadComponent: () => import('./seccion/categorias/categorias').then((m) => m.CategoriasComponent),
+        children: [
+          {
+            path: '',
+            redirectTo: 'consulta',
+            pathMatch: 'full',
+          },
+          {
+            path: 'consulta',
+            loadComponent: () =>
+              import('./modulo/categorias/consulta-categoria/consulta-categoria').then(
+                (m) => m.ConsultaCategoria,
+              ),
+          },
+          {
+            path: 'crear',
+            loadComponent: () =>
+              import('./modulo/categorias/crear-categoria/crear-categoria').then(
+                  (m) => m.CrearCategoria,
+              ),
+          }
+        ]
       },
       {
         path: 'cierres',
@@ -66,8 +112,13 @@ export const routes: Routes = [
         loadComponent: () => import('./seccion/inventario/inventario').then((m) => m.InventarioComponent),
         children: [
           {
+            path: '',
+            redirectTo: 'kardex',
+            pathMatch: 'full',
+          },
+          {
             path: 'kardex',
-            loadComponent: () => import('./productos/kardex/kardex').then((m) => m.Kardex),
+            loadComponent: () => import('./modulo/inventario/kardex/kardex').then((m) => m.Kardex),
           }
         ]
       },
@@ -88,36 +139,78 @@ export const routes: Routes = [
           {
             path: 'consulta',
             loadComponent: () =>
-              import('./productos/consulta-producto/consulta-producto').then(
+              import('./modulo/productos/consulta-producto/consulta-producto').then(
                 (m) => m.ConsultaProducto,
               ),
           },
           {
             path: 'nuevo',
             loadComponent: () =>
-              import('./productos/nuevo-producto/nuevo-producto').then((m) => m.NuevoProducto),
+              import('./modulo/productos/nuevo-producto/nuevo-producto').then((m) => m.NuevoProducto),
           },
           {
             path: 'ingreso',
             loadComponent: () =>
-              import('./productos/ingreso-producto/ingreso-producto').then(
+              import('./modulo/productos/ingreso-producto/ingreso-producto').then(
                 (m) => m.IngresoProducto,
               ),
           },
           {
             path: 'salida',
             loadComponent: () =>
-              import('./productos/salida-producto/salida-producto').then((m) => m.SalidaProducto),
+              import('./modulo/productos/salida-producto/salida-producto').then((m) => m.SalidaProducto),
           },
         ],
       },
       {
         path: 'proveedores',
         loadComponent: () => import('./seccion/proveedores/proveedores').then((m) => m.ProveedoresComponent),
+        children: [
+          {
+            path: '',
+            redirectTo: 'consulta',
+            pathMatch: 'full',
+          },
+          {
+            path: 'consulta',
+            loadComponent: () =>
+              import('./modulo/proveedores/consulta-proveedores/consulta-proveedores').then(
+                (m) => m.ConsultaProveedores,
+              ),
+          },
+          {
+            path: 'crear',
+            loadComponent: () =>
+              import('./modulo/proveedores/crear-proveedor/crear-proveedor').then(
+                (m) => m.CrearProveedor,
+              ),
+          }
+        ]
       },
       {
         path: 'ubicaciones',
         loadComponent: () => import('./seccion/ubicaciones/ubicaciones').then((m) => m.UbicacionesComponent),
+        children: [
+          {
+            path: '',
+            redirectTo: 'consulta',
+            pathMatch: 'full',
+          },
+          {
+            path: 'consulta',
+            loadComponent: () =>
+              import('./modulo/ubicaciones/consulta-ubicaciones/consulta-ubicaciones').then(
+                (m) => m.ConsultaUbicaciones,
+              ),
+          },
+          {
+            path: 'crear',
+            loadComponent: () =>
+              import('./modulo/ubicaciones/crear-ubicacion/crear-ubicacion').then(
+                (m) => m.CrearUbicacion,
+              ),
+          }
+        ]
       },
       {
         path: 'ventas',
@@ -128,12 +221,17 @@ export const routes: Routes = [
         loadComponent: () => import('./seccion/usuarios/usuarios').then((m) => m.UsuariosComponent),
         children: [
           {
+            path: '',
+            redirectTo: 'crear-perfil',
+            pathMatch: 'full',
+          },
+          {
             path: 'crear-perfil',
-            loadComponent: () => import('./personas/crear-perfil/crear-perfil').then((m) => m.CrearPerfil),
+            loadComponent: () => import('./modulo/personas/crear-perfil/crear-perfil').then((m) => m.CrearPerfil),
           },
           {
             path: 'lista-perfil',
-            loadComponent: () => import('./personas/lista-perfil/lista-perfil').then((m) => m.ListaPerfil),
+            loadComponent: () => import('./modulo/personas/lista-perfil/lista-perfil').then((m) => m.ListaPerfil),
           }
         ]
       },

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
-import { ApiService } from '../../services/api';
+import { LoginService } from '../../modulo/services/login.service';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 
@@ -15,7 +15,7 @@ export class LoginComponent {
 
   constructor(
     private fb: FormBuilder,
-    private api: ApiService,
+    private api: LoginService,
     private router: Router,
   ) {
     this.loginForm = this.fb.group({

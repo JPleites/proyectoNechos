@@ -1,0 +1,79 @@
+<div class="container py-4">
+
+  <div class="card" style="max-width: 700px; margin: auto;">
+
+    <!-- HEADER -->
+    <div class="card-body">
+      <h4 class="mb-0">Nueva Ubicación</h4>
+      <small class="text-muted">Registro de estantes y niveles</small>
+    </div>
+
+    <div class="card-body pt-0">
+
+      <div class="row g-3">
+
+        <!-- ALMACÉN -->
+        <div class="col-md-12">
+
+          <div class="form-outline">
+            <select
+              class="form-select"
+              [(ngModel)]="ubicacion.almacenId"
+            >
+              <option value="">Seleccione almacén</option>
+              <option *ngFor="let a of almacenes" [value]="a.id">
+                {{ a.almacen }}
+              </option>
+            </select>
+            <label class="form-label">Almacén *</label>
+          </div>
+
+        </div>
+
+        <!-- ESTANTE -->
+        <div class="col-md-6">
+          <div class="form-outline">
+            <input
+              [(ngModel)]="ubicacion.estante"
+              class="form-control"
+            />
+            <label class="form-label">Estante *</label>
+          </div>
+        </div>
+
+        <!-- NIVEL -->
+        <div class="col-md-6">
+          <div class="form-outline">
+            <input
+              [(ngModel)]="ubicacion.nivel"
+              class="form-control"
+            />
+            <label class="form-label">Nivel *</label>
+          </div>
+        </div>
+
+        <!-- PREVIEW CÓDIGO -->
+        <div class="col-md-12">
+          <div class="alert alert-light border small mb-0">
+            <strong>Código generado:</strong>
+            {{ ubicacion.almacenId }}E{{ ubicacion.estante }}N{{ ubicacion.nivel }}
+          </div>
+        </div>
+
+      </div>
+
+      <!-- BOTÓN -->
+      <div class="text-end mt-4">
+
+        <button class="btn btn-primary" (click)="guardar()">
+          <i class="fas fa-map-marker-alt me-2"></i>
+          Guardar ubicación
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

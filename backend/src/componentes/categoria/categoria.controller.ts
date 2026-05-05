@@ -1,46 +1,63 @@
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { CategoriaService } from './categoria.service';
 import { AuthGuard } from '../auth/auth.guard';
-import { UseGuards } from '@nestjs/common';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 
 @UseGuards(AuthGuard, RolesGuard)
-
-@Roles('admin', 'supervisor')
-@Controller('categoria')
+@Controller('categorias')
 export class CategoriaController {
-    constructor(private readonly categoriaService: CategoriaService) {}
+  constructor(private readonly service: CategoriaService) {}
 
-    @Get()
-    findAll() {
-        return this.categoriaService.categorias({});
-    }
+  @Get()
+  findAll() {
+    return this.service.findAll();
+  }
 
-    @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.categoriaService.categoria({
-            id: id,
-        });
-    }
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.service.findOne(id);
+  }
 
-    @Post()
-    create(@Body() data: any) {
-        return this.categoriaService.createCategoria(data);
-    }
+  @Roles('admin', 'supervisor')
+  @Post()
+  create(@Body() data: any) {
+    return this.service.create(data);
+  }
 
-    @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.categoriaService.deleteCategoria({
-            id: id,
-        });
-    }
+  @Roles('admin', 'supervisor')
+  @Put(':id')
+  update(@Param('id') id: string, @Body() data: any) {
+    return this.service.update(id, data);
+  }
 
-    @Put(':id')
-    update(@Param('id') id: string, @Body() data: any) {
-        return this.categoriaService.updateCategoria({
-            where: { id: id },
-            data,
-        });
-    }
+  @Roles('admin', 'supervisor')
+  @Delete(':id')
+  delete(@Param('id') id: string) {
+    return this.service.delete(id);
+  }
+
+  @Roles('admin', 'supervisor')
+  @Post(':id/proveedores')
+  asignarProveedor(
+    @Param('id') id: string,
+    @Body() body: { proveedorRtn: string },
+  ) {
+    return this.service.asignarProveedor(id, body.proveedorRtn);
+  }
+
+  @Roles('admin', 'supervisor')
+  @Delete(':id/proveedores/:rtn')
+  quitarProveedor(@Param('id') id: string, @Param('rtn') rtn: string) {
+    return this.service.quitarProveedor(id, rtn);
+  }
 }

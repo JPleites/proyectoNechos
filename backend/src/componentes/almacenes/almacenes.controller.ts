@@ -37,6 +37,7 @@ export class AlmacenesController {
         });
     }
 
+    @Roles('admin', 'supervisor')    
     @Put(':id')
     update(@Param('id') id: string, @Body() data: any) {
         return this.almacenesService.updateAlmacenes({

@@ -1,0 +1,53 @@
+<div class="container py-4">
+
+  <div class="card" style="max-width: 600px; margin: auto;">
+
+    <!-- HEADER -->
+    <div class="card-body">
+      <h4 class="mb-0">Nuevo Almacén</h4>
+      <small class="text-muted">Registro de bodegas</small>
+    </div>
+
+    <div class="card-body pt-0">
+
+      <div class="row g-3">
+
+        <!-- ID -->
+        <div class="col-md-6">
+          <div class="form-outline">
+            <input
+              [(ngModel)]="almacen.id"
+              class="form-control"
+            />
+            <label class="form-label">ID (ej: ALM1) *</label>
+          </div>
+        </div>
+
+        <!-- NOMBRE -->
+        <div class="col-md-6">
+          <div class="form-outline">
+            <input
+              [(ngModel)]="almacen.almacen"
+              class="form-control"
+            />
+            <label class="form-label">Nombre del almacén *</label>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- BOTÓN -->
+      <div class="text-end mt-4">
+
+        <button class="btn btn-primary" (click)="guardar()">
+          <i class="fas fa-save me-2"></i>
+          Guardar
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

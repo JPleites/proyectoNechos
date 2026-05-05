@@ -1,58 +1,83 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { Categoria, Prisma } from '@prisma/client';
 
 @Injectable()
 export class CategoriaService {
   constructor(private prisma: PrismaService) {}
 
-  async categoria(
-    categoriaWhereUniqueInput: Prisma.CategoriaWhereUniqueInput,
-  ): Promise<Categoria | null> {
-    return this.prisma.categoria.findUnique({
-      where: categoriaWhereUniqueInput,
-    });
-  }
-
-  async categorias(params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.CategoriaWhereUniqueInput;
-    where?: Prisma.CategoriaWhereInput;
-    orderBy?: Prisma.CategoriaOrderByWithRelationInput;
-  }): Promise<Categoria[]> {
-    const { skip, take, cursor, where, orderBy } = params;
+  async findAll() {
     return this.prisma.categoria.findMany({
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
+      include: {
+        CategoriaProveedores: {
+          include: {
+            proveedor: true,
+          },
+        },
+      },
     });
   }
 
-  async createCategoria(data: Prisma.CategoriaCreateInput): Promise<Categoria> {
+  async findOne(id: string) {
+    return this.prisma.categoria.findUnique({
+      where: { id },
+      include: {
+        CategoriaProveedores: {
+          include: {
+            proveedor: true,
+          },
+        },
+      },
+    });
+  }
+
+  async create(data: any) {
+    // 🚫 validar duplicado
+    const existe = await this.prisma.categoria.findUnique({
+      where: { id: data.id },
+    });
+
+    if (existe) {
+      throw new Error('La categoría ya existe');
+    }
+
     return this.prisma.categoria.create({
-      data,
+      data: {
+        id: data.id,
+        nombre: data.nombre,
+      },
     });
   }
 
-  async updateCategoria(params: {
-    where: Prisma.CategoriaWhereUniqueInput;
-    data: Prisma.CategoriaUpdateInput;
-  }): Promise<Categoria> {
-    const { where, data } = params;
+  async update(id: string, data: any) {
     return this.prisma.categoria.update({
+      where: { id },
       data,
-      where,
     });
   }
 
-  async deleteCategoria(
-    where: Prisma.CategoriaWhereUniqueInput,
-  ): Promise<Categoria> {
+  async delete(id: string) {
     return this.prisma.categoria.delete({
-      where,
+      where: { id },
+    });
+  }
+
+  async asignarProveedor(categoriaId: string, proveedorRtn: string) {
+    return this.prisma.categoriaProveedores.create({
+      data: {
+        categoriaId,
+        proveedorRtn,
+      },
+    });
+  }
+
+  async quitarProveedor(categoriaId: string, proveedorRtn: string) {
+    return this.prisma.categoriaProveedores.delete({
+      where: {
+        categoriaId_proveedorRtn: {
+          categoriaId,
+          proveedorRtn,
+        },
+      },
     });
   }
 }

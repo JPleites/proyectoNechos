@@ -8,72 +8,72 @@
     <div class="fw-bold text-dark">
       Bienvenido: <span class="text-secondary">[Nombre de Usuario]</span>
     </div>
-    <div class="d-flex align-items-center" style="cursor: pointer;">
+    <div class="d-flex align-items-center" style="cursor: pointer;" (click)="logout()">
       <span class="me-2 fw-bold text-danger" style="font-size: 13px;">Cerrar Sesión</span>
-      <img src="/logout.png" alt="Logout" style="width: 20px; height: 20px;">
+      <i class="fas fa-sign-out-alt text-danger" style="font-size: 20px;"></i>
     </div>
   </div>
 
   <!-- Grid de Módulos -->
   <div style="display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(3, 1fr); gap: 10px; flex-grow: 1;">
 
-    <div class="modulo-card">
-      <img src="/usuario.png" class="img-necho" alt="Usuarios">
+    <div class="modulo-card" (click)="navigateTo('usuarios')">
+      <i class="fas fa-users icon-necho"></i>
       <div class="mt-2" style="font-size: 13px; font-weight: bold;">Usuarios</div>
     </div>
 
-    <div class="modulo-card">
-      <img src="/ubicaciones.png" class="img-necho" alt="Ubicaciones">
+    <div class="modulo-card" (click)="navigateTo('ubicaciones')">
+      <i class="fas fa-map-marker-alt icon-necho"></i>
       <div class="mt-2" style="font-size: 13px; font-weight: bold;">Ubicaciones</div>
     </div>
 
-    <div class="modulo-card">
-      <img src="/colaboradores.png" class="img-necho" alt="Colaboradores">
+    <div class="modulo-card" (click)="navigateTo('perfiles')">
+      <i class="fas fa-id-card icon-necho"></i>
       <div class="mt-2" style="font-size: 13px; font-weight: bold;">Perfiles</div>
     </div>
 
-    <div class="modulo-card">
-      <img src="/arqueo.png" class="img-necho" alt="Arqueos">
+    <div class="modulo-card" (click)="navigateTo('arqueos')">
+      <i class="fas fa-cash-register icon-necho"></i>
       <div class="mt-2" style="font-size: 13px; font-weight: bold;">Arqueos</div>
     </div>
 
-    <div class="modulo-card">
-      <img src="/productos.png" class="img-necho" alt="Productos">
+    <div class="modulo-card" (click)="navigateTo('productos')">
+      <i class="fas fa-box-open icon-necho"></i>
       <div class="mt-2" style="font-size: 13px; font-weight: bold;">Productos</div>
     </div>
 
-    <div class="modulo-card">
-      <img src="/categorias.png" class="img-necho" alt="Categorías">
+    <div class="modulo-card" (click)="navigateTo('categorias')">
+      <i class="fas fa-tags icon-necho"></i>
       <div class="mt-2" style="font-size: 13px; font-weight: bold;">Categorías</div>
     </div>
 
-    <div class="modulo-card">
-      <img src="/clientes.png" class="img-necho" alt="Clientes">
+    <div class="modulo-card" (click)="navigateTo('clientes')">
+      <i class="fas fa-user-tie icon-necho"></i>
       <div class="mt-2" style="font-size: 13px; font-weight: bold;">Clientes</div>
     </div>
 
-    <div class="modulo-card">
-      <img src="/almacenes.png" class="img-necho" alt="Almacenes">
+    <div class="modulo-card" (click)="navigateTo('almacenes')">
+      <i class="fas fa-warehouse icon-necho"></i>
       <div class="mt-2" style="font-size: 13px; font-weight: bold;">Almacenes</div>
     </div>
 
-    <div class="modulo-card">
-      <img src="/inventario_.png" class="img-necho" alt="Inventario">
+    <div class="modulo-card" (click)="navigateTo('inventario')">
+      <i class="fas fa-clipboard-list icon-necho"></i>
       <div class="mt-2" style="font-size: 13px; font-weight: bold;">Inventario</div>
     </div>
 
-    <div class="modulo-card">
-      <img src="/proveedor.png" class="img-necho" alt="Proveedores">
+    <div class="modulo-card" (click)="navigateTo('proveedores')">
+      <i class="fas fa-truck-loading icon-necho"></i>
       <div class="mt-2" style="font-size: 13px; font-weight: bold;">Proveedores</div>
     </div>
 
-    <div class="modulo-card">
-      <img src="/facturacion.png" class="img-necho" alt="Facturación">
+    <div class="modulo-card" (click)="navigateTo('facturacion')">
+      <i class="fas fa-file-invoice-dollar icon-necho"></i>
       <div class="mt-2" style="font-size: 13px; font-weight: bold;">Facturación</div>
     </div>
 
-    <div class="modulo-card">
-      <img src="/cierre.png" class="img-necho" alt="Cierres">
+    <div class="modulo-card" (click)="navigateTo('cierres')">
+      <i class="fas fa-lock icon-necho"></i>
       <div class="mt-2" style="font-size: 13px; font-weight: bold;">Cierres</div>
     </div>
 

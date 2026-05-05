@@ -1,0 +1,60 @@
+<div class="container-fluid py-4">
+  <div class="card">
+    <!-- HEADER -->
+    <div class="card-body">
+      <h4 class="mb-0">Ubicaciones</h4>
+      <small class="text-muted">Gestión de estantes y niveles</small>
+    </div>
+
+    <div class="card-body pt-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle w-100">
+          <thead class="table-light">
+            <tr>
+              <th>Ubicación</th>
+              <th>Estante</th>
+              <th>Nivel</th>
+              <th>Almacén</th>
+              <th class="text-center" style="width: 120px">Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let u of ubicaciones">
+              <td class="fw-semibold">
+                <i class="fas fa-map-marker-alt text-muted me-2"></i>
+                {{ u.ubicacion }}
+              </td>
+
+              <td>{{ u.estante }}</td>
+              <td>{{ u.nivel }}</td>
+
+              <td>
+                <i class="fas fa-warehouse text-muted me-2"></i>
+                {{ u.almacen?.almacen }}
+              </td>
+
+              <td class="text-center">
+                <button
+                  class="btn btn-sm btn-outline-danger"
+                  (click)="eliminar(u.ubicacion)"
+                  title="Eliminar"
+                >
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+
+            <!-- EMPTY STATE -->
+            <tr *ngIf="!ubicaciones || ubicaciones.length === 0">
+              <td colspan="5" class="text-center text-muted py-4">
+                <i class="fas fa-inbox me-2"></i>
+                No hay ubicaciones registradas
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

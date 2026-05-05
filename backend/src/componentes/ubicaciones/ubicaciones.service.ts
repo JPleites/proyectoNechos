@@ -1,59 +1,92 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { Ubicaciones, Prisma } from '@prisma/client';
 
 @Injectable()
-
 export class UbicacionesService {
-    constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) {}
 
-    async ubicacion(
-        ubicacionWhereUniqueInput: Prisma.UbicacionesWhereUniqueInput,
-    ): Promise<Ubicaciones | null> {
-        return this.prisma.ubicaciones.findUnique({
-            where: ubicacionWhereUniqueInput,
-        });
+  // 🔍 Obtener una ubicación
+  async findOne(id: string) {
+    return this.prisma.ubicaciones.findUnique({
+      where: { ubicacion: id },
+      include: {
+        almacen: true,
+      },
+    });
+  }
+
+  // 📋 Listar ubicaciones
+  async findAll() {
+    return this.prisma.ubicaciones.findMany({
+      include: {
+        almacen: true,
+      },
+    });
+  }
+
+  // ➕ Crear ubicación (CON VALIDACIONES 🔥)
+  async create(data: any) {
+    // 1. Validar almacén
+    const almacen = await this.prisma.almacenes.findUnique({
+      where: { id: data.almacenId },
+    });
+
+    if (!almacen) {
+      throw new Error('El almacén no existe');
     }
 
-    async ubicaciones(params: {
-        skip?: number;
-        take?: number;
-        cursor?: Prisma.UbicacionesWhereUniqueInput;
-        where?: Prisma.UbicacionesWhereInput;
-        orderBy?: Prisma.UbicacionesOrderByWithRelationInput;
-    }): Promise<Ubicaciones[]> {
-        const { skip, take, cursor, where, orderBy } = params;
-        return this.prisma.ubicaciones.findMany({
-            skip,
-            take,
-            cursor,
-            where,
-            orderBy,
-        });
+    // 2. Validar duplicado
+    const existe = await this.prisma.ubicaciones.findUnique({
+      where: { ubicacion: data.ubicacion },
+    });
+
+    if (existe) {
+      throw new Error('La ubicación ya existe');
     }
 
-    async createUbicaciones(data: Prisma.UbicacionesCreateInput): Promise<Ubicaciones> {
-        return this.prisma.ubicaciones.create({
-            data,
-        });
+    // 3. Crear con relación correcta
+    return this.prisma.ubicaciones.create({
+      data: {
+        ubicacion: data.ubicacion,
+        estante: data.estante,
+        nivel: data.nivel,
+        almacen: {
+          connect: { id: data.almacenId },
+        },
+      },
+    });
+  }
+
+  // ✏️ Actualizar
+  async update(id: string, data: any) {
+    // Validar almacén si viene
+    if (data.almacenId) {
+      const almacen = await this.prisma.almacenes.findUnique({
+        where: { id: data.almacenId },
+      });
+
+      if (!almacen) {
+        throw new Error('El almacén no existe');
+      }
     }
 
-    async updateUbicaciones(params: {
-        where: Prisma.UbicacionesWhereUniqueInput;
-        data: Prisma.UbicacionesUpdateInput;
-    }): Promise<Ubicaciones> {
-        const { where, data } = params;
-        return this.prisma.ubicaciones.update({
-            data,
-            where,
-        });
-    }
+    return this.prisma.ubicaciones.update({
+      where: { ubicacion: id },
+      data: {
+        estante: data.estante,
+        nivel: data.nivel,
+        ...(data.almacenId && {
+          almacen: {
+            connect: { id: data.almacenId },
+          },
+        }),
+      },
+    });
+  }
 
-    async deleteUbicaciones(
-        where: Prisma.UbicacionesWhereUniqueInput,
-    ): Promise<Ubicaciones> {
-        return this.prisma.ubicaciones.delete({
-            where,
-        });
-    }
+  async delete(id: string) {
+    return this.prisma.ubicaciones.delete({
+      where: { ubicacion: id },
+    });
+  }
 }

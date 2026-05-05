@@ -7,54 +7,47 @@ export class ProveedoresService {
   constructor(private prisma: PrismaService) {}
 
   async proveedor(
-    proveedorWhereUniqueInput: Prisma.ProveedoresWhereUniqueInput,
+    where: Prisma.ProveedoresWhereUniqueInput,
   ): Promise<Proveedores | null> {
     return this.prisma.proveedores.findUnique({
-      where: proveedorWhereUniqueInput,
-    });
-  }
-
-  async proveedores(params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.ProveedoresWhereUniqueInput;
-    where?: Prisma.ProveedoresWhereInput;
-    orderBy?: Prisma.ProveedoresOrderByWithRelationInput;
-  }): Promise<Proveedores[]> {
-    const { skip, take, cursor, where, orderBy } = params;
-    return this.prisma.proveedores.findMany({
-      skip,
-      take,
-      cursor,
       where,
-      orderBy,
     });
   }
 
-  async createProveedores(
-    data: Prisma.ProveedoresCreateInput,
-  ): Promise<Proveedores> {
+  async proveedores(): Promise<Proveedores[]> {
+    return this.prisma.proveedores.findMany({
+      include: {
+        CategoriaProveedores: {
+          include: {
+            categoria: true,
+          },
+        },
+      },
+    });
+  }
+
+  async create(data: Prisma.ProveedoresCreateInput): Promise<Proveedores> {
+    const existe = await this.prisma.proveedores.findUnique({
+      where: { rtn: data.rtn },
+    });
+
+    if (existe) {
+      throw new Error('Proveedor ya existe');
+    }
+
     return this.prisma.proveedores.create({
       data,
     });
   }
 
-  async updateProveedores(params: {
+  async update(params: {
     where: Prisma.ProveedoresWhereUniqueInput;
     data: Prisma.ProveedoresUpdateInput;
   }): Promise<Proveedores> {
-    const { where, data } = params;
-    return this.prisma.proveedores.update({
-      data,
-      where,
-    });
+    return this.prisma.proveedores.update(params);
   }
 
-  async deleteProveedores(
-    where: Prisma.ProveedoresWhereUniqueInput,
-  ): Promise<Proveedores> {
-    return this.prisma.proveedores.delete({
-      where,
-    });
+  async delete(where: Prisma.ProveedoresWhereUniqueInput) {
+    return this.prisma.proveedores.delete({ where });
   }
 }

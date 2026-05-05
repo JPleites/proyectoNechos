@@ -1,18 +1,17 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 
 
 @Component({
   selector: 'app-proveedores',
   standalone: true,
-  imports: [CommonModule, RouterOutlet],
+  imports: [CommonModule, RouterOutlet, RouterLink],
   templateUrl: './proveedores.html',
   styleUrls: ['./proveedores.scss']
 })
 export class ProveedoresComponent {
   sidebarOpen = true;
-
   rol = localStorage.getItem('rol');
 
   constructor(private router: Router) {}
@@ -31,6 +30,4 @@ export class ProveedoresComponent {
 
     this.router.navigate([rutas[rol] || '/login']);
   }
-  onExample1() { console.log('Acción 1 ejecutada'); }
-  onExample2() { console.log('Acción 2 ejecutada'); }
 }

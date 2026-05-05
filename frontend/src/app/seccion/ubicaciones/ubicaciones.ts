@@ -1,17 +1,16 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, Router } from "@angular/router";
+import { RouterOutlet, Router, RouterLinkWithHref } from "@angular/router";
 
 @Component({
   selector: 'app-ubicaciones',
   standalone: true,
-  imports: [CommonModule, RouterOutlet],
+  imports: [CommonModule, RouterOutlet, RouterLinkWithHref],
   templateUrl: './ubicaciones.html',
   styleUrls: ['./ubicaciones.scss']
 })
 export class UbicacionesComponent {
   sidebarOpen = true;
-
   rol = localStorage.getItem('rol');
 
   constructor(private router: Router) {}
@@ -30,7 +29,4 @@ export class UbicacionesComponent {
 
     this.router.navigate([rutas[rol] || '/login']);
   }
-
-  onExample1() { console.log('Acción 1 ejecutada'); }
-  onExample2() { console.log('Acción 2 ejecutada'); }
 }
