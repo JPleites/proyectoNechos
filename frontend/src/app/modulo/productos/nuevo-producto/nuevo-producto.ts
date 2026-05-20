@@ -32,7 +32,8 @@ export class NuevoProducto {
     this.form = this.fb.group({
       codigo: ['', Validators.required],
       producto: ['', Validators.required],
-      costo: [0, Validators.required],
+      costoCompra: [0, Validators.required],
+      costoVenta: [0, Validators.required],
       precio: [0, Validators.required],
       descuento: [0],
       proveedor: ['', Validators.required],

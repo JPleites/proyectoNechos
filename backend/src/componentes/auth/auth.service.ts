@@ -10,6 +10,9 @@ export class AuthService {
   async login(codigo: number, contrasena: string) {
     const user = await this.prisma.usuarios.findUnique({
       where: { codigo },
+      include:{
+        perfil: true
+      }
     });
 
     if (!user) {
@@ -23,7 +26,7 @@ export class AuthService {
     }
 
     const token = jwt.sign(
-      { sub: user.codigo, rol: user.rol },
+      { sub: user.codigo, rol: user.rol, nombre: user.perfil.nombre },
       process.env.JWT_SECRET! ,
       { expiresIn: '1h' },
     );
@@ -31,6 +34,8 @@ export class AuthService {
     return {
       access_token: token,
       rol: user.rol,
+      codigo: user.codigo,
+      nombre: user.perfil.nombre,
     };
   }
 }

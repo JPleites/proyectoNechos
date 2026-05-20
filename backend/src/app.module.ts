@@ -22,6 +22,8 @@ import { VentasModule } from './componentes/ventas/ventas.module';
 import { MovimientosinventarioService } from './componentes/movimientosinventario/movimientosinventario.service';
 import { MovimientosinventarioController } from './componentes/movimientosinventario/movimientosinventario.controller';
 import { MovimientosinventarioModule } from './componentes/movimientosinventario/movimientosinventario.module';
+import { CategoriaProveedoresModule } from './componentes/categoria-proveedores/categoria-proveedores.module';
+import { PedidoModule } from './componentes/pedidos/pedidos.module';
 
 ConfigModule.forRoot();
 
@@ -42,6 +44,8 @@ ConfigModule.forRoot();
     AuthModule,
     VentasModule,
     MovimientosinventarioModule,
+    CategoriaProveedoresModule,
+    PedidoModule,
   ],
   controllers: [AppController, VentasController, MovimientosinventarioController],
   providers: [AppService, PrismaService, VentasService, MovimientosinventarioService],

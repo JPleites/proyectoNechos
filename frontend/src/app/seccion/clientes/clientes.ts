@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet, RouterLinkWithHref } from '@angular/router';
 
 
 @Component({
   selector: 'app-clientes',
   standalone: true,
-  imports: [CommonModule, RouterOutlet],
+  imports: [CommonModule, RouterOutlet, RouterLinkWithHref],
   templateUrl: './clientes.html',
   styleUrls: ['./clientes.scss']
 })

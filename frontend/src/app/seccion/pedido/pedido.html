@@ -13,13 +13,13 @@
       </div>
 
       <nav class="sidebar-nav">
-        <button class="nav-item" (click)="onExample1()">
+        <button class="nav-item"  routerLink="nuevo-pedido" routerLinkActive="active">
           <img src="/usuario.png" class="nav-icon" alt="Example 1">
-          <span class="nav-label" *ngIf="sidebarOpen">Example 1</span>
+          <span class="nav-label" *ngIf="sidebarOpen">Crear Pedido</span>
         </button>
-        <button class="nav-item" (click)="onExample2()">
+        <button class="nav-item" routerLink="consultar-pedidos">
           <img src="/productos.png" class="nav-icon" alt="Example 2">
-          <span class="nav-label" *ngIf="sidebarOpen">Example 2</span>
+          <span class="nav-label" *ngIf="sidebarOpen">Consultar Pedidos</span>
         </button>
       </nav>
 

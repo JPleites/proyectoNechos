@@ -6,7 +6,7 @@
       Rol: <span class="text-primary">Admin</span>
     </div>
     <div class="fw-bold text-dark">
-      Bienvenido: <span class="text-secondary">[Nombre de Usuario]</span>
+      Bienvenido: <span class="text-secondary">{{ nombre }}</span>
     </div>
     <div class="d-flex align-items-center" style="cursor: pointer;" (click)="logout()">
       <span class="me-2 fw-bold text-danger" style="font-size: 13px;">Cerrar Sesión</span>
@@ -32,9 +32,9 @@
       <div class="mt-2" style="font-size: 13px; font-weight: bold;">Perfiles</div>
     </div>
 
-    <div class="modulo-card" (click)="navigateTo('arqueos')">
+    <div class="modulo-card" (click)="navigateTo('pedidos')">
       <i class="fas fa-cash-register icon-necho"></i>
-      <div class="mt-2" style="font-size: 13px; font-weight: bold;">Arqueos</div>
+      <div class="mt-2" style="font-size: 13px; font-weight: bold;">Pedidos</div>
     </div>
 
     <div class="modulo-card" (click)="navigateTo('productos')">
@@ -67,9 +67,9 @@
       <div class="mt-2" style="font-size: 13px; font-weight: bold;">Proveedores</div>
     </div>
 
-    <div class="modulo-card" (click)="navigateTo('facturacion')">
+    <div class="modulo-card" (click)="navigateTo('caja')">
       <i class="fas fa-file-invoice-dollar icon-necho"></i>
-      <div class="mt-2" style="font-size: 13px; font-weight: bold;">Facturación</div>
+      <div class="mt-2" style="font-size: 13px; font-weight: bold;">Caja</div>
     </div>
 
     <div class="modulo-card" (click)="navigateTo('cierres')">

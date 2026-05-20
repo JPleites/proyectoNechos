@@ -1,1 +1,74 @@
-<p>consulta-clientes works!</p>
+<div class="container-fluid py-4">
+  <div class="card">
+    <!-- HEADER -->
+    <div class="card-body d-flex justify-content-between align-items-center">
+      <div>
+        <h4 class="mb-0">Clientes</h4>
+        <small class="text-muted">Gestión de clientes</small>
+      </div>
+
+      <a routerLink="/clientes/nuevo" class="btn btn-primary">
+        <i class="fas fa-user-plus me-2"></i>
+        Nuevo Cliente
+      </a>
+    </div>
+
+    <div class="card-body pt-0">
+      <!-- TABLE -->
+      <div class="table-responsive">
+        <table class="table table-hover align-middle w-100">
+          <thead class="table-light">
+            <tr>
+              <th style="width: 120px">ID</th>
+              <th>Nombre</th>
+              <th>Correo</th>
+              <th>Teléfono</th>
+              <th>Dirección</th>
+              <th class="text-center" style="width: 140px">Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let c of clientes">
+              <td class="fw-semibold">{{ c.id }}</td>
+
+              <td>
+                <i class="fas fa-user text-muted me-2"></i>
+                {{ c.nombre }}
+              </td>
+
+              <td>{{ c.correo }}</td>
+
+              <td>
+                <i class="fas fa-phone text-muted me-2"></i>
+                {{ c.telefono || '-' }}
+              </td>
+
+              <td class="text-truncate" style="max-width: 200px">
+                {{ c.direccion || '-' }}
+              </td>
+
+              <td class="text-center">
+                <button
+                  class="btn btn-sm btn-outline-danger"
+                  (click)="eliminar(c.id)"
+                  title="Eliminar"
+                >
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+
+            <!-- EMPTY STATE -->
+            <tr *ngIf="!clientes || clientes.length === 0">
+              <td colspan="6" class="text-center text-muted py-4">
+                <i class="fas fa-inbox me-2"></i>
+                No hay clientes registrados
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -66,4 +66,12 @@ export class ProductosController {
   getInventario(@Param('id') id: string) {
     return this.productosService.productoConInventario(id);
   }
+  
+  @Get('ubicaciones/:productoCodigo/:almacenId')
+getUbicaciones(
+  @Param('productoCodigo') productoCodigo: string,
+  @Param('almacenId') almacenId: string,
+) {
+  return this.productosService.obtenerUbicaciones(productoCodigo, almacenId);
+}
 }

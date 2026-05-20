@@ -1,0 +1,176 @@
+<div class="container-fluid py-4">
+
+  <div class="card h-100 d-flex flex-column">
+
+    <!-- HEADER -->
+    <div class="card-body border-bottom flex-shrink-0">
+      <h4 class="mb-0">
+        <i class="fas fa-cash-register me-2 text-primary"></i>
+        Cierre de Caja
+      </h4>
+      <small class="text-muted">Control de arqueo diario</small>
+    </div>
+
+    <!-- CONTENIDO SCROLL -->
+    <div class="card-body flex-grow-1 overflow-auto">
+
+      <!-- RESUMEN -->
+      <div *ngIf="arqueo" class="row g-3 mb-4">
+
+        <div class="col-md-4 col-lg-2">
+          <div class="p-3 border rounded bg-light text-center">
+            <div class="text-muted small">Efectivo</div>
+            <div class="fw-bold">L {{ arqueo.totalEfectivo }}</div>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-lg-2">
+          <div class="p-3 border rounded bg-light text-center">
+            <div class="text-muted small">BAC</div>
+            <div class="fw-bold">L {{ arqueo.totalBac }}</div>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-lg-2">
+          <div class="p-3 border rounded bg-light text-center">
+            <div class="text-muted small">Ficohsa</div>
+            <div class="fw-bold">L {{ arqueo.totalFicohsa }}</div>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-lg-2">
+          <div class="p-3 border rounded bg-light text-center">
+            <div class="text-muted small">Davivienda</div>
+            <div class="fw-bold">L {{ arqueo.totalDavivienda }}</div>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-lg-2">
+          <div class="p-3 border rounded bg-light text-center">
+            <div class="text-muted small">Transferencias</div>
+            <div class="fw-bold">L {{ arqueo.totalTransferencias }}</div>
+          </div>
+        </div>
+
+      </div>
+
+      <hr />
+
+      <!-- INPUTS -->
+      <h6 class="mb-3 text-muted">Recuento físico</h6>
+
+      <div class="row g-3">
+
+        <div class="col-md-4 col-lg-2">
+          <div class="form-outline">
+            <input type="number" class="form-control"
+              [(ngModel)]="efectivoContado"
+              (input)="calcularDiferencia()" />
+            <label class="form-label">Efectivo</label>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-lg-2">
+          <div class="form-outline">
+            <input type="number" class="form-control"
+              [(ngModel)]="bacContado"
+              (input)="calcularDiferencia()" />
+            <label class="form-label">BAC</label>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-lg-2">
+          <div class="form-outline">
+            <input type="number" class="form-control"
+              [(ngModel)]="ficohsaContado"
+              (input)="calcularDiferencia()" />
+            <label class="form-label">Ficohsa</label>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-lg-2">
+          <div class="form-outline">
+            <input type="number" class="form-control"
+              [(ngModel)]="daviviendaContado"
+              (input)="calcularDiferencia()" />
+            <label class="form-label">Davivienda</label>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-lg-2">
+          <div class="form-outline">
+            <input type="number" class="form-control"
+              [(ngModel)]="transferenciaContado"
+              (input)="calcularDiferencia()" />
+            <label class="form-label">Transferencias</label>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- DIFERENCIAS -->
+      <div class="mt-4">
+
+        <h6 class="mb-3 text-muted">Desglose de diferencias</h6>
+
+        <div class="list-group shadow-sm">
+
+          <div class="list-group-item d-flex justify-content-between">
+            <span>Efectivo</span>
+            <span [ngClass]="diferencias.efectivo >= 0 ? 'text-success' : 'text-danger'">
+              L {{ diferencias.efectivo }}
+            </span>
+          </div>
+
+          <div class="list-group-item d-flex justify-content-between">
+            <span>BAC</span>
+            <span [ngClass]="diferencias.bac >= 0 ? 'text-success' : 'text-danger'">
+              L {{ diferencias.bac }}
+            </span>
+          </div>
+
+          <div class="list-group-item d-flex justify-content-between">
+            <span>Ficohsa</span>
+            <span [ngClass]="diferencias.ficohsa >= 0 ? 'text-success' : 'text-danger'">
+              L {{ diferencias.ficohsa }}
+            </span>
+          </div>
+
+          <div class="list-group-item d-flex justify-content-between">
+            <span>Davivienda</span>
+            <span [ngClass]="diferencias.davivienda >= 0 ? 'text-success' : 'text-danger'">
+              L {{ diferencias.davivienda }}
+            </span>
+          </div>
+
+          <div class="list-group-item d-flex justify-content-between">
+            <span>Transferencias</span>
+            <span [ngClass]="diferencias.transferencia >= 0 ? 'text-success' : 'text-danger'">
+              L {{ diferencias.transferencia }}
+            </span>
+          </div>
+
+          <div class="list-group-item d-flex justify-content-between fw-bold bg-light">
+            <span>Total</span>
+            <span [ngClass]="diferencias.total >= 0 ? 'text-success' : 'text-danger'">
+              L {{ diferencias.total }}
+            </span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- FOOTER FIJO (CORRECTO) -->
+    <div class="card-footer bg-white text-end flex-shrink-0">
+      <button class="btn btn-danger btn-lg" (click)="cerrarCaja()">
+        <i class="fas fa-lock me-2"></i>
+        Cerrar caja
+      </button>
+    </div>
+
+  </div>
+
+</div>

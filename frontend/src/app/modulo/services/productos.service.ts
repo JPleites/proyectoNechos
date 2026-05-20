@@ -5,7 +5,6 @@ import { ApiService } from './api';
   providedIn: 'root',
 })
 export class ProductosService {
-
   constructor(private apiService: ApiService) {}
 
   getProductos() {
@@ -30,5 +29,9 @@ export class ProductosService {
 
   buscarProductos(query: string) {
     return this.apiService.get(`/productos/buscar?q=${query}`);
+  }
+
+  getUbicaciones(productoCodigo: string, almacenId: string) {
+    return this.apiService.get(`/productos/ubicaciones/${productoCodigo}/${almacenId}`);
   }
 }

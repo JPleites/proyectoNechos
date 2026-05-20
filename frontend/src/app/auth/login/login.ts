@@ -3,6 +3,7 @@ import { FormBuilder, ReactiveFormsModule, FormGroup, Validators } from '@angula
 import { LoginService } from '../../modulo/services/login.service';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
+import lo from '@angular/common/locales/lo';
 
 @Component({
   selector: 'app-login',
@@ -50,6 +51,8 @@ export class LoginComponent {
         // 🔐 Guardar datos
         localStorage.setItem('token', res.access_token);
         localStorage.setItem('rol', res.rol);
+        localStorage.setItem('codigo', res.codigo);
+        localStorage.setItem('nombre', res.nombre);
 
         Swal.fire({
           icon: 'success',

@@ -101,11 +101,9 @@ export class ProductosService {
     }
 
     // Obtener valores finales (nuevo o actual)
-    const categoria =
-      (data.categoria as string) || productoActual.categoria;
+    const categoria = (data.categoria as string) || productoActual.categoria;
 
-    const proveedor =
-      (data.proveedorRel as string) || productoActual.proveedor;
+    const proveedor = (data.proveedorRel as string) || productoActual.proveedor;
 
     // Validar relación si existen ambos
     if (categoria && proveedor) {
@@ -160,6 +158,20 @@ export class ProductosService {
       where: { codigo },
       include: {
         inventario: true,
+      },
+    });
+  }
+
+  async obtenerUbicaciones(productoCodigo: string, almacenId: string) {
+    return this.prisma.inventario.findMany({
+      where: {
+        productoCodigo: String(productoCodigo),
+        ubicacionRel: {
+          almacenId: String(almacenId),
+        },
+      },
+      include: {
+        ubicacionRel: true,
       },
     });
   }

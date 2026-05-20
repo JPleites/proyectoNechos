@@ -6,53 +6,70 @@ import { Arqueo, Prisma } from '@prisma/client';
 export class ArqueoService {
   constructor(private prisma: PrismaService) {}
 
-  async arqueo(
-    arqueoWhereUniqueInput: Prisma.ArqueoWhereUniqueInput,
-  ): Promise<Arqueo | null> {
-    return this.prisma.arqueo.findUnique({
-      where: arqueoWhereUniqueInput,
+  async getArqueoHoy(usuarioCodigo: number) {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    return this.prisma.arqueo.findFirst({
+      where: {
+        usuarioCodigo,
+        fecha: {
+          gte: hoy,
+        },
+      },
+      orderBy: {
+        fecha: 'desc',
+      },
     });
   }
 
-  async arqueos(params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.ArqueoWhereUniqueInput;
-    where?: Prisma.ArqueoWhereInput;
-    orderBy?: Prisma.ArqueoOrderByWithRelationInput;
-  }): Promise<Arqueo[]> {
-    const { skip, take, cursor, where, orderBy } = params;
-    return this.prisma.arqueo.findMany({
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
-    });
-  }
+  // async arqueo(
+  //   arqueoWhereUniqueInput: Prisma.ArqueoWhereUniqueInput,
+  // ): Promise<Arqueo | null> {
+  //   return this.prisma.arqueo.findUnique({
+  //     where: arqueoWhereUniqueInput,
+  //   });
+  // }
 
-  async createArqueo(data: Prisma.ArqueoCreateInput): Promise<Arqueo> {
-    return this.prisma.arqueo.create({
-      data,
-    });
-  }
+  // async arqueos(params: {
+  //   skip?: number;
+  //   take?: number;
+  //   cursor?: Prisma.ArqueoWhereUniqueInput;
+  //   where?: Prisma.ArqueoWhereInput;
+  //   orderBy?: Prisma.ArqueoOrderByWithRelationInput;
+  // }): Promise<Arqueo[]> {
+  //   const { skip, take, cursor, where, orderBy } = params;
+  //   return this.prisma.arqueo.findMany({
+  //     skip,
+  //     take,
+  //     cursor,
+  //     where,
+  //     orderBy,
+  //   });
+  // }
 
-  async updateArqueo(params: {
-    where: Prisma.ArqueoWhereUniqueInput;
-    data: Prisma.ArqueoUpdateInput;
-  }): Promise<Arqueo> {
-    const { where, data } = params;
-    return this.prisma.arqueo.update({
-      data,
-      where,
-    });
-  }
+  // async createArqueo(data: Prisma.ArqueoCreateInput): Promise<Arqueo> {
+  //   return this.prisma.arqueo.create({
+  //     data,
+  //   });
+  // }
 
-  async deleteArqueo(
-    where: Prisma.ArqueoWhereUniqueInput,
-  ): Promise<Arqueo> {
-    return this.prisma.arqueo.delete({
-      where,
-    });
-  }
+  // async updateArqueo(params: {
+  //   where: Prisma.ArqueoWhereUniqueInput;
+  //   data: Prisma.ArqueoUpdateInput;
+  // }): Promise<Arqueo> {
+  //   const { where, data } = params;
+  //   return this.prisma.arqueo.update({
+  //     data,
+  //     where,
+  //   });
+  // }
+
+  // async deleteArqueo(
+  //   where: Prisma.ArqueoWhereUniqueInput,
+  // ): Promise<Arqueo> {
+  //   return this.prisma.arqueo.delete({
+  //     where,
+  //   });
+  // }
 }

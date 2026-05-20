@@ -1,0 +1,101 @@
+<div class="container py-4">
+  <form [formGroup]="form">
+    <!-- CLIENTE -->
+    <div class="card p-3 mb-3">
+      <h4>Nuevo Pedido</h4>
+
+      <div class="row">
+        <div class="col-md-6">
+          <label>Cliente</label>
+
+          <select class="form-control" formControlName="clienteId">
+            <option value="">Seleccionar</option>
+
+            <option *ngFor="let c of clientes" [value]="c.id">
+              {{ c.nombre }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- AGREGAR PRODUCTO -->
+    <div class="card p-3 mb-3">
+      <h5>Agregar producto</h5>
+
+      <div class="row g-2">
+        <div class="col-md-4">
+          <input
+            class="form-control"
+            placeholder="Escanear código de barras"
+            formControlName="codigoBarra"
+            (keyup.enter)="buscarProductoPorCodigo()"
+          />
+        </div>
+
+        <div class="col-md-3">
+          <select class="form-control" formControlName="almacenId">
+            <option value="">Seleccionar almacén</option>
+            <option *ngFor="let a of almacenes" [value]="a.id">
+              {{ a.almacen }}
+            </option>
+          </select>
+          <select class="form-control" formControlName="ubicacion">
+            <option value="">Ubicación</option>
+            <option *ngFor="let u of ubicaciones" [value]="u.ubicacion">
+              {{ u.ubicacion }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <input type="number" class="form-control" formControlName="cantidad" />
+        </div>
+
+        <div class="col-md-3">
+          <button type="button" class="btn btn-primary w-100" (click)="agregarProducto()">
+            Agregar
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <!-- CARRITO -->
+  <div class="card p-3 mb-3">
+    <h5>Detalle del pedido</h5>
+
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Ubicación</th>
+          <th>Cant.</th>
+          <th>Precio</th>
+          <th>Subtotal</th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let item of carrito; let i = index">
+          <td>{{ item.nombreProducto }}</td>
+          <td>{{ item.ubicacion }}</td>
+          <td>{{ item.cantidad }}</td>
+          <td>{{ item.precioUnitario }}</td>
+          <td>{{ item.subtotal }}</td>
+          <td>
+            <button class="btn btn-danger btn-sm" (click)="eliminarItem(i)">X</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h5 class="text-end">Total: {{ total }}</h5>
+  </div>
+
+  <!-- ACCIONES -->
+  <div class="text-end">
+    <button class="btn btn-success" (click)="guardarPedido()">Guardar Pedido</button>
+  </div>
+</div>

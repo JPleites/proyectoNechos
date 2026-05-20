@@ -1,1 +1,75 @@
-<p>crear-cliente works!</p>
+<div class="container py-4">
+
+  <div class="card" style="max-width: 800px; margin: auto;">
+
+    <!-- HEADER -->
+    <div class="card-body">
+      <h4 class="mb-0">Nuevo Cliente</h4>
+      <small class="text-muted">Registro de clientes del sistema</small>
+    </div>
+
+    <div class="card-body pt-0">
+
+      <div class="row g-3">
+
+        <!-- ID -->
+        <div class="col-md-4">
+          <div class="form-outline">
+            <input [(ngModel)]="cliente.id" class="form-control" />
+            <label class="form-label">ID *</label>
+          </div>
+        </div>
+
+        <!-- NOMBRE -->
+        <div class="col-md-8">
+          <div class="form-outline">
+            <input [(ngModel)]="cliente.nombre" class="form-control" />
+            <label class="form-label">Nombre *</label>
+          </div>
+        </div>
+
+        <!-- CORREO -->
+        <div class="col-md-6">
+          <div class="form-outline">
+            <input [(ngModel)]="cliente.correo" class="form-control" />
+            <label class="form-label">Correo *</label>
+          </div>
+        </div>
+
+        <!-- TELÉFONO -->
+        <div class="col-md-6">
+          <div class="form-outline">
+            <input [(ngModel)]="cliente.telefono" class="form-control" />
+            <label class="form-label">Teléfono</label>
+          </div>
+        </div>
+
+        <!-- DIRECCIÓN -->
+        <div class="col-md-12">
+          <div class="form-outline">
+            <textarea
+              [(ngModel)]="cliente.direccion"
+              class="form-control"
+              rows="3"
+            ></textarea>
+            <label class="form-label">Dirección</label>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- BOTÓN -->
+      <div class="text-end mt-4">
+
+        <button class="btn btn-primary" (click)="guardar()">
+          <i class="fas fa-user-plus me-2"></i>
+          Guardar cliente
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

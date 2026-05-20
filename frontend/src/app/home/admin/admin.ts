@@ -7,6 +7,7 @@ import { Component } from '@angular/core';
   styleUrl: './admin.scss',
 })
 export class Admin {
+  nombre: string = localStorage.getItem('nombre') || 'Admin';
   navigateTo(modulo: string) {
     if (modulo) {
       window.location.href = modulo;

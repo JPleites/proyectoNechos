@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet, RouterLink } from '@angular/router';
 
 
 @Component({
   selector: 'app-cierres',
   standalone: true,
-  imports: [CommonModule, RouterOutlet],
+  imports: [CommonModule, RouterOutlet, RouterLink],
   templateUrl: './cierres.html',
   styleUrls: ['./cierres.scss']
 })
@@ -31,7 +31,4 @@ export class CierresComponent {
 
     this.router.navigate([rutas[rol] || '/login']);
   }
-
-  onExample1() { console.log('Acción 1 ejecutada'); }
-  onExample2() { console.log('Acción 2 ejecutada'); }
 }

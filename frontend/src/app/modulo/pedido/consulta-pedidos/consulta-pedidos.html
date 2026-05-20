@@ -1,0 +1,92 @@
+<div class="container-fluid py-4">
+  <div class="card">
+    <!-- HEADER -->
+    <div class="card-body d-flex justify-content-between align-items-center">
+      <div>
+        <h4 class="mb-0">Pedidos</h4>
+        <small class="text-muted">Gestión de pedidos</small>
+      </div>
+    </div>
+
+    <div class="card-body pt-0">
+      <!-- TABLE -->
+      <div class="table-responsive">
+        <table class="table table-hover align-middle w-100">
+          <thead class="table-light">
+            <tr>
+              <th style="width: 120px">ID</th>
+              <th>Cliente</th>
+              <th>Estado</th>
+              <th>Fecha</th>
+              <th>Total</th>
+              <th class="text-center" style="width: 140px">Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let p of pedidos">
+              <td class="fw-semibold">{{ p.id }}</td>
+
+              <td>
+                <i class="fas fa-user text-muted me-2"></i>
+                {{ p.cliente?.nombre || 'Consumidor Final' }}
+              </td>
+
+              <td>
+                <span
+                  class="badge"
+                  [ngClass]="{
+                    'bg-warning text-dark': p.estado === 'EN_PROCESO',
+                    'bg-primary': p.estado === 'EN_CAJA',
+                    'bg-success': p.estado === 'FACTURADO',
+                    'bg-danger': p.estado === 'CANCELADO',
+                  }"
+                >
+                  {{ p.estado }}
+                </span>
+              </td>
+
+              <td>
+                {{ p.fecha | date: 'dd/MM/yyyy' }}
+              </td>
+
+              <td class="text-truncate" style="max-width: 200px">Lps. {{ p.total }}</td>
+
+              <td class="text-center">
+                <button
+                  class="btn btn-sm btn-outline-danger"
+                  (click)="eliminar(p.id)"
+                  title="Eliminar"
+                >
+                  <i class="fas fa-trash"></i>
+                </button>
+                <button
+                  class="btn btn-success btn-sm"
+                  (click)="enviarACaja(p.id)"
+                  *ngIf="p.estado === 'EN_PROCESO'"
+                >
+                  Enviar a caja
+                </button>
+                <button
+                  class="btn btn-warning"
+                  (click)="cancelarPedido(p.id)"
+                  *ngIf="p.estado === 'EN_PROCESO'"
+                >
+                  Cancelar Pedido
+                </button>
+              </td>
+            </tr>
+
+            <!-- EMPTY STATE -->
+            <tr *ngIf="!pedidos || pedidos.length === 0">
+              <td colspan="6" class="text-center text-muted py-4">
+                <i class="fas fa-inbox me-2"></i>
+                No hay pedidos registrados
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

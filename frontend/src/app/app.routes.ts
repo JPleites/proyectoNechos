@@ -43,7 +43,8 @@ export const routes: Routes = [
       // RUTAS DE SECCION
       {
         path: 'almacenes',
-        loadComponent: () => import('./seccion/almacenes/almacenes').then((m) => m.AlmacenesComponent),
+        loadComponent: () =>
+          import('./seccion/almacenes/almacenes').then((m) => m.AlmacenesComponent),
         children: [
           {
             path: '',
@@ -60,11 +61,9 @@ export const routes: Routes = [
           {
             path: 'crear',
             loadComponent: () =>
-              import('./modulo/almacenes/crear-almacen/crear-almacen').then(
-                (m) => m.CrearAlmacen,
-              ),
-          }
-        ]
+              import('./modulo/almacenes/crear-almacen/crear-almacen').then((m) => m.CrearAlmacen),
+          },
+        ],
       },
       {
         path: 'arqueos',
@@ -73,10 +72,28 @@ export const routes: Routes = [
       {
         path: 'caja',
         loadComponent: () => import('./seccion/caja/caja').then((m) => m.CajaComponent),
+        children: [
+          {
+            path: '',
+            redirectTo: 'consulta-pedidos',
+            pathMatch: 'full',
+          },
+          {
+            path: 'consulta-pedidos',
+            loadComponent: () =>
+              import('./modulo/caja/caja/consulta-pedidos').then((m) => m.ConsultaPedidos),
+          },
+          // {
+          //   path: 'cobro',
+          //   loadComponent: () =>
+          //     import('./modulo/caja/')
+          // }
+        ],
       },
       {
         path: 'categorias',
-        loadComponent: () => import('./seccion/categorias/categorias').then((m) => m.CategoriasComponent),
+        loadComponent: () =>
+          import('./seccion/categorias/categorias').then((m) => m.CategoriasComponent),
         children: [
           {
             path: '',
@@ -94,22 +111,61 @@ export const routes: Routes = [
             path: 'crear',
             loadComponent: () =>
               import('./modulo/categorias/crear-categoria/crear-categoria').then(
-                  (m) => m.CrearCategoria,
+                (m) => m.CrearCategoria,
               ),
-          }
-        ]
+          },
+        ],
       },
       {
         path: 'cierres',
         loadComponent: () => import('./seccion/cierres/cierres').then((m) => m.CierresComponent),
+        children: [
+          {
+            path: '',
+            redirectTo: 'cierre-caja',
+            pathMatch: 'full',
+          },
+          {
+            path: 'cierre-caja',
+            loadComponent: () =>
+              import('./modulo/cierres/cierre-caja/cierre-caja').then((m) => m.CierreCaja),
+          },
+          {
+            path: 'consulta-cierres',
+            loadComponent: () =>
+              import('./modulo/cierres/consulta-cierres/consulta-cierres').then(
+                (m) => m.ConsultaCierres,
+              ),
+          }
+        ],
       },
       {
         path: 'clientes',
         loadComponent: () => import('./seccion/clientes/clientes').then((m) => m.ClientesComponent),
+        children: [
+          {
+            path: '',
+            redirectTo: 'consulta',
+            pathMatch: 'full',
+          },
+          {
+            path: 'consulta',
+            loadComponent: () =>
+              import('./modulo/clientes/consulta-clientes/consulta-clientes').then(
+                (m) => m.ConsultaClientes,
+              ),
+          },
+          {
+            path: 'crear',
+            loadComponent: () =>
+              import('./modulo/clientes/crear-cliente/crear-cliente').then((m) => m.CrearCliente),
+          },
+        ],
       },
       {
         path: 'inventario',
-        loadComponent: () => import('./seccion/inventario/inventario').then((m) => m.InventarioComponent),
+        loadComponent: () =>
+          import('./seccion/inventario/inventario').then((m) => m.InventarioComponent),
         children: [
           {
             path: '',
@@ -119,12 +175,33 @@ export const routes: Routes = [
           {
             path: 'kardex',
             loadComponent: () => import('./modulo/inventario/kardex/kardex').then((m) => m.Kardex),
-          }
-        ]
+          },
+        ],
       },
       {
         path: 'pedido',
         loadComponent: () => import('./seccion/pedido/pedido').then((m) => m.PedidoComponent),
+        children: [
+          {
+            path: '',
+            redirectTo: 'nuevo-pedido',
+            pathMatch: 'full',
+          },
+          {
+            path: 'nuevo-pedido',
+            loadComponent: () =>
+              import('./modulo/pedido/nuevo-pedido/nuevo-pedido').then(
+                (m) => m.NuevoPedidoComponent,
+              ),
+          },
+          {
+            path: 'consultar-pedidos',
+            loadComponent: () =>
+              import('./modulo/pedido/consulta-pedidos/consulta-pedidos').then(
+                (m) => m.ConsultaPedidos,
+              ),
+          },
+        ],
       },
       {
         path: 'productos',
@@ -146,7 +223,9 @@ export const routes: Routes = [
           {
             path: 'nuevo',
             loadComponent: () =>
-              import('./modulo/productos/nuevo-producto/nuevo-producto').then((m) => m.NuevoProducto),
+              import('./modulo/productos/nuevo-producto/nuevo-producto').then(
+                (m) => m.NuevoProducto,
+              ),
           },
           {
             path: 'ingreso',
@@ -158,13 +237,16 @@ export const routes: Routes = [
           {
             path: 'salida',
             loadComponent: () =>
-              import('./modulo/productos/salida-producto/salida-producto').then((m) => m.SalidaProducto),
+              import('./modulo/productos/salida-producto/salida-producto').then(
+                (m) => m.SalidaProducto,
+              ),
           },
         ],
       },
       {
         path: 'proveedores',
-        loadComponent: () => import('./seccion/proveedores/proveedores').then((m) => m.ProveedoresComponent),
+        loadComponent: () =>
+          import('./seccion/proveedores/proveedores').then((m) => m.ProveedoresComponent),
         children: [
           {
             path: '',
@@ -184,12 +266,13 @@ export const routes: Routes = [
               import('./modulo/proveedores/crear-proveedor/crear-proveedor').then(
                 (m) => m.CrearProveedor,
               ),
-          }
-        ]
+          },
+        ],
       },
       {
         path: 'ubicaciones',
-        loadComponent: () => import('./seccion/ubicaciones/ubicaciones').then((m) => m.UbicacionesComponent),
+        loadComponent: () =>
+          import('./seccion/ubicaciones/ubicaciones').then((m) => m.UbicacionesComponent),
         children: [
           {
             path: '',
@@ -209,8 +292,8 @@ export const routes: Routes = [
               import('./modulo/ubicaciones/crear-ubicacion/crear-ubicacion').then(
                 (m) => m.CrearUbicacion,
               ),
-          }
-        ]
+          },
+        ],
       },
       {
         path: 'ventas',
@@ -227,13 +310,15 @@ export const routes: Routes = [
           },
           {
             path: 'crear-perfil',
-            loadComponent: () => import('./modulo/personas/crear-perfil/crear-perfil').then((m) => m.CrearPerfil),
+            loadComponent: () =>
+              import('./modulo/personas/crear-perfil/crear-perfil').then((m) => m.CrearPerfil),
           },
           {
             path: 'lista-perfil',
-            loadComponent: () => import('./modulo/personas/lista-perfil/lista-perfil').then((m) => m.ListaPerfil),
-          }
-        ]
+            loadComponent: () =>
+              import('./modulo/personas/lista-perfil/lista-perfil').then((m) => m.ListaPerfil),
+          },
+        ],
       },
     ],
   },

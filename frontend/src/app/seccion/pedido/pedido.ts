@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, Router } from '@angular/router';
+import { RouterOutlet, Router, RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'app-pedido',
   standalone: true,
-  imports: [CommonModule, RouterOutlet],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './pedido.html',
   styleUrls: ['./pedido.scss']
 })
@@ -30,7 +30,4 @@ export class PedidoComponent {
 
     this.router.navigate([rutas[rol] || '/login']);
   }
-
-  onExample1() { console.log('Acción 1 ejecutada'); }
-  onExample2() { console.log('Acción 2 ejecutada'); }
 }
