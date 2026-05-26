@@ -36,7 +36,7 @@ export class PedidosService {
   }
 
   facturarPedido(id: number, data: any) {
-    return this.api.post(`/pedidos/${id}/facturar`, data);
+    return this.api.post(`/ventas/${id}/facturar`, data);
   }
 
   cerrarCaja(data: any) {

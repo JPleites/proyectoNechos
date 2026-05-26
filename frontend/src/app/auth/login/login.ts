@@ -12,7 +12,6 @@ import lo from '@angular/common/locales/lo';
 })
 export class LoginComponent {
   loginForm: FormGroup;
-  loading = false;
 
   constructor(
     private fb: FormBuilder,
@@ -44,8 +43,6 @@ export class LoginComponent {
       return;
     }
 
-    this.loading = true;
-
     this.api.login(this.loginForm.value).subscribe({
       next: (res: any) => {
         // 🔐 Guardar datos
@@ -58,18 +55,15 @@ export class LoginComponent {
           icon: 'success',
           title: 'Bienvenido',
           text: 'Inicio de sesión exitoso',
-          timer: 1500,
           showConfirmButton: false,
         }).then(() => {
           this.redirigirPorRol(res.rol);
         });
 
         this.loginForm.reset();
-        this.loading = false;
       },
 
       error: (err) => {
-        this.loading = false;
 
         Swal.fire({
           icon: 'error',

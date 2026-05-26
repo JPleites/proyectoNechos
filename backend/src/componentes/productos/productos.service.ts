@@ -1,17 +1,25 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Productos, Prisma } from '@prisma/client';
+import { GeneradorCodigoService } from 'src/common/services/generador-codigo/generador-codigo.service';
 
 @Injectable()
 export class ProductosService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private codeGen: GeneradorCodigoService,
+  ) {}
 
   // 🔍 Obtener un producto
   async producto(
-    productoWhereUniqueInput: Prisma.ProductosWhereUniqueInput,
+    where: Prisma.ProductosWhereUniqueInput,
   ): Promise<Productos | null> {
     return this.prisma.productos.findUnique({
-      where: productoWhereUniqueInput,
+      where,
+      include: {
+        inventario: true,
+        proveedorRel: true,
+      },
     });
   }
 
@@ -33,6 +41,16 @@ export class ProductosService {
     });
   }
 
+  async generarProductoID() {
+    const last = await this.prisma.productos.findFirst({
+      orderBy: { id: 'desc' },
+    });
+
+    const nextNumber = last ? last.id + 1 : 1;
+
+    return this.codeGen.generate('P', nextNumber);
+  }
+
   // 🆕 Crear producto con validaciones 🔥
   async createProductos(data: Prisma.ProductosCreateInput): Promise<Productos> {
     // 0️⃣ evitar duplicados
@@ -46,7 +64,7 @@ export class ProductosService {
 
     // 1️⃣ validar categoría
     const categoria = await this.prisma.categoria.findUnique({
-      where: { id: data.categoria as string },
+      where: { id: Number(data.categoria) },
     });
 
     if (!categoria) {
@@ -55,7 +73,7 @@ export class ProductosService {
 
     // 2️⃣ validar proveedor
     const proveedor = await this.prisma.proveedores.findUnique({
-      where: { rtn: data.proveedorRel as string },
+      where: { id: Number(data.proveedorRel) },
     });
 
     if (!proveedor) {
@@ -66,8 +84,8 @@ export class ProductosService {
     const relacion = await this.prisma.categoriaProveedores.findUnique({
       where: {
         categoriaId_proveedorRtn: {
-          categoriaId: data.categoria as string,
-          proveedorRtn: data.proveedorRel as string,
+          categoriaId: categoria.id,
+          proveedorRtn: Number(data.proveedorRel),
         },
       },
     });
@@ -77,6 +95,10 @@ export class ProductosService {
         'El proveedor no pertenece a la categoría seleccionada',
       );
     }
+
+    const productoID = await this.generarProductoID();
+
+    data.productoID = productoID;
 
     // 4️⃣ crear producto
     return this.prisma.productos.create({
@@ -91,36 +113,12 @@ export class ProductosService {
   }): Promise<Productos> {
     const { where, data } = params;
 
-    // Obtener producto actual
-    const productoActual = await this.prisma.productos.findUnique({
+    const producto = await this.prisma.productos.findUnique({
       where,
     });
 
-    if (!productoActual) {
+    if (!producto) {
       throw new BadRequestException('Producto no encontrado');
-    }
-
-    // Obtener valores finales (nuevo o actual)
-    const categoria = (data.categoria as string) || productoActual.categoria;
-
-    const proveedor = (data.proveedorRel as string) || productoActual.proveedor;
-
-    // Validar relación si existen ambos
-    if (categoria && proveedor) {
-      const relacion = await this.prisma.categoriaProveedores.findUnique({
-        where: {
-          categoriaId_proveedorRtn: {
-            categoriaId: categoria,
-            proveedorRtn: proveedor,
-          },
-        },
-      });
-
-      if (!relacion) {
-        throw new BadRequestException(
-          'El proveedor no pertenece a la categoría',
-        );
-      }
     }
 
     return this.prisma.productos.update({
@@ -133,9 +131,7 @@ export class ProductosService {
   async deleteProductos(
     where: Prisma.ProductosWhereUniqueInput,
   ): Promise<Productos> {
-    return this.prisma.productos.delete({
-      where,
-    });
+    return this.prisma.productos.delete({ where });
   }
 
   // 🔎 Buscar productos
@@ -143,7 +139,7 @@ export class ProductosService {
     return this.prisma.productos.findMany({
       where: {
         OR: [
-          { codigo: { contains: q } },
+          { codigo: { contains: q, mode: 'insensitive' } },
           { producto: { contains: q, mode: 'insensitive' } },
           { marca: { contains: q, mode: 'insensitive' } },
           { categoria: { contains: q, mode: 'insensitive' } },
@@ -157,17 +153,21 @@ export class ProductosService {
     return this.prisma.productos.findUnique({
       where: { codigo },
       include: {
-        inventario: true,
+        inventario: {
+          include: {
+            ubicacionRel: true,
+          },
+        },
       },
     });
   }
 
-  async obtenerUbicaciones(productoCodigo: string, almacenId: string) {
+  async obtenerUbicaciones(productoCodigo: string, almacenId: number) {
     return this.prisma.inventario.findMany({
       where: {
         productoCodigo: String(productoCodigo),
         ubicacionRel: {
-          almacenId: String(almacenId),
+          almacenId: Number(almacenId),
         },
       },
       include: {

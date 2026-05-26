@@ -24,6 +24,8 @@ import { MovimientosinventarioController } from './componentes/movimientosinvent
 import { MovimientosinventarioModule } from './componentes/movimientosinventario/movimientosinventario.module';
 import { CategoriaProveedoresModule } from './componentes/categoria-proveedores/categoria-proveedores.module';
 import { PedidoModule } from './componentes/pedidos/pedidos.module';
+import { GeneradorCodigoService } from './componentes/services/generador-codigo/generador-codigo.service';
+import { CommonModule } from './componentes/common/common/common.module';
 
 ConfigModule.forRoot();
 
@@ -46,8 +48,9 @@ ConfigModule.forRoot();
     MovimientosinventarioModule,
     CategoriaProveedoresModule,
     PedidoModule,
+    CommonModule,
   ],
   controllers: [AppController, VentasController, MovimientosinventarioController],
-  providers: [AppService, PrismaService, VentasService, MovimientosinventarioService],
+  providers: [AppService, PrismaService, VentasService, MovimientosinventarioService, GeneradorCodigoService],
 })
 export class AppModule {}

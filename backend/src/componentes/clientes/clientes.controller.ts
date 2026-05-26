@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Query } from '@nestjs/common';
 import { ClientesService } from './clientes.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { UseGuards } from '@nestjs/common';
@@ -20,7 +20,7 @@ export class ClientesController {
 
     @Roles('admin', 'supervisor', 'vendedor', 'cajero')
     @Get(':id')
-    findOne(@Param('id') id: string) {
+    findOne(@Param('id') id: number) {
         return this.clientesService.cliente({
             id: id,
         });
@@ -34,7 +34,7 @@ export class ClientesController {
 
     @Roles('admin', 'supervisor')
     @Delete(':id')
-    remove(@Param('id') id: string) {
+    remove(@Param('id') id: number) {
         return this.clientesService.deleteClientes({
             id: id,
         });
@@ -42,10 +42,14 @@ export class ClientesController {
 
     @Roles('admin', 'supervisor')
     @Put(':id')
-    update(@Param('id') id: string, @Body() data: any) {
+    update(@Param('id') id: number, @Body() data: any) {
         return this.clientesService.updateClientes({
             where: { id: id },
             data,
         });
     }
+    @Get('buscar')
+buscar(@Query('q') q: string) {
+  return this.clientesService.buscarClientes(q);
+}
 }

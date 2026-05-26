@@ -1,10 +1,39 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
+
 import { PrismaService } from '../../prisma/prisma.service';
+import { GeneradorCodigoService } from 'src/common/services/generador-codigo/generador-codigo.service';
 
 @Injectable()
 export class CategoriaService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private codeGen: GeneradorCodigoService,
+  ) {}
 
+  // =========================
+  // GENERAR CATEGORIA ID
+  // =========================
+  async generarCategoriaID() {
+    const ultimaCategoria = await this.prisma.categoria.findFirst({
+      orderBy: {
+        id: 'desc',
+      },
+    });
+
+    const siguienteNumero = ultimaCategoria
+      ? ultimaCategoria.id + 1
+      : 1;
+
+    return this.codeGen.generate('CAT', siguienteNumero);
+  }
+
+  // =========================
+  // LISTAR TODAS
+  // =========================
   async findAll() {
     return this.prisma.categoria.findMany({
       include: {
@@ -14,11 +43,17 @@ export class CategoriaService {
           },
         },
       },
+      orderBy: {
+        nombre: 'asc',
+      },
     });
   }
 
-  async findOne(id: string) {
-    return this.prisma.categoria.findUnique({
+  // =========================
+  // OBTENER UNA
+  // =========================
+  async findOne(id: number) {
+    const categoria = await this.prisma.categoria.findUnique({
       where: { id },
       include: {
         CategoriaProveedores: {
@@ -28,40 +63,153 @@ export class CategoriaService {
         },
       },
     });
+
+    if (!categoria) {
+      throw new NotFoundException(
+        'Categoría no encontrada',
+      );
+    }
+
+    return categoria;
   }
 
+  // =========================
+  // CREAR
+  // =========================
   async create(data: any) {
-    // 🚫 validar duplicado
-    const existe = await this.prisma.categoria.findUnique({
-      where: { id: data.id },
+    // Validar duplicado por nombre
+    const existe = await this.prisma.categoria.findFirst({
+      where: {
+        nombre: {
+          equals: data.nombre,
+          mode: 'insensitive',
+        },
+      },
     });
 
     if (existe) {
-      throw new Error('La categoría ya existe');
+      throw new BadRequestException(
+        'La categoría ya existe',
+      );
     }
+
+    // Generar código interno
+    const categoriaID = await this.generarCategoriaID();
 
     return this.prisma.categoria.create({
       data: {
-        id: data.id,
+        categoriaID,
         nombre: data.nombre,
       },
     });
   }
 
-  async update(id: string, data: any) {
+  // =========================
+  // ACTUALIZAR
+  // =========================
+  async update(id: number, data: any) {
+    const categoria = await this.prisma.categoria.findUnique({
+      where: { id },
+    });
+
+    if (!categoria) {
+      throw new NotFoundException(
+        'Categoría no encontrada',
+      );
+    }
+
+    // Validar duplicado de nombre
+    if (data.nombre) {
+      const existe = await this.prisma.categoria.findFirst({
+        where: {
+          nombre: {
+            equals: data.nombre,
+            mode: 'insensitive',
+          },
+          NOT: {
+            id,
+          },
+        },
+      });
+
+      if (existe) {
+        throw new BadRequestException(
+          'Ya existe una categoría con ese nombre',
+        );
+      }
+    }
+
     return this.prisma.categoria.update({
       where: { id },
       data,
     });
   }
 
-  async delete(id: string) {
+  // =========================
+  // ELIMINAR
+  // =========================
+  async delete(id: number) {
+    const categoria = await this.prisma.categoria.findUnique({
+      where: { id },
+    });
+
+    if (!categoria) {
+      throw new NotFoundException(
+        'Categoría no encontrada',
+      );
+    }
+
     return this.prisma.categoria.delete({
       where: { id },
     });
   }
 
-  async asignarProveedor(categoriaId: string, proveedorRtn: string) {
+  // =========================
+  // ASIGNAR PROVEEDOR
+  // =========================
+  async asignarProveedor(
+    categoriaId: number,
+    proveedorRtn: number,
+  ) {
+    // Validar categoría
+    const categoria = await this.prisma.categoria.findUnique({
+      where: { id: categoriaId },
+    });
+
+    if (!categoria) {
+      throw new NotFoundException(
+        'Categoría no encontrada',
+      );
+    }
+
+    // Validar proveedor
+    const proveedor = await this.prisma.proveedores.findUnique({
+      where: { id: proveedorRtn },
+    });
+
+    if (!proveedor) {
+      throw new NotFoundException(
+        'Proveedor no encontrado',
+      );
+    }
+
+    // Evitar duplicados
+    const existe =
+      await this.prisma.categoriaProveedores.findUnique({
+        where: {
+          categoriaId_proveedorRtn: {
+            categoriaId,
+            proveedorRtn,
+          },
+        },
+      });
+
+    if (existe) {
+      throw new BadRequestException(
+        'El proveedor ya está asignado',
+      );
+    }
+
     return this.prisma.categoriaProveedores.create({
       data: {
         categoriaId,
@@ -70,13 +218,45 @@ export class CategoriaService {
     });
   }
 
-  async quitarProveedor(categoriaId: string, proveedorRtn: string) {
+  // =========================
+  // QUITAR PROVEEDOR
+  // =========================
+  async quitarProveedor(
+    categoriaId: number,
+    proveedorRtn: number,
+  ) {
     return this.prisma.categoriaProveedores.delete({
       where: {
         categoriaId_proveedorRtn: {
           categoriaId,
           proveedorRtn,
         },
+      },
+    });
+  }
+
+  // =========================
+  // BUSCAR
+  // =========================
+  async buscar(query: string) {
+    return this.prisma.categoria.findMany({
+      where: {
+        OR: [
+          {
+            nombre: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+          {
+            categoriaID: {
+              contains: query,
+            },
+          },
+        ],
+      },
+      orderBy: {
+        nombre: 'asc',
       },
     });
   }

@@ -15,8 +15,13 @@ import { Roles } from '../auth/roles.decorator';
 
 @Controller('ventas')
 @UseGuards(AuthGuard, RolesGuard)
-@Roles('admin', 'supervisor', 'vendedor')
+@Roles('admin', 'supervisor', 'cajero')
 export class VentasController {
   constructor(private readonly ventasService: VentasService) {}
 
+    // ✅ facturar
+  @Post(':id/facturar')
+  facturar(@Param('id') id: string, @Body() data: any) {
+    return this.ventasService.facturarPedido(Number(id), data);
+  }
 }

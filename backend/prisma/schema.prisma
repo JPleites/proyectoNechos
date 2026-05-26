@@ -7,34 +7,39 @@ datasource db {
 }
 
 model Almacenes {
-  id          String        @id
+  id          Int           @id @default(autoincrement())
+  almacenID   String        @unique
   almacen     String
   ubicaciones Ubicaciones[]
 }
 
 model Arqueo {
   id                  Int      @id @default(autoincrement())
+  arqueoID            String   @unique
   usuarioCodigo       Int
   fecha               DateTime @default(now())
-  totalEfectivo       Decimal
-  totalBac            Decimal
-  totalFicohsa        Decimal
-  totalDavivienda     Decimal
-  totalTransferencias Decimal
-  totalRetiros        Decimal
-  totalDevoluciones   Decimal
+  totalEfectivo       Decimal  @default(0)
+  totalBac            Decimal  @default(0)
+  totalFicohsa        Decimal  @default(0)
+  totalDavivienda     Decimal  @default(0)
+  totalTransferencias Decimal  @default(0)
+  totalRetiros        Decimal  @default(0)
+  totalDevoluciones   Decimal  @default(0)
+  totalFacturado      Decimal  @default(0)
 
   usuario Usuarios @relation(fields: [usuarioCodigo], references: [codigo])
 }
 
 model Categoria {
-  id                   String                 @id
+  id                   Int                    @id @default(autoincrement())
+  categoriaID          String                 @unique
   nombre               String
   CategoriaProveedores CategoriaProveedores[]
 }
 
 model Cierres {
   id            Int      @id @default(autoincrement())
+  cierreID      String   @unique
   usuarioCodigo Int
   fecha         DateTime @default(now())
 
@@ -55,7 +60,9 @@ model Cierres {
 }
 
 model Clientes {
-  id        String    @id
+  id        Int       @id @default(autoincrement())
+  clienteID String    @unique
+  rtn       String    @unique
   nombre    String
   correo    String?
   telefono  String?
@@ -65,8 +72,8 @@ model Clientes {
 }
 
 model Devoluciones {
-  id Int @id @default(autoincrement())
-
+  id             Int    @id @default(autoincrement())
+  devolucionID   String @unique
   ventaId        Int
   productoCodigo String
 
@@ -101,18 +108,15 @@ model MovimientosInventario {
 }
 
 model Pedidos {
-  id Int @id @default(autoincrement())
+  id       Int    @id @default(autoincrement())
+  pedidoID String @unique
 
-  clienteId     String?
+  clienteID     Int
   usuarioCodigo Int
 
   fecha DateTime @default(now())
 
   estado String
-  // EN_PROCESO
-  // EN_CAJA
-  // FACTURADO
-  // CANCELADO
 
   subtotal  Decimal
   impuesto  Decimal
@@ -121,26 +125,19 @@ model Pedidos {
 
   detalles PedidoDetalle[]
 
-  cliente Clientes? @relation(fields: [clienteId], references: [id])
+  cliente Clientes? @relation(fields: [clienteID], references: [id])
   usuario Usuarios  @relation(fields: [usuarioCodigo], references: [codigo])
 }
 
 model PedidoDetalle {
-  id Int @id @default(autoincrement())
-
-  pedidoId Int
-
+  id             Int     @id @default(autoincrement())
+  pedidoID       Int
   productoCodigo String
-
-  ubicacion String
-
-  cantidad Int
-
+  ubicacion      String
+  cantidad       Int
   precioUnitario Decimal
-
-  subtotal Decimal
-
-  pedido Pedidos @relation(fields: [pedidoId], references: [id])
+  subtotal       Decimal
+  pedido         Pedidos @relation(fields: [pedidoID], references: [id])
 
   producto Productos @relation(fields: [productoCodigo], references: [codigo])
 
@@ -162,18 +159,20 @@ model Perfil {
 }
 
 model Productos {
-  codigo         String @id
+  id             Int                     @id @default(autoincrement())
+  productoID     String                  @unique
+  codigo         String                  @unique
   producto       String
-  costoCompra    Decimal @default(0)
-  costoVenta     Decimal @default(0)
+  costoCompra    Decimal
+  costoVenta     Decimal
   precio         Decimal
   descuento      Decimal
-  proveedor      String
+  proveedor      Int
   marca          String
   categoria      String
   descripcion    String
   inventario     Inventario[]
-  proveedorRel   Proveedores @relation(fields: [proveedor], references: [rtn])
+  proveedorRel   Proveedores             @relation(fields: [proveedor], references: [id])
   ventaDetalles  VentaDetalle[]
   movimientos    MovimientosInventario[]
   devoluciones   Devoluciones[]
@@ -181,7 +180,9 @@ model Productos {
 }
 
 model Proveedores {
-  rtn                  String                 @id
+  id                   Int                    @id @default(autoincrement())
+  proveedorID          String                 @unique
+  rtn                  String                 @unique
   proveedor            String
   CategoriaProveedores CategoriaProveedores[]
   productos            Productos[]
@@ -189,9 +190,10 @@ model Proveedores {
 
 model Ubicaciones {
   ubicacion      String          @id
-  estante        String
-  nivel          String
-  almacenId      String
+  deposito       Int
+  estante        Int
+  nivel          Int
+  almacenId      Int
   inventario     Inventario[]
   almacen        Almacenes       @relation(fields: [almacenId], references: [id])
   pedidoDetalles PedidoDetalle[]
@@ -211,21 +213,21 @@ model Usuarios {
 }
 
 model CategoriaProveedores {
-  categoriaId  String
-  proveedorRtn String
-  categoria    Categoria   @relation(fields: [categoriaId], references: [id])
-  proveedor    Proveedores @relation(fields: [proveedorRtn], references: [rtn])
+  categoriaId Int
+  proveedorId Int
+  categoria   Categoria   @relation(fields: [categoriaId], references: [id])
+  proveedor   Proveedores @relation(fields: [proveedorId], references: [id])
 
-  @@id([categoriaId, proveedorRtn])
+  @@id([categoriaId, proveedorId])
 }
 
 model Ventas {
-  id           Int      @id @default(autoincrement())
-  numeroRecibo String   @unique
-  clienteId    String
-  fecha        DateTime @default(now())
-  estado       String
-  tipoVenta    String
+  id        Int      @id @default(autoincrement())
+  ventaID   String   @unique
+  clienteID Int
+  fecha     DateTime @default(now())
+  estado    String
+  tipoVenta String
 
   subtotal  Decimal
   impuesto  Decimal
@@ -239,14 +241,14 @@ model Ventas {
   usuarioCodigo Int
 
   usuario      Usuarios       @relation(fields: [usuarioCodigo], references: [codigo])
-  cliente      Clientes       @relation(fields: [clienteId], references: [id])
+  cliente      Clientes       @relation(fields: [clienteID], references: [id])
   detalles     VentaDetalle[]
   devoluciones Devoluciones[]
 }
 
 model VentaDetalle {
   id             Int     @id @default(autoincrement())
-  ventaId        Int
+  ventaID        Int
   productoCodigo String
   nombreProducto String
   cantidad       Int
@@ -255,6 +257,6 @@ model VentaDetalle {
 
   descuento Decimal
 
-  venta    Ventas    @relation(fields: [ventaId], references: [id])
+  venta    Ventas    @relation(fields: [ventaID], references: [id])
   producto Productos @relation(fields: [productoCodigo], references: [codigo])
 }
