@@ -7,6 +7,7 @@ import {
   Delete,
   Put,
   Req,
+  Query,
 } from '@nestjs/common';
 import { InventarioService } from './inventario.service';
 import { AuthGuard } from '../auth/auth.guard';
@@ -60,5 +61,16 @@ export class InventarioController {
       where: { id: Number(id) },
       data,
     });
+  }
+
+  @Get('ubicaciones-disponibles')
+  getUbicacionesDisponibles(
+    @Query('almacenId') almacenId: number,
+    @Query('productoCodigo') productoCodigo: string,
+  ) {
+    return this.inventarioService.getUbicacionesDisponibles(
+      almacenId,
+      productoCodigo,
+    );
   }
 }

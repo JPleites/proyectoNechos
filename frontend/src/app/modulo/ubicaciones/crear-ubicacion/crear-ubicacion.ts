@@ -17,6 +17,7 @@ export class CrearUbicacion implements OnInit {
     estante: '',
     nivel: '',
     almacenId: '',
+    deposito: '',
   };
 
   almacenes: any[] = [];
@@ -41,13 +42,8 @@ export class CrearUbicacion implements OnInit {
       Swal.fire('Error', 'Completa todos los campos', 'warning');
       return;
     }
-
-    const codigo =
-      this.ubicacion.almacenId + 'E' + this.ubicacion.estante + 'N' + this.ubicacion.nivel;
-
     const data = {
       ...this.ubicacion,
-      ubicacion: codigo,
     };
 
     Swal.fire({
@@ -70,6 +66,7 @@ export class CrearUbicacion implements OnInit {
           estante: '',
           nivel: '',
           almacenId: '',
+          deposito: '',
         };
       },
 

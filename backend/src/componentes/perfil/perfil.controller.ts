@@ -7,7 +7,7 @@ import { Roles } from '../auth/roles.decorator';
 @UseGuards(AuthGuard, RolesGuard)
 
 @Controller('perfil')
-@Roles('admin', 'supervisor')
+// @Roles('admin', 'supervisor')
 export class PerfilController {
     constructor(private readonly perfilService: PerfilService) {}
 

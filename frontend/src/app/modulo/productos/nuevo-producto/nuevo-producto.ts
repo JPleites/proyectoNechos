@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ProveedoresService } from '../../services/proveedores.service';
 import { CategoriasService } from '../../services/categorias.service';
+import { MarcaService } from '../../services/marca.service';
 
 @Component({
   selector: 'app-nuevo-producto',
@@ -20,6 +21,7 @@ export class NuevoProducto {
   categorias: any[] = [];
   proveedores: any[] = [];
   proveedoresFiltrados: any[] = [];
+  marcasFiltradas: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -28,6 +30,7 @@ export class NuevoProducto {
 
     private categoriasService: CategoriasService,
     private proveedoresService: ProveedoresService,
+    private marcaService: MarcaService,
   ) {
     this.form = this.fb.group({
       codigo: ['', Validators.required],
@@ -99,11 +102,11 @@ export class NuevoProducto {
       this.proveedores = data;
     });
   }
-  
+
   onCategoriaChange() {
     const categoriaId = this.form.get('categoria')?.value;
 
-    const categoria = this.categorias.find((c) => c.id === categoriaId);
+    const categoria = this.categorias.find((c) => Number(c.id) === Number(categoriaId));
 
     if (!categoria) return;
 
@@ -111,5 +114,17 @@ export class NuevoProducto {
 
     // limpiar proveedor seleccionado
     this.form.patchValue({ proveedor: '' });
+  }
+
+  onProveedorChange() {
+    const proveedorId = Number(this.form.get('proveedor')?.value);
+
+    if (!proveedorId) return;
+
+    // 🔥 pedir al backend las marcas reales
+    this.marcaService.getMarcasPorProveedor(proveedorId).subscribe((data: any) => {
+      this.marcasFiltradas = data ?? [];
+      this.form.patchValue({ marca: '' });
+    });
   }
 }

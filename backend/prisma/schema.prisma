@@ -35,6 +35,7 @@ model Categoria {
   categoriaID          String                 @unique
   nombre               String
   CategoriaProveedores CategoriaProveedores[]
+  Productos            Productos[]
 }
 
 model Cierres {
@@ -92,6 +93,15 @@ model Inventario {
   cantidad       Int
   producto       Productos   @relation(fields: [productoCodigo], references: [codigo])
   ubicacionRel   Ubicaciones @relation(fields: [ubicacion], references: [ubicacion])
+}
+
+model Marca {
+  id           Int         @id @default(autoincrement())
+  marcaID      String      @unique
+  nombre       String
+  proveedorId  Int
+  proveedorRel Proveedores @relation(fields: [proveedorId], references: [id])
+  productos    Productos[]
 }
 
 model MovimientosInventario {
@@ -159,20 +169,27 @@ model Perfil {
 }
 
 model Productos {
-  id             Int                     @id @default(autoincrement())
-  productoID     String                  @unique
-  codigo         String                  @unique
-  producto       String
-  costoCompra    Decimal
-  costoVenta     Decimal
-  precio         Decimal
-  descuento      Decimal
-  proveedor      Int
-  marca          String
-  categoria      String
-  descripcion    String
+  id         Int    @id @default(autoincrement())
+  productoID String @unique
+  codigo     String @unique
+  producto   String
+
+  costoCompra Decimal
+  costoVenta  Decimal
+  precio      Decimal
+  descuento   Decimal
+
+  proveedorId  Int
+  proveedorRel Proveedores @relation(fields: [proveedorId], references: [id])
+
+  categoriaId  Int
+  categoriaRel Categoria @relation(fields: [categoriaId], references: [id])
+
+  marcaId     Int
+  marcaRel    Marca  @relation(fields: [marcaId], references: [id])
+  descripcion String
+
   inventario     Inventario[]
-  proveedorRel   Proveedores             @relation(fields: [proveedor], references: [id])
   ventaDetalles  VentaDetalle[]
   movimientos    MovimientosInventario[]
   devoluciones   Devoluciones[]
@@ -186,6 +203,7 @@ model Proveedores {
   proveedor            String
   CategoriaProveedores CategoriaProveedores[]
   productos            Productos[]
+  Marca                Marca[]
 }
 
 model Ubicaciones {
@@ -254,8 +272,7 @@ model VentaDetalle {
   cantidad       Int
   precioUnitario Decimal
   subtotal       Decimal
-
-  descuento Decimal
+  descuento      Decimal
 
   venta    Ventas    @relation(fields: [ventaID], references: [id])
   producto Productos @relation(fields: [productoCodigo], references: [codigo])

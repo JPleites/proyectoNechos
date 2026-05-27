@@ -21,14 +21,14 @@ export class CategoriaProveedoresController {
   ) {}
 
   @Get(':rtn')
-  getByProveedor(@Param('rtn') rtn: string) {
+  getByProveedor(@Param('rtn') rtn: number) {
     return this.CategoriaProveedoresService.getByProveedor(rtn);
   }
 
   @Post()
-  asignar(@Body() data: { proveedorRtn: string; categorias: string[] }) {
+  asignar(@Body() data: { proveedorId: number; categorias: number[] }) {
     return this.CategoriaProveedoresService.asignarCategorias(
-      data.proveedorRtn,
+      data.proveedorId,
       data.categorias,
     );
   }

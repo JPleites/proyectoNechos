@@ -20,7 +20,7 @@
 
           <tbody>
             <tr *ngFor="let a of almacenes">
-              <td class="fw-semibold">{{ a.id }}</td>
+              <td class="fw-semibold">{{ a.almacenID }}</td>
               <td>{{ a.almacen }}</td>
               <td class="text-center">
                 <button class="btn btn-sm btn-outline-danger" (click)="eliminarAlmacen(a.id)">

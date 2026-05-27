@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -7,25 +8,25 @@ import { ApiService } from './api';
 export class CategoriasService {
   constructor(private api: ApiService) {}
 
-  getCategorias() {
-    return this.api.get('/categorias');
+  getCategorias(): Observable<any[]> {
+    return this.api.get<any[]>('/categorias');
   }
 
-  crearCategoria(data: any) {
-    return this.api.post('/categorias', data);
+  crearCategoria(data: any): Observable<any> {
+    return this.api.post<any>('/categorias', data);
   }
 
-  eliminarCategoria(id: string) {
+  eliminarCategoria(id: string): Observable<any> {
     return this.api.delete(`/categorias/${id}`);
   }
 
-  asignarProveedor(categoriaId: string, proveedorRtn: string) {
+  asignarProveedor(categoriaId: string, proveedorRtn: string): Observable<any> {
     return this.api.post(`/categorias/${categoriaId}/proveedores`, {
       proveedorRtn,
     });
   }
 
-  quitarProveedor(categoriaId: string, rtn: string) {
+  quitarProveedor(categoriaId: string, rtn: string): Observable<any> {
     return this.api.delete(`/categorias/${categoriaId}/proveedores/${rtn}`);
   }
 }

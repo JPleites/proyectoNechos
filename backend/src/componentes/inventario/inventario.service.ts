@@ -6,6 +6,29 @@ import { Inventario, Prisma } from '@prisma/client';
 export class InventarioService {
   constructor(private prisma: PrismaService) {}
 
+  async getUbicacionesDisponibles(almacenId: number, productoCodigo: string) {
+    return this.prisma.ubicaciones
+      .findMany({
+        where: {
+          almacenId,
+        },
+        include: {
+          inventario: true,
+        },
+      })
+      .then((ubicaciones) => {
+        return ubicaciones.filter((u) => {
+          const inv = u.inventario[0];
+
+          // vacía
+          if (!inv) return true;
+
+          // mismo producto
+          return inv.productoCodigo === productoCodigo;
+        });
+      });
+  }
+
   async inventario(
     inventarioWhereUniqueInput: Prisma.InventarioWhereUniqueInput,
   ): Promise<Inventario | null> {

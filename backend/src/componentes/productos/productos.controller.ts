@@ -66,12 +66,17 @@ export class ProductosController {
   getInventario(@Param('id') id: string) {
     return this.productosService.productoConInventario(id);
   }
-  
+
   @Get('ubicaciones/:productoCodigo/:almacenId')
-getUbicaciones(
-  @Param('productoCodigo') productoCodigo: string,
-  @Param('almacenId') almacenId: string,
-) {
-  return this.productosService.obtenerUbicaciones(productoCodigo, almacenId);
-}
+  getUbicaciones(
+    @Param('productoCodigo') productoCodigo: string,
+    @Param('almacenId') almacenId: number,
+  ) {
+    return this.productosService.obtenerUbicaciones(productoCodigo, almacenId);
+  }
+
+  @Get('filtros')
+  filtrar(@Query() query: any) {
+    return this.productosService.filtrarProductos(query);
+  }
 }

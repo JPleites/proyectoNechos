@@ -78,7 +78,7 @@
             <h6 class="erp-section-title">Logística</h6>
 
             <div class="col-md-6">
-              <label class="erp-label">Categoría *</label>
+              <label class="erp-label">Categoría</label>
               <select formControlName="categoria" class="erp-input" (change)="onCategoriaChange()">
                 <option value="">Seleccione</option>
                 <option *ngFor="let c of categorias" [value]="c.id">
@@ -90,7 +90,7 @@
             <div class="row g-3">
               <div class="col-md-6">
                 <label class="erp-label">Proveedor</label>
-                <select formControlName="proveedor" class="erp-input">
+                <select formControlName="proveedor" class="erp-input" (change)="onProveedorChange()">
                   <option value="">Seleccione</option>
                   <option *ngFor="let p of proveedoresFiltrados" [value]="p.id">
                     {{ p.proveedor }}
@@ -100,7 +100,12 @@
 
               <div class="col-md-6">
                 <label class="erp-label">Marca</label>
-                <input formControlName="marca" class="erp-input" />
+                <select formControlName="marca" class="erp-input">
+                  <option value="">Seleccione</option>
+                  <option *ngFor="let m of marcasFiltradas" [value]="m.id">
+                    {{ m.nombre }}
+                  </option>
+                </select>
               </div>
             </div>
           </div>

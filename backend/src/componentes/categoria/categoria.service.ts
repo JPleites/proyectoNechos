@@ -169,7 +169,7 @@ export class CategoriaService {
   // =========================
   async asignarProveedor(
     categoriaId: number,
-    proveedorRtn: number,
+    proveedorId: number,
   ) {
     // Validar categoría
     const categoria = await this.prisma.categoria.findUnique({
@@ -184,7 +184,7 @@ export class CategoriaService {
 
     // Validar proveedor
     const proveedor = await this.prisma.proveedores.findUnique({
-      where: { id: proveedorRtn },
+      where: { id: proveedorId },
     });
 
     if (!proveedor) {
@@ -197,9 +197,9 @@ export class CategoriaService {
     const existe =
       await this.prisma.categoriaProveedores.findUnique({
         where: {
-          categoriaId_proveedorRtn: {
+          categoriaId_proveedorId: {
             categoriaId,
-            proveedorRtn,
+            proveedorId,
           },
         },
       });
@@ -213,7 +213,7 @@ export class CategoriaService {
     return this.prisma.categoriaProveedores.create({
       data: {
         categoriaId,
-        proveedorRtn,
+        proveedorId,
       },
     });
   }
@@ -223,13 +223,13 @@ export class CategoriaService {
   // =========================
   async quitarProveedor(
     categoriaId: number,
-    proveedorRtn: number,
+    proveedorId: number,
   ) {
     return this.prisma.categoriaProveedores.delete({
       where: {
-        categoriaId_proveedorRtn: {
+        categoriaId_proveedorId: {
           categoriaId,
-          proveedorRtn,
+          proveedorId,
         },
       },
     });

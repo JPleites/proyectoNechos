@@ -61,10 +61,4 @@ export class PedidosController {
   cancelar(@Param('id') id: string) {
     return this.service.cancelarPedido(Number(id));
   }
-
-  // ✅ facturar
-  @Post(':id/facturar')
-  facturar(@Param('id') id: string, @Body() data: any) {
-    return this.service.facturarPedido(Number(id), data);
-  }
 }

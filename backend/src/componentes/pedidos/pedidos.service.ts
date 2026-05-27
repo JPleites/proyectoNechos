@@ -256,9 +256,6 @@ export class PedidosService {
         detalles: {
           include: {
             producto: true,
-            cantidad: true,
-            precioUnitario: true,
-            subtotal: true,
             ubicacionRel: true,
           },
         },

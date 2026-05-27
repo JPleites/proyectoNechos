@@ -19,25 +19,21 @@ export class ProductosService {
       include: {
         inventario: true,
         proveedorRel: true,
+        categoriaRel: true,
+        marcaRel: true,
       },
     });
   }
 
   // 📋 Listar productos
-  async productos(params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.ProductosWhereUniqueInput;
-    where?: Prisma.ProductosWhereInput;
-    orderBy?: Prisma.ProductosOrderByWithRelationInput;
-  }): Promise<Productos[]> {
-    const { skip, take, cursor, where, orderBy } = params;
+  async productos(params: any) {
     return this.prisma.productos.findMany({
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
+      ...params,
+      include: {
+        proveedorRel: true,
+        categoriaRel: true,
+        marcaRel: true,
+      },
     });
   }
 
@@ -52,8 +48,7 @@ export class ProductosService {
   }
 
   // 🆕 Crear producto con validaciones 🔥
-  async createProductos(data: Prisma.ProductosCreateInput): Promise<Productos> {
-    // 0️⃣ evitar duplicados
+  async createProductos(data: any): Promise<Productos> {
     const existeProducto = await this.prisma.productos.findUnique({
       where: { codigo: data.codigo },
     });
@@ -62,30 +57,43 @@ export class ProductosService {
       throw new BadRequestException('El producto ya existe');
     }
 
-    // 1️⃣ validar categoría
+    const categoriaId = Number(data.categoria);
+    const proveedorId = Number(data.proveedor);
+    const marcaId = Number(data.marca);
+
     const categoria = await this.prisma.categoria.findUnique({
-      where: { id: Number(data.categoria) },
+      where: { id: categoriaId },
     });
 
     if (!categoria) {
       throw new BadRequestException('La categoría no existe');
     }
 
-    // 2️⃣ validar proveedor
     const proveedor = await this.prisma.proveedores.findUnique({
-      where: { id: Number(data.proveedorRel) },
+      where: { id: proveedorId },
     });
 
     if (!proveedor) {
       throw new BadRequestException('El proveedor no existe');
     }
 
-    // 3️⃣ validar relación categoría-proveedor 🔥
+    const marca = await this.prisma.marca.findUnique({
+      where: { id: marcaId },
+    });
+
+    if (!marca) {
+      throw new BadRequestException('La marca no existe');
+    }
+
+    if (marca.proveedorId !== proveedor.id) {
+      throw new BadRequestException('La marca no pertenece a ese proveedor');
+    }
+
     const relacion = await this.prisma.categoriaProveedores.findUnique({
       where: {
-        categoriaId_proveedorRtn: {
+        categoriaId_proveedorId: {
           categoriaId: categoria.id,
-          proveedorRtn: Number(data.proveedorRel),
+          proveedorId: proveedor.id,
         },
       },
     });
@@ -98,11 +106,20 @@ export class ProductosService {
 
     const productoID = await this.generarProductoID();
 
-    data.productoID = productoID;
-
-    // 4️⃣ crear producto
     return this.prisma.productos.create({
-      data,
+      data: {
+        codigo: data.codigo,
+        producto: data.producto,
+        costoCompra: data.costoCompra,
+        costoVenta: data.costoVenta,
+        precio: data.precio,
+        descuento: data.descuento ?? 0,
+        descripcion: data.descripcion ?? '',
+        productoID,
+        categoriaRel: { connect: { id: categoria.id } },
+        proveedorRel: { connect: { id: proveedor.id } },
+        marcaRel: { connect: { id: marca.id } },
+      },
     });
   }
 
@@ -141,9 +158,29 @@ export class ProductosService {
         OR: [
           { codigo: { contains: q, mode: 'insensitive' } },
           { producto: { contains: q, mode: 'insensitive' } },
-          { marca: { contains: q, mode: 'insensitive' } },
-          { categoria: { contains: q, mode: 'insensitive' } },
+          { descripcion: { contains: q, mode: 'insensitive' } },
+
+          {
+            proveedorRel: {
+              proveedor: { contains: q, mode: 'insensitive' },
+            },
+          },
+          {
+            categoriaRel: {
+              nombre: { contains: q, mode: 'insensitive' },
+            },
+          },
+          {
+            marcaRel: {
+              nombre: { contains: q, mode: 'insensitive' },
+            },
+          },
         ],
+      },
+      include: {
+        proveedorRel: true,
+        categoriaRel: true,
+        marcaRel: true,
       },
     });
   }
@@ -172,6 +209,54 @@ export class ProductosService {
       },
       include: {
         ubicacionRel: true,
+      },
+    });
+  }
+
+  async filtrarProductos(query: any) {
+    const { q, categoriaId, proveedorId, marcaId } = query;
+
+    return this.prisma.productos.findMany({
+      where: {
+        AND: [
+          q
+            ? {
+                OR: [
+                  { codigo: { contains: q, mode: 'insensitive' } },
+                  { producto: { contains: q, mode: 'insensitive' } },
+                  { descripcion: { contains: q, mode: 'insensitive' } },
+
+                  {
+                    proveedorRel: {
+                      proveedor: { contains: q, mode: 'insensitive' },
+                    },
+                  },
+                  {
+                    categoriaRel: {
+                      nombre: { contains: q, mode: 'insensitive' },
+                    },
+                  },
+                  {
+                    marcaRel: {
+                      nombre: { contains: q, mode: 'insensitive' },
+                    },
+                  },
+                ],
+              }
+            : {},
+
+          categoriaId ? { categoriaId: Number(categoriaId) } : {},
+          proveedorId ? { proveedorId: Number(proveedorId) } : {},
+          marcaId ? { marcaId: Number(marcaId) } : {},
+        ],
+      },
+      include: {
+        proveedorRel: true,
+        categoriaRel: true,
+        marcaRel: true,
+      },
+      orderBy: {
+        id: 'desc',
       },
     });
   }

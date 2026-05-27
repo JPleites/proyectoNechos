@@ -24,7 +24,7 @@ export class CategoriaController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: number) {
     return this.service.findOne(id);
   }
 
@@ -36,28 +36,28 @@ export class CategoriaController {
 
   @Roles('admin', 'supervisor')
   @Put(':id')
-  update(@Param('id') id: string, @Body() data: any) {
+  update(@Param('id') id: number, @Body() data: any) {
     return this.service.update(id, data);
   }
 
   @Roles('admin', 'supervisor')
   @Delete(':id')
-  delete(@Param('id') id: string) {
+  delete(@Param('id') id: number) {
     return this.service.delete(id);
   }
 
   @Roles('admin', 'supervisor')
   @Post(':id/proveedores')
   asignarProveedor(
-    @Param('id') id: string,
-    @Body() body: { proveedorRtn: string },
+    @Param('id') id: number,
+    @Body() body: { proveedorRtn: number },
   ) {
     return this.service.asignarProveedor(id, body.proveedorRtn);
   }
 
   @Roles('admin', 'supervisor')
   @Delete(':id/proveedores/:rtn')
-  quitarProveedor(@Param('id') id: string, @Param('rtn') rtn: string) {
+  quitarProveedor(@Param('id') id: number, @Param('rtn') rtn: number) {
     return this.service.quitarProveedor(id, rtn);
   }
 }

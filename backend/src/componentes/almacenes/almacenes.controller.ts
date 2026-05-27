@@ -17,7 +17,7 @@ export class AlmacenesController {
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string) {
+    findOne(@Param('id') id: number) {
         return this.almacenesService.almacen({
             id: id,
         });
@@ -31,7 +31,7 @@ export class AlmacenesController {
     
     @Roles('admin', 'supervisor')
     @Delete(':id')
-    remove(@Param('id') id: string) {
+    remove(@Param('id') id: number) {
         return this.almacenesService.deleteAlmacenes({
             id: id,
         });
@@ -39,7 +39,7 @@ export class AlmacenesController {
 
     @Roles('admin', 'supervisor')    
     @Put(':id')
-    update(@Param('id') id: string, @Body() data: any) {
+    update(@Param('id') id: number, @Body() data: any) {
         return this.almacenesService.updateAlmacenes({
             where: { id: id },
             data,

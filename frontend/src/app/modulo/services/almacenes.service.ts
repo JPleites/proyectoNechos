@@ -1,12 +1,13 @@
 import { Injectable } from "@angular/core";
 import { ApiService } from "./api";
+import { Observable } from "rxjs/internal/Observable";
 @Injectable({
   providedIn: "root",
 })
 export class AlmacenesService {
   constructor(private apiService: ApiService) {}
 
-    getAlmacenes() {
+    getAlmacenes(): Observable<any> {
         return this.apiService.get("/almacenes");
     }
 

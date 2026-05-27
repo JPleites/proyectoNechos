@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { ApiService } from './api';
 
 @Injectable({
   providedIn: 'root',
 })
 export class InventarioService {
-
   constructor(private apiService: ApiService) {}
 
   ingresar(data: any) {
@@ -27,4 +27,10 @@ export class InventarioService {
   getKardex(codigo: string) {
     return this.apiService.get(`/inventario/kardex/${codigo}`);
   }
+
+  getUbicacionesDisponibles(almacenId: number, codigo: string){
+  return this.apiService.get(
+    `/inventario/ubicaciones-disponibles?productoCodigo=${codigo}&almacenId=${almacenId}`,
+  );
+}
 }

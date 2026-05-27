@@ -5,81 +5,109 @@ import { CategoriaProveedoresService } from '../../services/categoria-proveedore
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
 
+interface Proveedor {
+  id: number;
+  proveedorID: string;
+  rtn: string;
+  proveedor: string;
+}
+
+interface Categoria {
+  id: number;
+  nombre: string;
+}
+
 @Component({
   selector: 'app-consulta-proveedores',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './consulta-proveedores.html',
   styleUrl: './consulta-proveedores.scss',
 })
 export class ConsultaProveedores implements OnInit {
-  proveedores: any[] = [];
-  categorias: any[] = [];
-  categoriasProveedor: any[] = [];
-  proveedorSeleccionado: any = null;
+
+  proveedores: Proveedor[] = [];
+  categorias: Categoria[] = [];
+
+  proveedorSeleccionado: Proveedor | null = null;
+
   mostrarModal = false;
-  categoriasSeleccionadas: string[] = [];
+
+  categoriasSeleccionadas: number[] = [];
 
   constructor(
     private service: ProveedoresService,
     private categoriaService: CategoriasService,
     private categoriaProveedoresService: CategoriaProveedoresService,
   ) {}
+
   ngOnInit() {
-    this.cargar();
+    this.cargarProveedores();
   }
 
-  cargar() {
-    this.service.getProveedores().subscribe((data: any) => {
-      this.proveedores = data;
+  // 📦 Cargar proveedores
+  cargarProveedores() {
+    this.service.getProveedores().subscribe({
+      next: (data: Proveedor[]) => {
+        this.proveedores = data ?? [];
+      },
+      error: (err) => console.error(err),
     });
   }
 
-  cargarCategorias() {
-    this.categoriaService.getCategorias().subscribe((data: any) => {
-      this.categorias = data;
-    });
-  }
-
-  abrirCategorias(proveedor: any) {
+  // 📦 Abrir modal
+  abrirCategorias(proveedor: Proveedor) {
     this.proveedorSeleccionado = proveedor;
     this.mostrarModal = true;
-
-    // 🔥 limpiar antes de cargar
     this.categoriasSeleccionadas = [];
 
-    this.categoriaService.getCategorias().subscribe((cats: any) => {
-      this.categorias = cats;
+    // 🔥 cargar categorías
+    this.categoriaService.getCategorias().subscribe({
+      next: (cats: Categoria[]) => {
+        this.categorias = cats;
 
-      this.categoriaProveedoresService
-        .getCategoriasProveedor(proveedor.rtn)
-        .subscribe((rel: any) => {
-          this.categoriasSeleccionadas = rel.map((r: any) => r.categoriaId);
-        });
+        // 🔥 categorías del proveedor (YA CON ID)
+        this.categoriaProveedoresService
+          .getCategoriasProveedor(proveedor.id)
+          .subscribe({
+            next: (rel: any[]) => {
+              this.categoriasSeleccionadas = rel.map(r => r.categoriaId);
+            },
+            error: () => {
+              this.categoriasSeleccionadas = [];
+            },
+          });
+      },
     });
   }
 
+  // ❌ cerrar modal
   cerrarModal() {
     this.mostrarModal = false;
     this.proveedorSeleccionado = null;
     this.categoriasSeleccionadas = [];
   }
 
-  toggleCategoria(id: string, checked: boolean) {
+  // ☑️ toggle categoría
+  toggleCategoria(id: number, checked: boolean) {
     if (checked) {
       if (!this.categoriasSeleccionadas.includes(id)) {
         this.categoriasSeleccionadas.push(id);
       }
     } else {
-      this.categoriasSeleccionadas = this.categoriasSeleccionadas.filter((c) => c !== id);
+      this.categoriasSeleccionadas = this.categoriasSeleccionadas.filter(
+        c => c !== id
+      );
     }
   }
 
+  // 💾 guardar cambios
   guardarCategorias() {
     if (!this.proveedorSeleccionado) return;
 
     this.categoriaProveedoresService
       .asignarCategorias({
-        proveedorRtn: this.proveedorSeleccionado.rtn,
+        proveedorId: this.proveedorSeleccionado.id,
         categorias: this.categoriasSeleccionadas,
       })
       .subscribe({
@@ -92,42 +120,4 @@ export class ConsultaProveedores implements OnInit {
         },
       });
   }
-
-  // eliminar(rtn: string) {
-  //   Swal.fire({
-  //     title: '¿Eliminar proveedor?',
-  //     text: 'Esta acción no se puede deshacer',
-  //     icon: 'warning',
-  //     showCancelButton: true,
-  //     confirmButtonColor: '#dc3545',
-  //     cancelButtonColor: '#6c757d',
-  //     confirmButtonText: 'Sí, eliminar',
-  //     cancelButtonText: 'Cancelar',
-  //     reverseButtons: true,
-  //   }).then((result) => {
-  //     if (result.isConfirmed) {
-  //       Swal.fire({
-  //         title: 'Eliminando...',
-  //         allowOutsideClick: false,
-  //         didOpen: () => Swal.showLoading(),
-  //       });
-
-  //       this.service.eliminarProveedor(rtn).subscribe({
-  //         next: () => {
-  //           Swal.fire({
-  //             icon: 'success',
-  //             title: 'Eliminado',
-  //             timer: 1500,
-  //             showConfirmButton: false,
-  //           });
-
-  //           this.cargar();
-  //         },
-  //         error: () => {
-  //           Swal.fire('Error', 'No se pudo eliminar el proveedor', 'error');
-  //         },
-  //       });
-  //     }
-  //   });
-  // }
 }

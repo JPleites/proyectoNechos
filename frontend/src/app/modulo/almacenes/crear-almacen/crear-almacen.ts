@@ -12,14 +12,13 @@ import Swal from 'sweetalert2';
 })
 export class CrearAlmacen {
   almacen = {
-    id: '',
     almacen: '',
   };
 
   constructor(private service: AlmacenesService) {}
 
   guardar() {
-    if (!this.almacen.id || !this.almacen.almacen) {
+    if (!this.almacen.almacen) {
       Swal.fire('Error', 'Completa todos los campos', 'warning');
       return;
     }
@@ -29,7 +28,6 @@ export class CrearAlmacen {
         Swal.fire('Éxito', 'Almacén creado', 'success');
 
         this.almacen = {
-          id: '',
           almacen: '',
         };
       },

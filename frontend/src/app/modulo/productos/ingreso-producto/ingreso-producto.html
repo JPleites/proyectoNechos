@@ -1,5 +1,6 @@
 <div class="container py-4">
   <div class="card">
+
     <!-- HEADER -->
     <div class="card-body">
       <h4 class="mb-0">Ingreso de Inventario</h4>
@@ -8,30 +9,54 @@
 
     <div class="card-body pt-0">
       <form [formGroup]="form" (ngSubmit)="ingresar()">
+
         <div class="row g-3">
-          <!-- Código producto -->
+
+          <!-- 🔎 BUSCAR PRODUCTO -->
           <div class="col-md-4">
             <div class="form-outline">
               <input formControlName="productoCodigo" class="form-control" />
               <label class="form-label">Código producto</label>
             </div>
+            <button type="button" class="btn btn-primary mt-2" (click)="buscarProducto()">
+              Buscar producto
+            </button>
           </div>
 
-          <!-- Ubicación -->
+          <!-- 🏬 ALMACÉN -->
           <div class="col-md-4">
             <div class="form-outline">
-              <input formControlName="ubicacion" class="form-control" />
-              <label class="form-label">Ubicación (A1, B2...)</label>
+              <select formControlName="almacen" class="form-control" (change)="cargarUbicaciones()">
+                <option value="">Seleccione almacén</option>
+                <option *ngFor="let a of almacenes" [value]="a.id">
+                  {{ a.almacen }}
+                </option>
+              </select>
+              <label class="form-label">Almacén</label>
             </div>
           </div>
 
-          <!-- Cantidad -->
+          <!-- 📦 UBICACIÓN -->
+          <div class="col-md-4">
+            <div class="form-outline">
+              <select formControlName="ubicacion" class="form-control">
+                <option value="">Seleccione ubicación</option>
+                <option *ngFor="let u of ubicaciones" [value]="u.id">
+                  {{ u.ubicacion }} ({{ u.estante }}-{{ u.nivel }}-{{ u.deposito }})
+                </option>
+              </select>
+              <label class="form-label">Ubicación disponible</label>
+            </div>
+          </div>
+
+          <!-- 🔢 CANTIDAD -->
           <div class="col-md-4">
             <div class="form-outline">
               <input type="number" formControlName="cantidad" class="form-control" />
               <label class="form-label">Cantidad</label>
             </div>
           </div>
+
         </div>
 
         <!-- BOTÓN -->
@@ -41,6 +66,7 @@
             Ingresar inventario
           </button>
         </div>
+
       </form>
     </div>
   </div>

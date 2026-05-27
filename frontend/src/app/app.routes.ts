@@ -250,7 +250,7 @@ export const routes: Routes = [
         children: [
           {
             path: '',
-            redirectTo: 'consulta',
+            redirectTo: '',
             pathMatch: 'full',
           },
           {
@@ -265,6 +265,20 @@ export const routes: Routes = [
             loadComponent: () =>
               import('./modulo/proveedores/crear-proveedor/crear-proveedor').then(
                 (m) => m.CrearProveedor,
+              ),
+          },
+          {
+            path: 'crear-marca',
+            loadComponent: () =>
+              import('./modulo/marca/crear-marca/crear-marca').then(
+                (m) => m.CrearMarca,
+              ),
+          },
+          {
+            path: 'consulta-marcas',
+            loadComponent: () =>
+              import('./modulo/marca/consulta-marcas/consulta-marcas').then(
+                (m) => m.ConsultaMarcas,
               ),
           },
         ],

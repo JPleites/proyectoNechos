@@ -1,0 +1,60 @@
+<div class="container py-4">
+
+  <div class="card shadow-sm">
+
+    <div class="card-body">
+      <h4 class="mb-0">Marcas</h4>
+      <small class="text-muted">Gestión de marcas por proveedor</small>
+    </div>
+
+    <div class="card-body">
+
+      <!-- FORM -->
+      <form [formGroup]="form" (ngSubmit)="guardar()" class="row g-3">
+
+        <div class="col-md-6">
+          <label class="form-label">Nombre de marca</label>
+          <input formControlName="nombre" class="form-control">
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Proveedor</label>
+          <select formControlName="proveedorId"
+                  class="form-select"
+                  (change)="onProveedorChange()">
+
+            <option value="">Seleccione</option>
+
+            <option *ngFor="let p of proveedores" [value]="p.id">
+              {{ p.proveedor }}
+            </option>
+
+          </select>
+        </div>
+
+        <div class="col-12 text-end">
+          <button class="btn btn-primary">
+            Crear Marca
+          </button>
+        </div>
+
+      </form>
+
+      <hr>
+
+      <!-- LISTA -->
+      <h6>Marcas del proveedor</h6>
+
+      <ul class="list-group">
+        <li class="list-group-item d-flex justify-content-between"
+            *ngFor="let m of marcasFiltradas">
+
+          <span>{{ m.nombre }}</span>
+          <span class="badge bg-secondary">{{ m.marcaID }}</span>
+
+        </li>
+      </ul>
+
+    </div>
+  </div>
+</div>

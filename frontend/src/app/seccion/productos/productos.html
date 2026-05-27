@@ -1,8 +1,6 @@
 <div class="nap-layout" [class.sidebar-open]="sidebarOpen">
-
   <aside class="nap-sidebar" [class.collapsed]="!sidebarOpen">
     <div class="sidebar-inner">
-
       <!-- TOGGLE -->
       <button class="sidebar-toggle" (click)="sidebarOpen = !sidebarOpen" title="Menú">
         <i class="fas fa-bars"></i>
@@ -16,7 +14,6 @@
 
       <!-- NAV -->
       <nav class="sidebar-nav">
-
         <button class="nav-item" routerLink="consulta" routerLinkActive="active">
           <i class="fas fa-boxes nav-icon"></i>
           <span class="nav-label" *ngIf="sidebarOpen">Consultar Productos</span>
@@ -43,12 +40,10 @@
         <i class="fas fa-sign-out-alt nav-icon"></i>
         <span class="nav-label" *ngIf="sidebarOpen">Salir</span>
       </button>
-
     </div>
   </aside>
 
   <main>
     <router-outlet></router-outlet>
   </main>
-
 </div>

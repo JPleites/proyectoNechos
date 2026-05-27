@@ -55,7 +55,6 @@ export class LoginComponent {
           icon: 'success',
           title: 'Bienvenido',
           text: 'Inicio de sesión exitoso',
-          showConfirmButton: false,
         }).then(() => {
           this.redirigirPorRol(res.rol);
         });
