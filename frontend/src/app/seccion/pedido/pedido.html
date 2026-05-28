@@ -1,35 +1,38 @@
 <div class="nap-layout" [class.sidebar-open]="sidebarOpen">
-
   <aside class="nap-sidebar" [class.collapsed]="!sidebarOpen">
     <div class="sidebar-inner">
-
+      <!-- TOGGLE -->
       <button class="sidebar-toggle" (click)="sidebarOpen = !sidebarOpen" title="Menú">
-        <span class="toggle-icon">☰</span>
+        <i class="fas fa-bars"></i>
       </button>
 
+      <!-- BRAND -->
       <div class="sidebar-brand" *ngIf="sidebarOpen">
         <span class="brand-text">Necho's</span>
         <span class="brand-sub">Auto Parts</span>
       </div>
 
+      <!-- NAV -->
       <nav class="sidebar-nav">
-        <button class="nav-item"  routerLink="nuevo-pedido" routerLinkActive="active">
-          <img src="/usuario.png" class="nav-icon" alt="Example 1">
+        <button class="nav-item" routerLink="nuevo-pedido" routerLinkActive="active">
+          <i class="fas fa-cart-plus nav-icon"></i>
           <span class="nav-label" *ngIf="sidebarOpen">Crear Pedido</span>
         </button>
-        <button class="nav-item" routerLink="consultar-pedidos">
-          <img src="/productos.png" class="nav-icon" alt="Example 2">
+
+        <button class="nav-item" routerLink="consultar-pedidos" routerLinkActive="active">
+          <i class="fas fa-list-alt nav-icon"></i>
           <span class="nav-label" *ngIf="sidebarOpen">Consultar Pedidos</span>
         </button>
       </nav>
 
+      <!-- BACK -->
       <button class="btn-back" (click)="onBack()">
-        <img src="/logout.png" class="nav-icon" alt="Regresar">
+        <i class="fas fa-sign-out-alt nav-icon"></i>
         <span class="nav-label" *ngIf="sidebarOpen">Regresar</span>
       </button>
-
     </div>
   </aside>
+
   <main>
     <router-outlet></router-outlet>
   </main>

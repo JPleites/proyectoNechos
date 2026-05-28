@@ -1,40 +1,48 @@
 <div class="nap-layout" [class.sidebar-open]="sidebarOpen">
   <aside class="nap-sidebar" [class.collapsed]="!sidebarOpen">
     <div class="sidebar-inner">
+      <!-- TOGGLE -->
       <button class="sidebar-toggle" (click)="sidebarOpen = !sidebarOpen" title="Menú">
-        <span class="toggle-icon">☰</span>
+        <i class="fas fa-bars"></i>
       </button>
 
+      <!-- BRAND -->
       <div class="sidebar-brand" *ngIf="sidebarOpen">
         <span class="brand-text">Necho's</span>
         <span class="brand-sub">Auto Parts</span>
       </div>
 
+      <!-- NAV -->
       <nav class="sidebar-nav">
         <button class="nav-item" routerLink="consulta" routerLinkActive="active">
-          <img src="/usuario.png" class="nav-icon" alt="Example 1" />
+          <i class="fas fa-truck nav-icon"></i>
           <span class="nav-label" *ngIf="sidebarOpen">Consultar Proveedores</span>
         </button>
+
         <button class="nav-item" routerLink="crear" routerLinkActive="active">
-          <img src="/productos.png" class="nav-icon" alt="Example 2" />
+          <i class="fas fa-handshake-angle nav-icon"></i>
           <span class="nav-label" *ngIf="sidebarOpen">Nuevo Proveedor</span>
         </button>
+
         <button class="nav-item" routerLink="crear-marca" routerLinkActive="active">
-          <img src="/marcas.png" class="nav-icon" alt="Example 3" />
+          <i class="fas fa-copyright nav-icon"></i>
           <span class="nav-label" *ngIf="sidebarOpen">Crear Marca</span>
         </button>
+
         <button class="nav-item" routerLink="consulta-marcas" routerLinkActive="active">
-          <img src="/marcas.png" class="nav-icon" alt="Example 3" />
+          <i class="fas fa-bookmark nav-icon"></i>
           <span class="nav-label" *ngIf="sidebarOpen">Consultar Marcas</span>
         </button>
       </nav>
 
+      <!-- BACK -->
       <button class="btn-back" (click)="onBack()">
-        <img src="/logout.png" class="nav-icon" alt="Regresar" />
+        <i class="fas fa-sign-out-alt nav-icon"></i>
         <span class="nav-label" *ngIf="sidebarOpen">Regresar</span>
       </button>
     </div>
   </aside>
+
   <main>
     <router-outlet></router-outlet>
   </main>

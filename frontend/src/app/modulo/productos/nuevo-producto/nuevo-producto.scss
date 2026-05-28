@@ -1,80 +1,161 @@
+/* ===== CONTAINER: elimina el padding vertical excesivo ===== */
+.container.py-4 {
+  padding-top: 12px !important;
+  padding-bottom: 8px !important;
+}
+
+/* ===== ERP CARD: ocupa exactamente el viewport disponible ===== */
 .erp-card {
   background: #ffffff;
   border: 1px solid #e9ecef;
   border-radius: 12px;
-  padding: 24px;
+  padding: 14px 18px;
+
+  height: calc(100dvh - 32px); /* 32px = py-4 reducido (12+8+margen mínimo) */
+  max-height: calc(100dvh - 32px);
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
+/* ===== HEADER: fijo arriba, no encoge ===== */
 .erp-header {
   border-bottom: 1px solid #eee;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  flex-shrink: 0;
 }
 
 .erp-title {
   font-weight: 600;
   margin: 0;
+  font-size: 15px; /* reducido para ganar espacio */
 }
 
 .erp-subtitle {
   margin: 0;
-  font-size: 13px;
+  font-size: 12px;
   color: #6c757d;
 }
 
+/* ===== ROW BOOTSTRAP: ocupa el espacio restante con scroll interno ===== */
+.erp-card > .row {
+  flex: 1 1 auto;
+  min-height: 0;        /* clave para que flex + overflow funcione */
+  overflow: hidden;
+  margin: 0;            /* neutraliza el margen negativo de Bootstrap */
+}
+
+/* ===== COLUMNA IMAGEN: scroll si hace falta, no rompe el card ===== */
+.erp-card .col-lg-4 {
+  overflow-y: auto;
+  height: 100%;
+  padding-top: 4px;
+}
+
+/* ===== COLUMNA FORMULARIO: solo aquí va el scroll interno ===== */
+.erp-card .col-lg-8 {
+  overflow-y: auto;
+  height: 100%;
+  padding-top: 4px;
+  padding-right: 6px; /* espacio para scrollbar */
+}
+
+/* ===== SECCIONES: márgenes compactos ===== */
 .erp-section {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+}
+
+.erp-section:last-child {
+  margin-bottom: 0;
 }
 
 .erp-section-title {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
   color: #495057;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
   text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
+/* ===== INPUTS: padding reducido para ganar altura ===== */
 .erp-label {
-  font-size: 12px;
+  font-size: 11px;
   color: #6c757d;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   display: block;
 }
 
 .erp-input {
   width: 100%;
-  padding: 10px 12px;
+  padding: 6px 10px;      /* reducido de 10px 12px */
   border: 1px solid #dee2e6;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 13px;
   outline: none;
-  transition: 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
   background: #fff;
+  box-sizing: border-box;
 }
 
 .erp-input:focus {
   border-color: #0d6efd;
-  box-shadow: 0 0 0 2px rgba(13,110,253,0.1);
+  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.1);
 }
 
+/* ===== TEXTAREA: menos filas visualmente ===== */
+textarea.erp-input {
+  resize: none;
+  rows: 2;        /* el atributo HTML sigue siendo 3, pero lo comprimimos */
+  min-height: 52px;
+  max-height: 64px;
+}
+
+/* ===== IMAGEN: flexible, no fija ===== */
 .erp-image {
-  width: 180px;
-  height: 180px;
+  width: 100%;
+  max-width: 160px;
+  height: auto;
+  max-height: 120px;
   object-fit: cover;
   border-radius: 10px;
   border: 1px solid #e9ecef;
+  display: block;
+  margin: 0 auto 8px;
+  flex-shrink: 1;
 }
 
+/* ===== BOTÓN: compacto ===== */
 .erp-btn {
   background: #198754;
   color: #fff;
   border: none;
-  padding: 10px 18px;
+  padding: 7px 16px;
   border-radius: 6px;
-  font-size: 14px;
-  transition: 0.2s;
+  font-size: 13px;
+  transition: background 0.2s;
+  cursor: pointer;
 }
 
 .erp-btn:hover {
   background: #157347;
+}
+
+/* ===== GAP DE BOOTSTRAP: reducir g-4 y g-3 visualmente ===== */
+.erp-card .g-4 {
+  --bs-gutter-y: 0.6rem;
+  --bs-gutter-x: 1rem;
+}
+
+.erp-card .g-3 {
+  --bs-gutter-y: 0.5rem;
+  --bs-gutter-x: 0.75rem;
+}
+
+/* ===== mt-3 del botón: reducir ===== */
+.erp-card .mt-3 {
+  margin-top: 8px !important;
 }

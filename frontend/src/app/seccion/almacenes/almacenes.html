@@ -1,10 +1,8 @@
 <div class="nap-layout" [class.sidebar-open]="sidebarOpen">
-
   <aside class="nap-sidebar" [class.collapsed]="!sidebarOpen">
     <div class="sidebar-inner">
-
       <button class="sidebar-toggle" (click)="sidebarOpen = !sidebarOpen" title="Menú">
-        <span class="toggle-icon">☰</span>
+        <i class="fas fa-bars"></i>
       </button>
 
       <div class="sidebar-brand" *ngIf="sidebarOpen">
@@ -14,22 +12,23 @@
 
       <nav class="sidebar-nav">
         <button class="nav-item" routerLink="crear" routerLinkActive="active">
-          <img src="/usuario.png" class="nav-icon" alt="Example 1">
-          <span class="nav-label" *ngIf="sidebarOpen">Añadir Almacen</span>
+          <i class="fas fa-warehouse nav-icon"></i>
+          <span class="nav-label" *ngIf="sidebarOpen">Añadir Almacén</span>
         </button>
+
         <button class="nav-item" routerLink="consulta" routerLinkActive="active">
-          <img src="/productos.png" class="nav-icon" alt="Example 2">
+          <i class="fas fa-boxes nav-icon"></i>
           <span class="nav-label" *ngIf="sidebarOpen">Consultar Almacenes</span>
         </button>
       </nav>
 
       <button class="btn-back" (click)="onBack()">
-        <img src="/logout.png" class="nav-icon" alt="Regresar">
+        <i class="fas fa-sign-out-alt nav-icon"></i>
         <span class="nav-label" *ngIf="sidebarOpen">Regresar</span>
       </button>
-
     </div>
   </aside>
+
   <main>
     <router-outlet></router-outlet>
   </main>
