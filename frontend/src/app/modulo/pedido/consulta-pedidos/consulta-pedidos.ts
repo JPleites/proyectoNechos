@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { PedidosService } from '../../services/pedidos.service';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 export class ConsultaPedidos implements OnInit {
   pedidos: any[] = [];
 
-  constructor(private service: PedidosService) {}
+  constructor(private service: PedidosService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.cargarPedidos();
@@ -21,6 +21,7 @@ export class ConsultaPedidos implements OnInit {
   cargarPedidos() {
     this.service.getPedidos().subscribe((data: any) => {
       this.pedidos = data;
+      this.cdr.detectChanges();
     });
   }
 

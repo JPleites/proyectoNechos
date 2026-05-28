@@ -1,8 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
-import { firstValueFrom } from 'rxjs';
 import { ProductosService } from '../../services/productos.service';
 import { PedidosService } from '../../services/pedidos.service';
 import { ClientesService } from '../../services/clientes.service';
@@ -22,6 +21,8 @@ export class NuevoPedidoComponent implements OnInit {
   carrito: any[] = [];
   almacenes: any[] = [];
   ubicaciones: any[] = [];
+  busquedaCliente: string = '';
+  productoEncontrado: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -29,6 +30,7 @@ export class NuevoPedidoComponent implements OnInit {
     private pedidosService: PedidosService,
     private clientesService: ClientesService,
     private almacenesService: AlmacenesService,
+    private cdr: ChangeDetectorRef,
   ) {
     this.form = this.fb.group({
       clienteId: [''],
@@ -50,16 +52,27 @@ export class NuevoPedidoComponent implements OnInit {
     this.productosService.getProductos().subscribe({
       next: (data: any) => (this.productos = data),
     });
+    this.cdr.detectChanges();
   }
 
   cargarClientes() {
     this.clientesService.getClientes().subscribe({
       next: (data: any) => (this.clientes = data),
     });
+    this.cdr.detectChanges();
+  }
+
+  get clientesFiltrados() {
+    if (!this.busquedaCliente) return this.clientes;
+    const q = this.busquedaCliente.toLowerCase();
+    return this.clientes.filter(
+      (c) => c.nombre.toLowerCase().includes(q) || String(c.id).includes(q),
+    );
   }
 
   buscarProductoPorCodigo() {
-    this.ubicaciones = []; // limpiar ubicaciones al buscar nuevo producto
+    this.ubicaciones = [];
+    this.productoEncontrado = false;
     const codigo = this.form.value.codigoBarra;
 
     const producto = this.productos.find((p) => String(p.codigo).trim() === String(codigo).trim());
@@ -68,6 +81,8 @@ export class NuevoPedidoComponent implements OnInit {
       Swal.fire('No encontrado', 'Producto no existe', 'warning');
       return;
     }
+
+    this.productoEncontrado = true;
 
     this.form.patchValue({
       productoCodigo: producto.codigo,
@@ -98,6 +113,7 @@ export class NuevoPedidoComponent implements OnInit {
       this.ubicaciones = data;
 
       console.log('Ubicaciones obtenidas:', data);
+      this.cdr.detectChanges();
     });
   }
 
@@ -144,7 +160,6 @@ export class NuevoPedidoComponent implements OnInit {
 
     const pedido = {
       clienteId: this.form.value.clienteId || '9999999999999',
-      usuarioCodigo: 1, // temporal, luego vendrá del token
       impuesto: this.total * 0.15,
       subtotal: this.total - this.total * 0.15,
       descuento: 0,

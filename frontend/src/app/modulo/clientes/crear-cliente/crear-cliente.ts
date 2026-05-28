@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 })
 export class CrearCliente {
   cliente = {
-    id: '',
+    rtn: '',
     nombre: '',
     correo: '',
     telefono: '',
@@ -22,7 +22,7 @@ export class CrearCliente {
   constructor(private clientesService: ClientesService) {}
 
   guardar() {
-    if (!this.cliente.id || !this.cliente.nombre || !this.cliente.correo) {
+    if (!this.cliente.rtn || !this.cliente.nombre || !this.cliente.correo) {
       Swal.fire('Error', 'Completa los campos obligatorios', 'warning');
       return;
     }
@@ -41,7 +41,7 @@ export class CrearCliente {
           timer: 1500,
           showConfirmButton: false
         });
-        this.cliente = { id: '', nombre: '', correo: '', telefono: '', direccion: '' };
+        this.cliente = { rtn: '', nombre: '', correo: '', telefono: '', direccion: '' };
       },
       error: () => {
         Swal.fire('Error', 'Ocurrió un error al crear el cliente', 'error');

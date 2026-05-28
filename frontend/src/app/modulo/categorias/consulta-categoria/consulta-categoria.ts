@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CategoriasService } from '../../services/categorias.service';
 import { CommonModule } from '@angular/common';
 import { ProveedoresService } from '../../services/proveedores.service';
@@ -20,6 +20,7 @@ export class ConsultaCategoria implements OnInit {
   constructor(
     private service: CategoriasService,
     private proveedoresService: ProveedoresService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -30,6 +31,7 @@ export class ConsultaCategoria implements OnInit {
   cargar() {
     this.service.getCategorias().subscribe((data: any) => {
       this.categorias = data;
+      this.cdr.detectChanges();
       this.categoriasFiltradas = data;
     });
   }
@@ -54,6 +56,7 @@ export class ConsultaCategoria implements OnInit {
   cargarProveedores() {
     this.proveedoresService.getProveedores().subscribe((data: any) => {
       this.proveedores = data;
+      this.cdr.detectChanges();
     });
   }
 

@@ -23,6 +23,14 @@ export class PedidosService {
     return this.api.post(`/pedidos/${pedidoId}/detalle`, data);
   }
 
+  eliminarDetalle(detalleId: number) {
+    return this.api.delete(`/pedidos/detalle/${detalleId}`);
+  }
+
+  actualizarDetalle(detalleId: number, cantidad: number) {
+    return this.api.put(`/pedidos/detalle/${detalleId}`, { cantidad });
+  }
+
   deletePedido(id: number) {
     return this.api.delete(`/pedidos/${id}`);
   }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { InventarioService } from '../../services/inventario.service';
 import { AlmacenesService } from '../../services/almacenes.service';
@@ -19,7 +19,7 @@ export interface Almacen {
   templateUrl: './ingreso-producto.html',
   styleUrl: './ingreso-producto.scss',
 })
-export class IngresoProducto {
+export class IngresoProducto implements OnInit {
   form: FormGroup;
   productoValido: any = null;
   almacenes: Almacen[] = [];
@@ -29,20 +29,25 @@ export class IngresoProducto {
     private fb: FormBuilder,
     private inventarioService: InventarioService,
     private almacenService: AlmacenesService,
-    private ubicacionService: UbicacionesService,
     private productoService: ProductosService,
+    private cdr: ChangeDetectorRef
   ) {
     this.form = this.fb.group({
       productoCodigo: ['', Validators.required],
       ubicacion: ['', Validators.required],
       cantidad: [0, [Validators.required, Validators.min(1)]],
       almacen: ['', Validators.required],
+      referencia: ['', Validators.required],
     });
   }
   ngOnInit() {
     this.almacenService.getAlmacenes().subscribe({
       next: (res) => (this.almacenes = res),
+      error: (err) => {
+        console.error(err);
+      }
     });
+    this.cdr.detectChanges();
   }
 
   buscarProducto() {
@@ -57,7 +62,7 @@ export class IngresoProducto {
       next: (res) => {
         this.productoValido = true;
         Swal.fire('OK', 'Producto encontrado', 'success');
-        console.log('Producto válido:', this.productoValido);
+        this.cdr.detectChanges();
       },
       error: () => {
         this.productoValido = null;

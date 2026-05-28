@@ -1,6 +1,5 @@
 <div class="container py-4">
   <div class="card">
-
     <!-- HEADER -->
     <div class="card-body">
       <h4 class="mb-0">Ingreso de Inventario</h4>
@@ -9,9 +8,7 @@
 
     <div class="card-body pt-0">
       <form [formGroup]="form" (ngSubmit)="ingresar()">
-
         <div class="row g-3">
-
           <!-- 🔎 BUSCAR PRODUCTO -->
           <div class="col-md-4">
             <div class="form-outline">
@@ -22,41 +19,55 @@
               Buscar producto
             </button>
           </div>
+          <div *ngIf="productoValido">
+            <!-- 🏬 ALMACÉN -->
+            <div class="col-md-4">
+              <div class="form-outline">
+                <select
+                  formControlName="almacen"
+                  class="form-control"
+                  (change)="cargarUbicaciones()"
+                >
+                  <option value="">Seleccione almacén</option>
+                  <option *ngFor="let a of almacenes" [value]="a.id">
+                    {{ a.almacen }}
+                  </option>
+                </select>
+                <label class="form-label">Almacén</label>
+              </div>
+            </div>
 
-          <!-- 🏬 ALMACÉN -->
-          <div class="col-md-4">
-            <div class="form-outline">
-              <select formControlName="almacen" class="form-control" (change)="cargarUbicaciones()">
-                <option value="">Seleccione almacén</option>
-                <option *ngFor="let a of almacenes" [value]="a.id">
-                  {{ a.almacen }}
-                </option>
-              </select>
-              <label class="form-label">Almacén</label>
+            <!-- 📦 UBICACIÓN -->
+            <div class="col-md-4">
+              <div class="form-outline">
+                <select formControlName="ubicacion" class="form-control">
+                  <option value="">Seleccione ubicación</option>
+                  <option *ngFor="let u of ubicaciones" [value]="u.ubicacion">
+                    {{ u.ubicacion }} ({{ u.estante }}-{{ u.nivel }}-{{ u.deposito }})
+                  </option>
+                </select>
+                <label class="form-label">Ubicación disponible</label>
+              </div>
+            </div>
+
+            <!-- 🔢 CANTIDAD -->
+            <div class="col-md-4">
+              <div class="form-outline">
+                <input type="number" formControlName="cantidad" class="form-control" />
+                <label class="form-label">Cantidad</label>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-outline">
+                <select formControlName="referencia" class="form-control">
+                  <option value="">Seleccione tipo de ingreso</option>
+                  <option value="compra">Compra</option>
+                  <option value="devolucion">Devolución</option>
+                  <option value="ajuste">Ajuste</option>
+                </select>
+                </div>
             </div>
           </div>
-
-          <!-- 📦 UBICACIÓN -->
-          <div class="col-md-4">
-            <div class="form-outline">
-              <select formControlName="ubicacion" class="form-control">
-                <option value="">Seleccione ubicación</option>
-                <option *ngFor="let u of ubicaciones" [value]="u.id">
-                  {{ u.ubicacion }} ({{ u.estante }}-{{ u.nivel }}-{{ u.deposito }})
-                </option>
-              </select>
-              <label class="form-label">Ubicación disponible</label>
-            </div>
-          </div>
-
-          <!-- 🔢 CANTIDAD -->
-          <div class="col-md-4">
-            <div class="form-outline">
-              <input type="number" formControlName="cantidad" class="form-control" />
-              <label class="form-label">Cantidad</label>
-            </div>
-          </div>
-
         </div>
 
         <!-- BOTÓN -->
@@ -66,7 +77,6 @@
             Ingresar inventario
           </button>
         </div>
-
       </form>
     </div>
   </div>

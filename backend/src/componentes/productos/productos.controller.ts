@@ -25,6 +25,24 @@ export class ProductosController {
     return this.productosService.productos({});
   }
 
+  @Get('buscar')
+  buscar(@Query('q') q: string) {
+    return this.productosService.buscarProductos(q);
+  }
+
+  @Get('ubicaciones/:productoCodigo/:almacenId')
+  getUbicaciones(
+    @Param('productoCodigo') productoCodigo: string,
+    @Param('almacenId') almacenId: number,
+  ) {
+    return this.productosService.obtenerUbicaciones(productoCodigo, almacenId);
+  }
+
+  @Get('filtros')
+  filtrar(@Query() query: any) {
+    return this.productosService.filtrarProductos(query);
+  }
+
   @Roles('admin', 'supervisor', 'cajero', 'vendedor')
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -56,27 +74,9 @@ export class ProductosController {
     });
   }
 
-  @Get('buscar')
-  buscar(@Query('q') q: string) {
-    return this.productosService.buscarProductos(q);
-  }
-
   // Nuevo endpoint para obtener el inventario de un producto
   @Get(':id/inventario')
   getInventario(@Param('id') id: string) {
     return this.productosService.productoConInventario(id);
-  }
-
-  @Get('ubicaciones/:productoCodigo/:almacenId')
-  getUbicaciones(
-    @Param('productoCodigo') productoCodigo: string,
-    @Param('almacenId') almacenId: number,
-  ) {
-    return this.productosService.obtenerUbicaciones(productoCodigo, almacenId);
-  }
-
-  @Get('filtros')
-  filtrar(@Query() query: any) {
-    return this.productosService.filtrarProductos(query);
   }
 }

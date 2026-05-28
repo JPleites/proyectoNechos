@@ -76,9 +76,10 @@
                 <thead class="table-light">
                   <tr>
                     <th>Producto</th>
-                    <th class="text-center" style="width: 100px">Cantidad</th>
+                    <th class="text-center" style="width: 130px">Cantidad</th>
                     <th class="text-end" style="width: 140px">Precio</th>
                     <th class="text-end" style="width: 140px">Subtotal</th>
+                    <th style="width: 60px"></th>
                   </tr>
                 </thead>
 
@@ -90,12 +91,31 @@
                     </td>
 
                     <td class="text-center">
-                      {{ d.cantidad }}
+                      <div class="d-flex align-items-center justify-content-center gap-1">
+                        <button
+                          class="btn btn-sm btn-outline-secondary"
+                          (click)="actualizarCantidad(d, d.cantidad - 1)"
+                        >
+                          −
+                        </button>
+                        <span class="px-2">{{ d.cantidad }}</span>
+                        <button
+                          class="btn btn-sm btn-outline-secondary"
+                          (click)="actualizarCantidad(d, d.cantidad + 1)"
+                        >
+                          +
+                        </button>
+                      </div>
                     </td>
 
                     <td class="text-end">L {{ d.precioUnitario | number: '1.2-2' }}</td>
-
                     <td class="text-end fw-semibold">L {{ d.subtotal | number: '1.2-2' }}</td>
+
+                    <td class="text-center">
+                      <button class="btn btn-sm btn-outline-danger" (click)="eliminarDetalle(d.id)">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </td>
                   </tr>
                 </tbody>
 
@@ -108,38 +128,73 @@
                   </tr>
                   <hr />
 
-                  <div class="row g-3">
-                    <div class="col-md-4">
-                      <label>Método de pago</label>
-                      <select class="form-control" [(ngModel)]="metodoPago">
-                        <option value="EFECTIVO">Efectivo</option>
-                        <option value="BAC">BAC</option>
-                        <option value="FICOHSA">Ficohsa</option>
-                        <option value="DAVIVIENDA">Davivienda</option>
-                        <option value="TRANSFERENCIA">Transferencia</option>
-                        <option value="NOTACREDITO">Nota de Crédito</option>
-                      </select>
-                    </div>
-
-                    <div class="col-md-4">
-                      <label>Total recibido</label>
+                  <div class="row g-3 mt-2">
+                    <!-- Total recibido -->
+                    <div class="col-12 col-md-4">
+                      <label class="form-label fw-semibold">Total recibido</label>
                       <input type="number" class="form-control" [(ngModel)]="totalRecibido" />
                     </div>
 
-                    <div class="col-md-4" *ngIf="metodoPago === 'EFECTIVO'">
-                      <label>Cambio</label>
-                      <input class="form-control" [value]="cambio" readonly />
+                    <!-- Cambio (solo visible si aplica) -->
+                    <div class="col-12 col-md-4" *ngIf="totalRecibido > 0">
+                      <label class="form-label fw-semibold">Cambio</label>
+                      <input
+                        class="form-control fw-bold text-success"
+                        [value]="cambio | number: '1.2-2'"
+                        readonly
+                      />
                     </div>
                   </div>
 
-                  <div class="text-end mt-4">
-                    <button
-                      class="btn btn-success btn-lg"
-                      (click)="facturar()"
-                      [disabled]="cambio < 0"
+                  <!-- Botones de método de pago -->
+                  <div class="mt-4">
+                    <label class="form-label fw-semibold d-block mb-2"
+                      >Seleccione método de pago y cobrar</label
                     >
-                      Cobrar y facturar
-                    </button>
+                    <div class="d-flex flex-wrap gap-2">
+                      <button
+                        class="btn btn-outline-success"
+                        (click)="facturar('EFECTIVO')"
+                        [disabled]="cambio < 0"
+                      >
+                        <i class="fas fa-money-bill-wave me-1"></i> Efectivo
+                      </button>
+                      <button
+                        class="btn btn-outline-primary"
+                        (click)="facturar('BAC')"
+                        [disabled]="cambio < 0"
+                      >
+                        <i class="fas fa-credit-card me-1"></i> BAC
+                      </button>
+                      <button
+                        class="btn btn-outline-info"
+                        (click)="facturar('FICOHSA')"
+                        [disabled]="cambio < 0"
+                      >
+                        <i class="fas fa-credit-card me-1"></i> Ficohsa
+                      </button>
+                      <button
+                        class="btn btn-outline-warning"
+                        (click)="facturar('DAVIVIENDA')"
+                        [disabled]="cambio < 0"
+                      >
+                        <i class="fas fa-credit-card me-1"></i> Davivienda
+                      </button>
+                      <button
+                        class="btn btn-outline-secondary"
+                        (click)="facturar('TRANSFERENCIA')"
+                        [disabled]="cambio < 0"
+                      >
+                        <i class="fas fa-exchange-alt me-1"></i> Transferencia
+                      </button>
+                      <button
+                        class="btn btn-outline-dark"
+                        (click)="facturar('NOTACREDITO')"
+                        [disabled]="cambio < 0"
+                      >
+                        <i class="fas fa-file-invoice me-1"></i> Nota de Crédito
+                      </button>
+                    </div>
                   </div>
                 </tfoot>
               </table>

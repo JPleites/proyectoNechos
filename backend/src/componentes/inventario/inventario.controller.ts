@@ -30,22 +30,35 @@ export class InventarioController {
   kardex(@Param('codigo') codigo: string) {
     return this.inventarioService.kardexProducto(codigo);
   }
+
+  @Get('ubicaciones-disponibles')
+  getUbicacionesDisponibles(
+    @Query('almacenId') almacenId: number,
+    @Query('productoCodigo') productoCodigo: string,
+  ) {
+    return this.inventarioService.getUbicacionesDisponibles(
+      Number(almacenId),
+      productoCodigo,
+    );
+  }
+
+    //ingreso al inventario
+  @Post('ingreso')
+  ingreso(@Body() data: any, @Req() req: any) {
+    return this.inventarioService.ingresoProducto(data, req.user.sub);
+  }
+  
+  // salida del inventario
+  @Post('salida')
+  salida(@Body() data: any, @Req() req: any) {
+    return this.inventarioService.salidaProducto(data, req.user.sub);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.inventarioService.inventario({
       id: Number(id),
     });
-  }
-
-  //ingreso al inventario
-  @Post('ingreso')
-  ingreso(@Body() data: any, @Req() req: any) {
-    return this.inventarioService.ingresoProducto(data, req.user.sub);
-  }
-  // salida del inventario
-  @Post('salida')
-  salida(@Body() data: any, @Req() req: any) {
-    return this.inventarioService.salidaProducto(data, req.user.sub);
   }
 
   @Delete(':id')
@@ -61,16 +74,5 @@ export class InventarioController {
       where: { id: Number(id) },
       data,
     });
-  }
-
-  @Get('ubicaciones-disponibles')
-  getUbicacionesDisponibles(
-    @Query('almacenId') almacenId: number,
-    @Query('productoCodigo') productoCodigo: string,
-  ) {
-    return this.inventarioService.getUbicacionesDisponibles(
-      almacenId,
-      productoCodigo,
-    );
   }
 }

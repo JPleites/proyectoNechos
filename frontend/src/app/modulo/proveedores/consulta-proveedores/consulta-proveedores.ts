@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ProveedoresService } from '../../services/proveedores.service';
 import { CategoriasService } from '../../services/categorias.service';
 import { CategoriaProveedoresService } from '../../services/categoria-proveedores.service';
@@ -25,7 +25,6 @@ interface Categoria {
   styleUrl: './consulta-proveedores.scss',
 })
 export class ConsultaProveedores implements OnInit {
-
   proveedores: Proveedor[] = [];
   categorias: Categoria[] = [];
 
@@ -39,6 +38,7 @@ export class ConsultaProveedores implements OnInit {
     private service: ProveedoresService,
     private categoriaService: CategoriasService,
     private categoriaProveedoresService: CategoriaProveedoresService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
@@ -50,6 +50,7 @@ export class ConsultaProveedores implements OnInit {
     this.service.getProveedores().subscribe({
       next: (data: Proveedor[]) => {
         this.proveedores = data ?? [];
+        this.cdr.detectChanges();
       },
       error: (err) => console.error(err),
     });
@@ -65,18 +66,17 @@ export class ConsultaProveedores implements OnInit {
     this.categoriaService.getCategorias().subscribe({
       next: (cats: Categoria[]) => {
         this.categorias = cats;
+        this.cdr.detectChanges();
 
         // 🔥 categorías del proveedor (YA CON ID)
-        this.categoriaProveedoresService
-          .getCategoriasProveedor(proveedor.id)
-          .subscribe({
-            next: (rel: any[]) => {
-              this.categoriasSeleccionadas = rel.map(r => r.categoriaId);
-            },
-            error: () => {
-              this.categoriasSeleccionadas = [];
-            },
-          });
+        this.categoriaProveedoresService.getCategoriasProveedor(proveedor.id).subscribe({
+          next: (rel: any[]) => {
+            this.categoriasSeleccionadas = rel.map((r) => r.categoriaId);
+          },
+          error: () => {
+            this.categoriasSeleccionadas = [];
+          },
+        });
       },
     });
   }
@@ -95,9 +95,7 @@ export class ConsultaProveedores implements OnInit {
         this.categoriasSeleccionadas.push(id);
       }
     } else {
-      this.categoriasSeleccionadas = this.categoriasSeleccionadas.filter(
-        c => c !== id
-      );
+      this.categoriasSeleccionadas = this.categoriasSeleccionadas.filter((c) => c !== id);
     }
   }
 

@@ -58,8 +58,6 @@ export class LoginComponent {
         }).then(() => {
           this.redirigirPorRol(res.rol);
         });
-
-        this.loginForm.reset();
       },
 
       error: (err) => {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { UbicacionesService } from '../../services/ubicaciones.service';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 export class ConsultaUbicaciones implements OnInit {
   ubicaciones: any[] = [];
 
-  constructor(private ubicacionesService: UbicacionesService) {}
+  constructor(private ubicacionesService: UbicacionesService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.cargarUbicaciones();
@@ -21,6 +21,7 @@ export class ConsultaUbicaciones implements OnInit {
   cargarUbicaciones() {
     this.ubicacionesService.getUbicaciones().subscribe((data: any) => {
       this.ubicaciones = data;
+      this.cdr.detectChanges();
     });
   }
 

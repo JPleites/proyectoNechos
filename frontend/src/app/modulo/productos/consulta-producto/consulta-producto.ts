@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProductosService } from '../../services/productos.service';
 import { InventarioService } from '../../services/inventario.service';
@@ -52,6 +52,7 @@ export class ConsultaProducto implements OnInit {
     private categoriasService: CategoriasService,
     private proveedoresService: ProveedoresService,
     private marcaService: MarcaService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -64,29 +65,28 @@ export class ConsultaProducto implements OnInit {
     this.productosService.getProductos().subscribe({
       next: (data: Producto[]) => {
         this.productos = data ?? [];
-
-        // ⚠️ NO calcular stock aquí todavía
         this.stockMap = {};
+        this.cdr.detectChanges();
       },
       error: (err: any) => console.error(err),
     });
   }
 
   // 🔥 BUSQUEDA OPTIMIZADA
-  buscar() {
-    if (!this.busqueda) {
-      this.cargarProductos();
-      return;
-    }
+  // buscar() {
+  //   if (!this.busqueda) {
+  //     this.cargarProductos();
+  //     return;
+  //   }
 
-    this.productosService.buscarProductos(this.busqueda).subscribe({
-      next: (data: Producto[]) => {
-        this.productos = data ?? [];
-        this.stockMap = {}; // reset limpio
-      },
-      error: (err: any) => console.error(err),
-    });
-  }
+  //   this.productosService.buscarProductos(this.busqueda).subscribe({
+  //     next: (data: Producto[]) => {
+  //       this.productos = data ?? [];
+  //       this.stockMap = {}; // reset limpio
+  //     },
+  //     error: (err: any) => console.error(err),
+  //   });
+  // }
 
   // 🔥 INVENTARIO POR PRODUCTO
   verInventario(codigo: string) {
@@ -98,6 +98,7 @@ export class ConsultaProducto implements OnInit {
     if (this.inventarios[codigo]) {
       this.inventarioVisible = codigo;
       this.stockMap[codigo] = this.calcularStock(this.inventarios[codigo]);
+      this.cdr.detectChanges();
       return;
     }
 
@@ -109,6 +110,7 @@ export class ConsultaProducto implements OnInit {
         this.inventarioVisible = codigo;
 
         this.stockMap[codigo] = this.calcularStock(inventario);
+        this.cdr.detectChanges();
       },
       error: (err) => console.error(err),
     });
@@ -118,6 +120,7 @@ export class ConsultaProducto implements OnInit {
   private calcularStock(inventario: Inventario[]): number {
     return inventario.reduce((total, item) => total + (item.cantidad || 0), 0);
   }
+
   cargarFiltros() {
     this.categoriasService.getCategorias().subscribe((data: any) => {
       this.categorias = data;
@@ -130,6 +133,7 @@ export class ConsultaProducto implements OnInit {
     this.marcaService.getMarcas().subscribe((data: any) => {
       this.marcas = data;
     });
+    this.cdr.detectChanges();
   }
 
   aplicarFiltros() {
@@ -137,6 +141,7 @@ export class ConsultaProducto implements OnInit {
       next: (data: any) => {
         this.productos = data ?? [];
         this.stockMap = {};
+        console.log('Productos filtrados:', this.productos);
       },
       error: (err) => console.error(err),
     });

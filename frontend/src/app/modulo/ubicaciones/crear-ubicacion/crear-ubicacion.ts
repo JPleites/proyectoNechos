@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { UbicacionesService } from '../../services/ubicaciones.service';
 import { AlmacenesService } from '../../services/almacenes.service';
 import { FormsModule } from '@angular/forms';
@@ -25,6 +25,7 @@ export class CrearUbicacion implements OnInit {
   constructor(
     private ubicacionesService: UbicacionesService,
     private almacenesService: AlmacenesService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
@@ -34,6 +35,7 @@ export class CrearUbicacion implements OnInit {
   cargarAlmacenes() {
     this.almacenesService.getAlmacenes().subscribe((data: any) => {
       this.almacenes = data;
+      this.cdr.detectChanges();
     });
   }
 

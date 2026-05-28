@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ProductosService } from '../../services/productos.service';
 import Swal from 'sweetalert2';
@@ -14,7 +14,7 @@ import { MarcaService } from '../../services/marca.service';
   templateUrl: './nuevo-producto.html',
   styleUrl: './nuevo-producto.scss',
 })
-export class NuevoProducto {
+export class NuevoProducto implements OnInit {
   form: FormGroup;
   imagePreview: string | ArrayBuffer | null = null;
   selectedFile: File | null = null;
@@ -27,7 +27,7 @@ export class NuevoProducto {
     private fb: FormBuilder,
     private productosService: ProductosService,
     private router: Router,
-
+    private cdr: ChangeDetectorRef,
     private categoriasService: CategoriasService,
     private proveedoresService: ProveedoresService,
     private marcaService: MarcaService,
@@ -94,12 +94,14 @@ export class NuevoProducto {
   cargarCategorias() {
     this.categoriasService.getCategorias().subscribe((data: any) => {
       this.categorias = data;
+      this.cdr.detectChanges();
     });
   }
 
   cargarProveedores() {
     this.proveedoresService.getProveedores().subscribe((data: any) => {
       this.proveedores = data;
+      this.cdr.detectChanges();
     });
   }
 
@@ -114,6 +116,7 @@ export class NuevoProducto {
 
     // limpiar proveedor seleccionado
     this.form.patchValue({ proveedor: '' });
+    this.cdr.detectChanges();
   }
 
   onProveedorChange() {
@@ -125,6 +128,7 @@ export class NuevoProducto {
     this.marcaService.getMarcasPorProveedor(proveedorId).subscribe((data: any) => {
       this.marcasFiltradas = data ?? [];
       this.form.patchValue({ marca: '' });
+      this.cdr.detectChanges();
     });
   }
 }

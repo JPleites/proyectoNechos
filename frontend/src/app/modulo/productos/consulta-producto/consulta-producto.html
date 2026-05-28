@@ -15,7 +15,7 @@
 
     <div class="card-body pt-0">
       <!-- SEARCH MDB -->
-      <div class="input-group mb-3">
+      <!-- <div class="input-group mb-3">
         <input
           type="text"
           class="form-control"
@@ -27,7 +27,7 @@
         <button class="btn btn-outline-primary" (click)="buscar()">
           <i class="fas fa-search"></i>
         </button>
-      </div>
+      </div> -->
       <div class="row g-2 mb-3">
         <!-- BUSQUEDA -->
         <div class="col-md-4">
@@ -100,7 +100,7 @@
               <tr>
                 <td class="fw-bold">{{ p.codigo }}</td>
                 <td>{{ p.producto }}</td>
-                <td>L {{ p.precio }}</td>
+                <td>L {{ p.precio | number: '1.2-2' }}</td>
                 <td>{{ p.proveedorRel?.proveedor || '-' }}</td>
                 <td>{{ p.categoriaRel?.nombre || '-' }}</td>
                 <td>{{ p.marcaRel?.nombre || '-' }}</td>

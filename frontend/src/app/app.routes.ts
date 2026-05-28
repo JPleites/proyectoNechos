@@ -250,7 +250,7 @@ export const routes: Routes = [
         children: [
           {
             path: '',
-            redirectTo: '',
+            redirectTo: 'consulta',
             pathMatch: 'full',
           },
           {

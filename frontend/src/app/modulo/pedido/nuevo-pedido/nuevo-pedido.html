@@ -4,18 +4,19 @@
     <div class="card p-3 mb-3">
       <h4>Nuevo Pedido</h4>
 
-      <div class="row">
-        <div class="col-md-6">
-          <label>Cliente</label>
+      <div class="col-md-6">
+        <label>Cliente</label>
 
-          <select class="form-control" formControlName="clienteId">
-            <option value="">Seleccionar</option>
+        <!-- 🔍 Buscador -->
+        <input type="text" class="form-control mb-1" placeholder="Buscar por nombre o ID..." />
 
-            <option *ngFor="let c of clientes" [value]="c.id">
-              {{ c.nombre }}
-            </option>
-          </select>
-        </div>
+        <!-- 📋 Select filtrado -->
+        <select class="form-control" formControlName="clienteId">
+          <option value="">Seleccionar</option>
+          <option *ngFor="let c of clientesFiltrados" [value]="c.id">
+            #{{ c.rtn }} — {{ c.nombre }}
+          </option>
+        </select>
       </div>
     </div>
 
@@ -40,22 +41,35 @@
               {{ a.almacen }}
             </option>
           </select>
-          <select class="form-control" formControlName="ubicacion">
-            <option value="">Ubicación</option>
-            <option *ngFor="let u of ubicaciones" [value]="u.ubicacion">
-              {{ u.ubicacion }}
-            </option>
-          </select>
         </div>
-
-        <div class="col-md-2">
-          <input type="number" class="form-control" formControlName="cantidad" />
-        </div>
-
-        <div class="col-md-3">
-          <button type="button" class="btn btn-primary w-100" (click)="agregarProducto()">
-            Agregar
+        <div>
+          <button
+            type="button"
+            class="btn btn-secondary w-100"
+            (click)="buscarProductoPorCodigo()"
+          >
+            Buscar
           </button>
+        </div>
+        <div *ngIf="productoEncontrado">
+          <div class="col-md-3">
+            <select class="form-control" formControlName="ubicacion">
+              <option value="">Ubicación</option>
+              <option *ngFor="let u of ubicaciones" [value]="u.ubicacion">
+                {{ u.ubicacion }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-md-2">
+            <input type="number" class="form-control" formControlName="cantidad" />
+          </div>
+
+          <div class="col-md-3">
+            <button type="button" class="btn btn-primary w-100" (click)="agregarProducto()">
+              Agregar
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -82,8 +96,8 @@
           <td>{{ item.nombreProducto }}</td>
           <td>{{ item.ubicacion }}</td>
           <td>{{ item.cantidad }}</td>
-          <td>{{ item.precioUnitario }}</td>
-          <td>{{ item.subtotal }}</td>
+          <td>{{ item.precioUnitario | number: '1.2-2' }}</td>
+          <td>{{ item.subtotal | number: '1.2-2' }}</td>
           <td>
             <button class="btn btn-danger btn-sm" (click)="eliminarItem(i)">X</button>
           </td>
@@ -91,7 +105,7 @@
       </tbody>
     </table>
 
-    <h5 class="text-end">Total: {{ total }}</h5>
+    <h5 class="text-end">Total: {{ total | number: '1.2-2' }}</h5>
   </div>
 
   <!-- ACCIONES -->

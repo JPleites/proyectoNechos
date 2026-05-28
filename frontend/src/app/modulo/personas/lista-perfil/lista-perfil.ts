@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { PerfilService } from '../../services/perfil.service';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
@@ -10,12 +10,13 @@ import { CommonModule } from '@angular/common';
   templateUrl: './lista-perfil.html',
   styleUrl: './lista-perfil.scss',
 })
-export class ListaPerfil {
+export class ListaPerfil implements OnInit {
   perfiles: any[] = [];
 
   constructor(
     private perfilService: PerfilService,
     private router: Router,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
@@ -30,6 +31,7 @@ export class ListaPerfil {
     this.perfilService.getPerfiles().subscribe((res: any) => {
       console.log('Perfiles:', res);
       this.perfiles = [...res];
+      this.cdr.detectChanges();
     });
   }
 
@@ -52,6 +54,7 @@ export class ListaPerfil {
       if (result.isConfirmed) {
         this.perfilService.deletePerfil(id).subscribe(() => {
           this.cargar();
+          this.cdr.detectChanges();
         });
       }
     });
@@ -66,9 +69,11 @@ export class ListaPerfil {
       confirmButtonText: 'Crear',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.perfilService.crearUsuario(perfil.id, { contrasena: '123456', rol: 'vendedor' }).subscribe(() => {
-          this.cargar();
-        });
+        this.perfilService
+          .crearUsuario(perfil.id, { contrasena: '123456', rol: 'vendedor' })
+          .subscribe(() => {
+            this.cargar();
+          });
       }
     });
   }

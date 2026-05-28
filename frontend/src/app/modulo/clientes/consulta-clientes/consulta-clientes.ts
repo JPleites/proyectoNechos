@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ClientesService } from '../../services/clientes.service';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -13,7 +13,7 @@ import Swal from 'sweetalert2';
 export class ConsultaClientes implements OnInit {
   clientes: any[] = [];
 
-  constructor(private service: ClientesService) {}
+  constructor(private service: ClientesService, private cdRef: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.cargar();
@@ -22,6 +22,7 @@ export class ConsultaClientes implements OnInit {
   cargar() {
     this.service.getClientes().subscribe((data: any) => {
       this.clientes = data;
+      this.cdRef.detectChanges();
     });
   }
 

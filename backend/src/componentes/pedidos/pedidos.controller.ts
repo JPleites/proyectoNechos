@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Query,
+  Req,
 } from '@nestjs/common';
 import { PedidosService } from './pedidos.service';
 import { AuthGuard } from '../auth/auth.guard';
@@ -21,9 +22,10 @@ export class PedidosController {
 
   // 🟢 crear pedido
   @Roles('admin', 'supervisor', 'vendedor')
+  // pedidos.controller.ts
   @Post()
-  crear(@Body() data: any) {
-    return this.service.crearPedido(data);
+  crearPedido(@Body() data: any, @Req() req: any) {
+    return this.service.crearPedido(data, req.user.sub); // 👈 del token
   }
 
   // 📋 listar
@@ -36,6 +38,18 @@ export class PedidosController {
   @Get('en-caja')
   findEnCaja() {
     return this.service.listarPedidosEnCaja();
+  }
+
+  // ❌ Eliminar detalle
+  @Delete('detalle/:detalleId') // 👈 antes de :id para evitar conflicto
+  eliminarDetalle(@Param('detalleId') detalleId: string) {
+    return this.service.eliminarDetalle(Number(detalleId));
+  }
+
+  // ✏️ Actualizar cantidad de detalle
+  @Put('detalle/:detalleId') // 👈 antes de :id también
+  actualizarDetalle(@Param('detalleId') detalleId: string, @Body() data: any) {
+    return this.service.actualizarDetalle(Number(detalleId), data.cantidad);
   }
 
   // 🔍 ver uno

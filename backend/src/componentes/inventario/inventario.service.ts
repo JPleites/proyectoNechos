@@ -6,29 +6,6 @@ import { Inventario, Prisma } from '@prisma/client';
 export class InventarioService {
   constructor(private prisma: PrismaService) {}
 
-  async getUbicacionesDisponibles(almacenId: number, productoCodigo: string) {
-    return this.prisma.ubicaciones
-      .findMany({
-        where: {
-          almacenId,
-        },
-        include: {
-          inventario: true,
-        },
-      })
-      .then((ubicaciones) => {
-        return ubicaciones.filter((u) => {
-          const inv = u.inventario[0];
-
-          // vacía
-          if (!inv) return true;
-
-          // mismo producto
-          return inv.productoCodigo === productoCodigo;
-        });
-      });
-  }
-
   async inventario(
     inventarioWhereUniqueInput: Prisma.InventarioWhereUniqueInput,
   ): Promise<Inventario | null> {
@@ -86,10 +63,11 @@ export class InventarioService {
       productoCodigo: string;
       ubicacion: string;
       cantidad: number;
+      referencia: string;
     },
     usuarioCodigo: number,
   ) {
-    const { productoCodigo, ubicacion, cantidad } = data;
+    const { productoCodigo, ubicacion, cantidad, referencia } = data;
 
     // 🔍 1. Validar producto
     const producto = await this.prisma.productos.findUnique({
@@ -148,6 +126,7 @@ export class InventarioService {
           tipo: 'ENTRADA',
           cantidad,
           usuarioCodigo,
+          referencia,
         },
       });
 
@@ -275,4 +254,32 @@ export class InventarioService {
       kardex,
     };
   }
+
+  async getUbicacionesDisponibles(almacenId: number, productoCodigo: string) {
+    const ubicaciones = await this.prisma.ubicaciones.findMany({
+      where: { almacenId },
+      include: { inventario: true },
+    });
+
+    return ubicaciones.filter((u) => {
+      // Sin inventario → disponible
+      if (u.inventario.length === 0) return true;
+      // Con inventario del mismo producto → también disponible (suma stock)
+      return u.inventario.some((inv) => inv.productoCodigo === productoCodigo);
+    });
+  }
+
+  // async obtenerUbicaciones(productoCodigo: string, almacenId: number) {
+  //   return this.prisma.inventario.findMany({
+  //     where: {
+  //       productoCodigo: String(productoCodigo),
+  //       ubicacionRel: {
+  //         almacenId: Number(almacenId),
+  //       },
+  //     },
+  //     include: {
+  //       ubicacionRel: true,
+  //     },
+  //   });
+  // }
 }

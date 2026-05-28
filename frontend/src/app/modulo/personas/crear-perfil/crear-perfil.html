@@ -8,15 +8,22 @@
     <div class="card p-3 mb-3">
 
       <h5>Datos del perfil</h5>
-
+      <label class="form-label">DNI</label>
       <input class="form-control mb-2" placeholder="DNI" formControlName="dni" />
+      <label class="form-label">Nombre</label>
       <input class="form-control mb-2" placeholder="Nombre" formControlName="nombre" />
+      <label class="form-label">Teléfono</label>
       <input class="form-control mb-2" placeholder="Teléfono" formControlName="telefono" />
+      <label class="form-label">Cargo</label>
       <input class="form-control mb-2" placeholder="Cargo" formControlName="cargo" />
+      <label class="form-label">Departamento</label>
       <input class="form-control mb-2" placeholder="Departamento" formControlName="departamento" />
+      <label class="form-label">Dirección</label>
       <input class="form-control mb-2" placeholder="Dirección" formControlName="direccion" />
 
+      <label class="form-label">Fecha de ingreso</label>
       <input type="date" class="form-control mb-2" formControlName="fechaIngreso" />
+      <label class="form-label">Fecha de último ascenso</label>
       <input type="date" class="form-control mb-2" formControlName="fechaUltimoAscenso" />
 
     </div>
@@ -39,7 +46,7 @@
         <option value="admin">Administrador</option>
         <option value="vendedor">Vendedor</option>
         <option value="supervisor">Supervisor</option>
-        <option value="cajero">Cashier</option>
+        <option value="cajero">Cajero</option>
       </select>
       <input type="password" class="form-control mb-2" placeholder="Contraseña" formControlName="contrasena" />
 

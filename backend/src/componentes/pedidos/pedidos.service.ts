@@ -27,7 +27,7 @@ export class PedidosService {
   // =========================================================
   // CREAR PEDIDO
   // =========================================================
-  async crearPedido(data: any) {
+  async crearPedido(data: any, usuarioCodigo: number) {
     const { detalles, ...pedidoData } = data;
 
     if (!detalles || detalles.length === 0) {
@@ -42,16 +42,18 @@ export class PedidosService {
       const pedido = await tx.pedidos.create({
         data: {
           pedidoID,
-          clienteID: pedidoData.clienteID || null,
-          usuarioCodigo: pedidoData.usuarioCodigo,
-
           fecha: new Date(),
           estado: 'EN_PROCESO',
-
           subtotal: pedidoData.subtotal,
           impuesto: pedidoData.impuesto,
           descuento: pedidoData.descuento,
           total: pedidoData.total,
+          usuario: {
+            connect: { codigo: usuarioCodigo },
+          },
+          cliente: pedidoData.clienteId
+            ? { connect: { id: Number(pedidoData.clienteId) } }
+            : undefined,
         },
       });
 
@@ -241,7 +243,6 @@ export class PedidosService {
       },
     });
   }
-
   // =========================================================
   // LISTAR PEDIDOS EN CAJA
   // =========================================================
@@ -294,4 +295,37 @@ export class PedidosService {
     });
   }
 
+  async actualizarDetalle(detalleId: number, cantidad: number) {
+    const detalle = await this.prisma.pedidoDetalle.findUnique({
+      where: { id: detalleId },
+    });
+
+    if (!detalle) throw new BadRequestException('Detalle no encontrado');
+    if (cantidad < 1) throw new BadRequestException('La cantidad mínima es 1');
+
+    const subtotal = Number(detalle.precioUnitario) * cantidad;
+
+    const detalleActualizado = await this.prisma.pedidoDetalle.update({
+      where: { id: detalleId },
+      data: { cantidad, subtotal },
+    });
+
+    // Recalcular total del pedido
+    const detalles = await this.prisma.pedidoDetalle.findMany({
+      where: { pedidoID: detalle.pedidoID },
+    });
+
+    const nuevoTotal = detalles.reduce((acc, d) => acc + Number(d.subtotal), 0);
+
+    await this.prisma.pedidos.update({
+      where: { id: detalle.pedidoID },
+      data: {
+        total: nuevoTotal,
+        subtotal: nuevoTotal / 1.15,
+        impuesto: nuevoTotal - nuevoTotal / 1.15,
+      },
+    });
+
+    return detalleActualizado;
+  }
 }

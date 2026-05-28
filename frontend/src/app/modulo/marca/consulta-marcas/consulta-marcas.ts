@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MarcaService } from '../../services/marca.service';
 
@@ -10,13 +10,15 @@ import { MarcaService } from '../../services/marca.service';
   styleUrl: './consulta-marcas.scss',
 })
 export class ConsultaMarcas implements OnInit {
-
   marcas: any[] = [];
   marcasFiltradas: any[] = [];
 
   busqueda: string = '';
 
-  constructor(private marcaService: MarcaService) {}
+  constructor(
+    private marcaService: MarcaService,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit() {
     this.cargarMarcas();
@@ -27,6 +29,7 @@ export class ConsultaMarcas implements OnInit {
       next: (res: any) => {
         this.marcas = res ?? [];
         this.marcasFiltradas = this.marcas;
+        this.cdr.detectChanges();
       },
       error: (err) => console.error(err),
     });
@@ -35,9 +38,10 @@ export class ConsultaMarcas implements OnInit {
   buscar() {
     const texto = this.busqueda.toLowerCase();
 
-    this.marcasFiltradas = this.marcas.filter(m =>
-      m.nombre.toLowerCase().includes(texto) ||
-      m.proveedorRel?.proveedor?.toLowerCase().includes(texto)
+    this.marcasFiltradas = this.marcas.filter(
+      (m) =>
+        m.nombre.toLowerCase().includes(texto) ||
+        m.proveedorRel?.proveedor?.toLowerCase().includes(texto),
     );
   }
 }

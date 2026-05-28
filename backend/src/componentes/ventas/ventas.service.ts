@@ -227,6 +227,9 @@ export class VentasService {
               totalEfectivo: {
                 increment: total,
               },
+              totalFacturado: {
+                increment: total,
+              },
             },
           });
           break;
@@ -238,6 +241,9 @@ export class VentasService {
             },
             data: {
               totalBac: {
+                increment: total,
+              },
+              totalFacturado: {
                 increment: total,
               },
             },
@@ -253,6 +259,9 @@ export class VentasService {
               totalFicohsa: {
                 increment: total,
               },
+              totalFacturado: {
+                increment: total,
+              },
             },
           });
           break;
@@ -266,6 +275,9 @@ export class VentasService {
               totalDavivienda: {
                 increment: total,
               },
+              totalFacturado: {
+                increment: total,
+              },
             },
           });
           break;
@@ -277,6 +289,9 @@ export class VentasService {
             },
             data: {
               totalTransferencias: {
+                increment: total,
+              },
+              totalFacturado: {
                 increment: total,
               },
             },

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
@@ -25,9 +25,12 @@ export class CierreCaja implements OnInit {
     transferencia: 0,
     total: 0,
   };
-  usuarioCodigo = 1; // luego lo sacas del token
+  usuarioCodigo = Number(localStorage.getItem('codigo'));
 
-  constructor(private cierresService: CierresService) {}
+  constructor(
+    private cierresService: CierresService,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit() {
     this.cargarArqueo();
@@ -38,6 +41,7 @@ export class CierreCaja implements OnInit {
       next: (data: any) => {
         this.arqueo = data;
         this.calcularDiferencia();
+        this.cdr.detectChanges();
       },
       error: () => {
         Swal.fire('Error', 'No se pudo cargar arqueo', 'error');
@@ -102,12 +106,19 @@ export class CierreCaja implements OnInit {
           Swal.fire('Éxito', 'Caja cerrada', 'success');
 
           this.descargarPdf();
+
+          this.logout();
         },
         error: () => {
           Swal.fire('Error', 'No se pudo cerrar caja', 'error');
         },
       });
     });
+  }
+
+  logout() {
+    localStorage.clear();
+    location.href = '/login';
   }
 
   descargarPdf() {

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { InventarioService } from '../../services/inventario.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -13,7 +13,7 @@ export class Kardex {
   codigo: string = '';
   movimientos: any[] = [];
 
-  constructor(private inventarioService: InventarioService) {}
+  constructor(private inventarioService: InventarioService, private cdr: ChangeDetectorRef) {}
 
   buscar() {
     const codigo = this.codigo.trim();
@@ -39,6 +39,7 @@ export class Kardex {
             saldo,
           };
         });
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error(err);

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { AlmacenesService } from '../../services/almacenes.service';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 export class ConsultaAlmacen implements OnInit {
   almacenes: any[] = [];
 
-  constructor(private service: AlmacenesService) {}
+  constructor(private service: AlmacenesService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.cargarAlmacenes();
@@ -21,6 +21,7 @@ export class ConsultaAlmacen implements OnInit {
   cargarAlmacenes() {
     this.service.getAlmacenes().subscribe((data: any) => {
       this.almacenes = data;
+      this.cdr.detectChanges();
     });
   }
 
