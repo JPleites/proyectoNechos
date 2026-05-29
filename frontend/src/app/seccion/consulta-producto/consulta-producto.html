@@ -1,0 +1,38 @@
+<div class="nap-layout" [class.sidebar-open]="sidebarOpen">
+  <aside class="nap-sidebar" [class.collapsed]="!sidebarOpen">
+    <div class="sidebar-inner">
+      <!-- TOGGLE -->
+      <button class="sidebar-toggle" (click)="sidebarOpen = !sidebarOpen" title="Menú">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <!-- BRAND -->
+      <div class="sidebar-brand" *ngIf="sidebarOpen">
+        <span class="brand-text">Necho's</span>
+        <span class="brand-sub">Auto Parts</span>
+      </div>
+
+      <!-- NAV -->
+      <nav class="sidebar-nav">
+        <button class="nav-item" routerLink="consulta" routerLinkActive="active">
+          <i class="fas fa-boxes nav-icon"></i>
+          <span class="nav-label" *ngIf="sidebarOpen">Consultar Productos</span>
+        </button>
+        <!-- <button class="nav-item" routerLink="salida" routerLinkActive="active">
+          <i class="fas fa-arrow-up nav-icon text-danger"></i>
+          <span class="nav-label" *ngIf="sidebarOpen">Salida</span>
+        </button> -->
+      </nav>
+
+      <!-- BACK -->
+      <button class="btn-back" (click)="onBack()">
+        <i class="fas fa-sign-out-alt nav-icon"></i>
+        <span class="nav-label" *ngIf="sidebarOpen">Salir</span>
+      </button>
+    </div>
+  </aside>
+
+  <main>
+    <router-outlet></router-outlet>
+  </main>
+</div>
