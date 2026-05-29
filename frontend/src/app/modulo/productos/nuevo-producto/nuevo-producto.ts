@@ -89,6 +89,7 @@ export class NuevoProducto implements OnInit {
     };
 
     reader.readAsDataURL(file);
+    this.cdr.detectChanges();
   }
 
   cargarCategorias() {

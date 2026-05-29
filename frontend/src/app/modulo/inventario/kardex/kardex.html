@@ -1,21 +1,25 @@
-<div class="container py-4">
-  <div class="card">
-    <!-- HEADER -->
+<section class="container-fluid py-4 bg-body-tertiary min-vh-100">
+  <!-- HEADER -->
+  <header class="mb-4">
+    <h4 class="mb-1 fw-semibold">Kardex de inventario</h4>
+
+    <small class="text-muted"> Historial de movimientos de productos </small>
+  </header>
+
+  <!-- CARD -->
+  <article class="card border-0 shadow-sm rounded-4 overflow-hidden">
     <div class="card-body">
-      <h4 class="mb-0">Kardex de Inventario</h4>
-      <small class="text-muted">Historial de movimientos de productos</small>
-    </div>
-
-    <div class="card-body pt-0">
       <!-- SEARCH -->
-      <form (ngSubmit)="buscar()">
-        <div class="input-group mb-3">
-          <div class="form-outline flex-grow-1">
-            <input name="codigo" [(ngModel)]="codigo" class="form-control" />
-            <label class="form-label">Código de producto</label>
-          </div>
+      <form (ngSubmit)="buscar()" class="mb-4">
+        <div class="input-group">
+          <input
+            name="codigo"
+            [(ngModel)]="codigo"
+            class="form-control"
+            placeholder="Código de producto"
+          />
 
-          <button type="submit" class="btn btn-primary">
+          <button type="submit" class="btn btn-primary px-4">
             <i class="fas fa-search"></i>
           </button>
         </div>
@@ -23,51 +27,51 @@
 
       <!-- TABLE -->
       <div class="table-responsive">
-        <table class="table table-hover align-middle">
+        <table class="table table-hover align-middle mb-0">
+          <!-- HEADER -->
           <thead class="table-light">
             <tr>
-              <th>Fecha</th>
-              <th>Tipo</th>
-              <th>Cantidad</th>
-              <th>Usuario</th>
-              <th>Stock</th>
+              <th class="erp-th">Fecha</th>
+
+              <th class="erp-th">Tipo</th>
+
+              <th class="erp-th">Cantidad</th>
+
+              <th class="erp-th">Usuario</th>
+
+              <th class="erp-th">Stock</th>
             </tr>
           </thead>
 
+          <!-- BODY -->
           <tbody>
             <tr *ngFor="let m of movimientos">
-              <!-- FECHA -->
-              <td>
-                <span class="text-muted">
-                  {{ m.fecha | date: 'short' }}
-                </span>
+              <td class="text-muted">
+                {{ m.fecha | date: 'short' }}
               </td>
 
-              <!-- TIPO (INGRESO / SALIDA) -->
+              <!-- TIPO -->
               <td>
                 <span
-                  class="badge"
+                  class="erp-badge"
                   [ngClass]="{
-                    'bg-info': m.tipo === 'ENTRADA',
-                    'bg-danger': m.tipo === 'SALIDA',
+                    'erp-badge-success': m.tipo === 'ENTRADA',
+                    'erp-badge-danger': m.tipo === 'SALIDA',
                   }"
                 >
                   {{ m.tipo }}
                 </span>
               </td>
 
-              <!-- CANTIDAD -->
               <td class="fw-semibold">
                 {{ m.cantidad }}
               </td>
 
-              <!-- USUARIO -->
-              <td>
-                <i class="fas fa-user text-muted me-1"></i>
+              <td class="text-muted">
+                <i class="fas fa-user me-1"></i>
                 {{ m.codigoUsuario }}
               </td>
 
-              <!-- STOCK -->
               <td class="fw-semibold">
                 {{ m.saldo }}
               </td>
@@ -76,5 +80,5 @@
         </table>
       </div>
     </div>
-  </div>
-</div>
+  </article>
+</section>

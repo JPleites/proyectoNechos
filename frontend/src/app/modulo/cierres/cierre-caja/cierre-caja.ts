@@ -42,6 +42,7 @@ export class CierreCaja implements OnInit {
         this.arqueo = data;
         this.calcularDiferencia();
         this.cdr.detectChanges();
+        console.log('Arqueo cargado:', this.arqueo);
       },
       error: () => {
         Swal.fire('Error', 'No se pudo cargar arqueo', 'error');

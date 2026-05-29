@@ -1,97 +1,121 @@
-<div class="container py-4">
-  <div class="erp-card">
+<section class="container-fluid py-4 bg-body-tertiary min-vh-100">
+  <article class="card border-0 shadow-sm rounded-4 overflow-hidden">
     <!-- HEADER -->
-    <div class="erp-header">
-      <h4 class="erp-title">Nuevo Producto</h4>
-      <p class="erp-subtitle">Registro de información del inventario</p>
-    </div>
+    <header class="card-header bg-white border-bottom px-4 py-3">
+      <h4 class="mb-1 fw-semibold">Nuevo Producto</h4>
 
-    <div class="row g-4">
-      <!-- IMAGEN -->
-      <div class="col-lg-4">
-        <div class="erp-section text-center">
-          <img
-            [src]="imagePreview || 'https://via.placeholder.com/220x220?text=Producto'"
-            class="erp-image mb-3"
-          />
+      <small class="text-muted"> Registro de información del inventario </small>
+    </header>
 
-          <input
-            type="file"
-            class="form-control erp-input"
-            (change)="onImageSelected($event)"
-            accept="image/*"
-          />
+    <form class="card-body p-4" [formGroup]="form" (ngSubmit)="guardar()">
+      <div class="row g-4">
+        <!-- IMAGEN -->
+        <!-- IMAGEN -->
+        <aside class="col-lg-4">
+          <section class="erp-card text-center p-3">
+            <!-- PREVIEW -->
+            <div class="d-flex justify-content-center mb-3">
+              <img
+                [src]="imagePreview || 'https://via.placeholder.com/220x220?text=Producto'"
+                class="erp-product-image"
+                alt="Producto"
+              />
+            </div>
 
-          <small class="text-muted d-block mt-2"> Imagen del producto </small>
-        </div>
-      </div>
+            <!-- INPUT FILE -->
+            <label class="btn btn-outline-primary w-100 mb-2">
+              <i class="fas fa-upload me-2"></i>
+              Seleccionar imagen
+              <input type="file" accept="image/*" hidden (change)="onImageSelected($event)" />
+            </label>
 
-      <!-- FORM -->
-      <div class="col-lg-8">
-        <form [formGroup]="form" (ngSubmit)="guardar()">
-          <!-- SECCIÓN: BÁSICOS -->
-          <div class="erp-section">
+            <small class="erp-muted d-block"> Formatos recomendados: JPG, PNG </small>
+          </section>
+        </aside>
+
+        <!-- FORMULARIO -->
+        <main class="col-lg-8 d-grid gap-4">
+          <!-- INFORMACIÓN -->
+          <section class="erp-panel">
             <h6 class="erp-section-title">Información básica</h6>
 
             <div class="row g-3">
               <div class="col-md-4">
-                <label class="erp-label">Código</label>
-                <input formControlName="codigo" class="erp-input" />
+                <label class="form-label"> Código </label>
+
+                <input formControlName="codigo" class="form-control" />
               </div>
 
               <div class="col-md-8">
-                <label class="erp-label">Nombre del producto</label>
-                <input formControlName="producto" class="erp-input" />
+                <label class="form-label"> Nombre del producto </label>
+
+                <input formControlName="producto" class="form-control" />
               </div>
             </div>
-          </div>
+          </section>
 
-          <!-- SECCIÓN: PRECIOS -->
-          <div class="erp-section">
+          <!-- PRECIOS -->
+          <section class="erp-panel">
             <h6 class="erp-section-title">Precios</h6>
 
             <div class="row g-3">
               <div class="col-md-4">
-                <label class="erp-label">Costo de compra</label>
-                <input type="number" formControlName="costoCompra" class="erp-input" />
+                <label class="form-label">Costo compra</label>
+
+                <input type="number" formControlName="costoCompra" class="form-control" />
               </div>
 
               <div class="col-md-4">
-                <label class="erp-label">Costo de venta</label>
-                <input type="number" formControlName="costoVenta" class="erp-input" />
+                <label class="form-label">Costo venta</label>
+
+                <input type="number" formControlName="costoVenta" class="form-control" />
               </div>
 
               <div class="col-md-4">
-                <label class="erp-label">Precio de venta</label>
-                <input type="number" formControlName="precio" class="erp-input" />
+                <label class="form-label">Precio venta</label>
+
+                <input type="number" formControlName="precio" class="form-control" />
               </div>
 
               <div class="col-md-4">
-                <label class="erp-label">Descuento</label>
-                <input type="number" formControlName="descuento" class="erp-input" />
+                <label class="form-label">Descuento</label>
+
+                <input type="number" formControlName="descuento" class="form-control" />
               </div>
             </div>
-          </div>
+          </section>
 
-          <!-- SECCIÓN: LOGÍSTICA -->
-          <div class="erp-section">
+          <!-- LOGÍSTICA -->
+          <section class="erp-panel">
             <h6 class="erp-section-title">Logística</h6>
-
-            <div class="col-md-6">
-              <label class="erp-label">Categoría</label>
-              <select formControlName="categoria" class="erp-input" (change)="onCategoriaChange()">
-                <option value="">Seleccione</option>
-                <option *ngFor="let c of categorias" [value]="c.id">
-                  {{ c.nombre }}
-                </option>
-              </select>
-            </div>
 
             <div class="row g-3">
               <div class="col-md-6">
-                <label class="erp-label">Proveedor</label>
-                <select formControlName="proveedor" class="erp-input" (change)="onProveedorChange()">
+                <label class="form-label"> Categoría </label>
+
+                <select
+                  formControlName="categoria"
+                  class="form-select"
+                  (change)="onCategoriaChange()"
+                >
                   <option value="">Seleccione</option>
+
+                  <option *ngFor="let c of categorias" [value]="c.id">
+                    {{ c.nombre }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label"> Proveedor </label>
+
+                <select
+                  formControlName="proveedor"
+                  class="form-select"
+                  (change)="onProveedorChange()"
+                >
+                  <option value="">Seleccione</option>
+
                   <option *ngFor="let p of proveedoresFiltrados" [value]="p.id">
                     {{ p.proveedor }}
                   </option>
@@ -99,33 +123,37 @@
               </div>
 
               <div class="col-md-6">
-                <label class="erp-label">Marca</label>
-                <select formControlName="marca" class="erp-input">
+                <label class="form-label"> Marca </label>
+
+                <select formControlName="marca" class="form-select">
                   <option value="">Seleccione</option>
+
                   <option *ngFor="let m of marcasFiltradas" [value]="m.id">
                     {{ m.nombre }}
                   </option>
                 </select>
               </div>
             </div>
-          </div>
+          </section>
 
-          <!-- SECCIÓN: DESCRIPCIÓN -->
-          <div class="erp-section">
+          <!-- DESCRIPCIÓN -->
+          <section class="erp-panel">
             <h6 class="erp-section-title">Descripción</h6>
 
-            <textarea formControlName="descripcion" rows="3" class="erp-input"></textarea>
-          </div>
+            <textarea rows="4" formControlName="descripcion" class="form-control"></textarea>
+          </section>
 
-          <!-- BOTÓN -->
-          <div class="text-end mt-3">
-            <button type="submit" class="erp-btn">
+          <!-- ACTIONS -->
+          <footer class="d-flex justify-content-end gap-2">
+            <button type="button" class="btn btn-light border rounded-3 px-4">Cancelar</button>
+
+            <button type="submit" class="btn btn-primary rounded-3 px-4">
               <i class="fas fa-save me-2"></i>
               Guardar producto
             </button>
-          </div>
-        </form>
+          </footer>
+        </main>
       </div>
-    </div>
-  </div>
-</div>
+    </form>
+  </article>
+</section>

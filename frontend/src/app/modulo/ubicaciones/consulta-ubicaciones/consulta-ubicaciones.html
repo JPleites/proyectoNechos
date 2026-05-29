@@ -1,60 +1,79 @@
-<div class="container-fluid py-4">
-  <div class="card">
-    <!-- HEADER -->
-    <div class="card-body">
-      <h4 class="mb-0">Ubicaciones</h4>
-      <small class="text-muted">Gestión de estantes y niveles</small>
+<section class="container-fluid py-4 bg-body-tertiary min-vh-100">
+  <!-- HEADER -->
+  <header class="mb-4">
+    <h4 class="mb-1 fw-semibold">Ubicaciones</h4>
+
+    <small class="text-muted"> Gestión de estantes y niveles </small>
+  </header>
+
+  <!-- TABLE -->
+  <article class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <!-- HEAD -->
+        <thead class="table-light">
+          <tr>
+            <th class="erp-th">Ubicación</th>
+
+            <th class="erp-th">Almacén</th>
+
+            <th class="erp-th">Estante</th>
+
+            <th class="erp-th">Nivel</th>
+
+            <th class="erp-th">Depósito</th>
+
+            <th class="erp-th text-center pe-4" style="width: 120px">Acciones</th>
+          </tr>
+        </thead>
+
+        <!-- BODY -->
+        <tbody>
+          <tr *ngFor="let u of ubicaciones">
+            <td class="fw-medium text-dark ps-4">
+              <i class="fas fa-map-marker-alt text-muted me-2"></i>
+              {{ u.ubicacion }}
+            </td>
+
+            <td class="text-muted">
+              <i class="fas fa-warehouse text-muted me-2"></i>
+              {{ u.almacen?.almacen }}
+            </td>
+
+            <td class="text-muted">
+              {{ u.estante }}
+            </td>
+
+            <td class="text-muted">
+              {{ u.nivel }}
+            </td>
+
+            <td class="text-muted">
+              {{ u.deposito }}
+            </td>
+
+            <!-- ACTIONS -->
+            <td class="text-center pe-4">
+              <button
+                class="btn btn-light btn-sm border rounded-3"
+                (click)="eliminar(u.ubicacion)"
+                title="Eliminar"
+              >
+                <i class="fas fa-trash text-danger"></i>
+              </button>
+            </td>
+          </tr>
+
+          <!-- EMPTY -->
+          <tr *ngIf="!ubicaciones || ubicaciones.length === 0">
+            <td colspan="6" class="text-center py-5 text-muted">
+              <i class="fas fa-inbox fa-lg d-block mb-2"></i>
+
+              No hay ubicaciones registradas
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-
-    <div class="card-body pt-0">
-      <div class="table-responsive">
-        <table class="table table-hover align-middle w-100">
-          <thead class="table-light">
-            <tr>
-              <th>Ubicación</th>
-              <th>Almacén</th>
-              <th>Estante</th>
-              <th>Nivel</th>
-              <th>Depósito</th>
-              <th class="text-center" style="width: 120px">Acciones</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <tr *ngFor="let u of ubicaciones">
-              <td class="fw-semibold">
-                <i class="fas fa-map-marker-alt text-muted me-2"></i>
-                {{ u.ubicacion }}
-              </td>
-              <td>
-                <i class="fas fa-warehouse text-muted me-2"></i>
-                {{ u.almacen?.almacen }}
-              </td>
-              <td>{{ u.estante }}</td>
-              <td>{{ u.nivel }}</td>
-              <td>{{ u.deposito }}</td>
-
-              <td class="text-center">
-                <button
-                  class="btn btn-sm btn-outline-danger"
-                  (click)="eliminar(u.ubicacion)"
-                  title="Eliminar"
-                >
-                  <i class="fas fa-trash"></i>
-                </button>
-              </td>
-            </tr>
-
-            <!-- EMPTY STATE -->
-            <tr *ngIf="!ubicaciones || ubicaciones.length === 0">
-              <td colspan="5" class="text-center text-muted py-4">
-                <i class="fas fa-inbox me-2"></i>
-                No hay ubicaciones registradas
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
+  </article>
+</section>

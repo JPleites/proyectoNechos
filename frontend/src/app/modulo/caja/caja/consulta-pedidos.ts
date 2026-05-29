@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common';
 import { PedidosService } from '../../services/pedidos.service';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { ReciboComponent } from '../recibo/recibo';
+import { Modal } from 'bootstrap';
 
 @Component({
   selector: 'app-consulta-pedidos',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ReciboComponent],
   templateUrl: './consulta-pedidos.html',
   styleUrl: './consulta-pedidos.scss',
 })
@@ -15,6 +17,8 @@ export class ConsultaPedidos implements OnInit {
   pedidoSeleccionado: any = null;
   metodoPago = 'EFECTIVO';
   totalRecibido: number = 0;
+  ventaActual: any = null;
+  vendedorActual: string = '';
 
   constructor(
     private pedidosService: PedidosService,
@@ -46,39 +50,81 @@ export class ConsultaPedidos implements OnInit {
 
   facturar(metodoPago: string) {
     if (!this.pedidoSeleccionado) return;
-
     if (this.totalRecibido < Number(this.pedidoSeleccionado.total)) {
       Swal.fire('Error', 'El monto recibido es insuficiente', 'warning');
       return;
     }
 
     this.pedidosService
-      .facturarPedido(this.pedidoSeleccionado.id, {
-        metodoPago,
-        totalRecibido: this.totalRecibido,
-      })
+      .facturarPedido(this.pedidoSeleccionado.id, { metodoPago, totalRecibido: this.totalRecibido })
       .subscribe({
         next: (venta: any) => {
-          Swal.fire({
-            icon: 'success',
-            title: 'Venta realizada',
-            text: `Recibo #${venta.ventaID}`,
-          });
+          this.ventaActual = venta;
+          this.vendedorActual = venta.vendedor || 'N/A';
 
-          // limpiar formulario
+          // abrir modal
+          const modalEl = document.getElementById('modalRecibo');
+          if (modalEl) {
+            const modal = new Modal(modalEl);
+            modal.show();
+          }
+
+          // limpiar
           this.totalRecibido = 0;
-          this.metodoPago = 'EFECTIVO';
           this.pedidoSeleccionado = null;
-
-          // recargar lista
           this.cargarPedidos();
+          this.cdr.detectChanges();
         },
         error: (err) => {
-          console.error(err);
           Swal.fire('Error', err.error?.message || 'No se pudo facturar', 'error');
         },
       });
   }
+
+  imprimir() {
+    const contenido = document.getElementById('recibo-imprimir')?.innerHTML;
+    if (!contenido) return;
+
+    const ventana = window.open('', '_blank', 'width=300,height=600');
+    if (!ventana) return;
+
+    ventana.document.write(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Recibo</title>
+        <style>
+          @page { size: 80mm auto; margin: 4mm; }
+          body {
+            width: 80mm;
+            margin: 0;
+            padding: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+          }
+          table { width: 100%; border-collapse: collapse; }
+          hr { border-top: 1px dashed #000; border-bottom: none; }
+          .text-center { text-align: center; }
+          .text-end { text-align: right; }
+          .fw-bold { font-weight: bold; }
+          .d-flex { display: flex; }
+          .justify-content-between { justify-content: space-between; }
+          .mb-0 { margin-bottom: 0; }
+          .mb-1 { margin-bottom: 4px; }
+          .mb-2 { margin-bottom: 8px; }
+          .mt-1 { margin-top: 4px; }
+          .my-1 { margin-top: 4px; margin-bottom: 4px; }
+          h5 { font-size: 14px; margin: 0; }
+        </style>
+      </head>
+      <body onload="window.print(); window.close();">
+        ${contenido}
+      </body>
+    </html>
+  `);
+    ventana.document.close();
+  }
+
   eliminarDetalle(detalleId: number) {
     Swal.fire({
       title: '¿Eliminar producto?',

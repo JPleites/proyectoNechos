@@ -21,44 +21,54 @@ export class VentasService {
 
     return this.codeGen.generate('PED', nextNumber);
   }
-
   // =========================================================
   // FACTURAR PEDIDO
   // =========================================================
   async facturarPedido(id: number, data: any) {
-    return this.prisma.$transaction(async (tx) => {
-      // ==========================================
-      // OBTENER PEDIDO
-      // ==========================================
-      const pedido = await tx.pedidos.findUnique({
-        where: {
-          id,
-        },
-        include: {
-          detalles: {
-            include: {
-              producto: true,
-              ubicacionRel: true,
-            },
+    // ✅ Estas consultas ANTES de la transacción
+    const pedido = await this.prisma.pedidos.findUnique({
+      where: { id },
+      include: {
+        detalles: {
+          include: {
+            producto: true,
+            ubicacionRel: true,
           },
         },
-      });
+        usuario: {
+          include: { perfil: true }, // 👈 vendedor
+        },
+      },
+    });
 
-      if (!pedido) {
-        throw new BadRequestException('Pedido no encontrado');
-      }
+    if (!pedido) throw new BadRequestException('Pedido no encontrado');
+    if (pedido.estado !== 'EN_CAJA')
+      throw new BadRequestException('El pedido no está en caja');
+    if (!pedido.detalles.length)
+      throw new BadRequestException('El pedido no tiene productos');
 
-      if (pedido.estado !== 'EN_CAJA') {
-        throw new BadRequestException('El pedido no está en caja');
-      }
+    // ✅ Generar IDs antes de la transacción
+    const lastVenta = await this.prisma.ventas.findFirst({
+      orderBy: { id: 'desc' },
+    });
+    const ventaID = this.codeGen.generate(
+      'V',
+      lastVenta ? lastVenta.id + 1 : 1,
+    );
 
-      if (!pedido.detalles.length) {
-        throw new BadRequestException('El pedido no tiene productos');
-      }
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
 
-      // ==========================================
+    let arqueo = await this.prisma.arqueo.findFirst({
+      where: {
+        usuarioCodigo: pedido.usuarioCodigo,
+        fecha: { gte: hoy },
+      },
+    });
+
+    // ✅ Ahora sí la transacción — solo operaciones de escritura
+    return this.prisma.$transaction(async (tx) => {
       // VALIDAR STOCK
-      // ==========================================
       for (const detalle of pedido.detalles) {
         const inventario = await tx.inventario.findFirst({
           where: {
@@ -67,36 +77,17 @@ export class VentasService {
           },
         });
 
-        if (!inventario) {
+        if (!inventario)
           throw new BadRequestException(
-            `No existe inventario para ${detalle.productoCodigo}`,
+            `Sin inventario: ${detalle.productoCodigo}`,
           );
-        }
-
-        if (inventario.cantidad < detalle.cantidad) {
+        if (inventario.cantidad < detalle.cantidad)
           throw new BadRequestException(
-            `Stock insuficiente para ${detalle.productoCodigo}`,
+            `Stock insuficiente: ${detalle.productoCodigo}`,
           );
-        }
       }
 
-      // ==========================================
-      // GENERAR VENTA ID
-      // ==========================================
-      const lastVenta = await tx.ventas.findFirst({
-        orderBy: {
-          id: 'desc',
-        },
-      });
-
-      const ventaID = this.codeGen.generate(
-        'V',
-        lastVenta ? lastVenta.id + 1 : 1,
-      );
-
-      // ==========================================
       // CREAR VENTA
-      // ==========================================
       const venta = await tx.ventas.create({
         data: {
           ventaID,
@@ -104,18 +95,14 @@ export class VentasService {
           fecha: new Date(),
           estado: 'FACTURADA',
           tipoVenta: 'CONTADO',
-
           subtotal: pedido.subtotal,
           impuesto: pedido.impuesto,
           descuento: pedido.descuento,
           total: pedido.total,
-
           metodoPago: data.metodoPago,
           totalRecibido: data.totalRecibido,
           cambio: Number(data.totalRecibido) - Number(pedido.total),
-
           usuarioCodigo: pedido.usuarioCodigo,
-
           detalles: {
             create: pedido.detalles.map((d) => ({
               productoCodigo: d.productoCodigo,
@@ -129,14 +116,12 @@ export class VentasService {
         },
         include: {
           cliente: true,
-          usuario: true,
+          usuario: { include: { perfil: true } },
           detalles: true,
         },
       });
 
-      // ==========================================
       // DESCONTAR INVENTARIO
-      // ==========================================
       for (const detalle of pedido.detalles) {
         const inventario = await tx.inventario.findFirst({
           where: {
@@ -146,14 +131,8 @@ export class VentasService {
         });
 
         await tx.inventario.update({
-          where: {
-            id: inventario!.id,
-          },
-          data: {
-            cantidad: {
-              decrement: detalle.cantidad,
-            },
-          },
+          where: { id: inventario!.id },
+          data: { cantidad: { decrement: detalle.cantidad } },
         });
 
         await tx.movimientosInventario.create({
@@ -168,28 +147,11 @@ export class VentasService {
         });
       }
 
-      // ==========================================
-      // ACTUALIZAR ARQUEO
-      // ==========================================
-      const hoy = new Date();
-      hoy.setHours(0, 0, 0, 0);
-
-      let arqueo = await tx.arqueo.findFirst({
-        where: {
-          usuarioCodigo: pedido.usuarioCodigo,
-          fecha: {
-            gte: hoy,
-          },
-        },
-      });
-
+      // ARQUEO
       if (!arqueo) {
         const lastArqueo = await tx.arqueo.findFirst({
-          orderBy: {
-            id: 'desc',
-          },
+          orderBy: { id: 'desc' },
         });
-
         const arqueoID = this.codeGen.generate(
           'ARQ',
           lastArqueo ? lastArqueo.id + 1 : 1,
@@ -199,7 +161,6 @@ export class VentasService {
           data: {
             arqueoID,
             usuarioCodigo: pedido.usuarioCodigo,
-
             totalEfectivo: 0,
             totalBac: 0,
             totalFicohsa: 0,
@@ -212,106 +173,38 @@ export class VentasService {
         });
       }
 
-      // ==========================================
       // SUMAR AL ARQUEO
-      // ==========================================
       const total = Number(pedido.total);
+      const campoMetodo: Record<string, string> = {
+        EFECTIVO: 'totalEfectivo',
+        BAC: 'totalBac',
+        FICOHSA: 'totalFicohsa',
+        DAVIVIENDA: 'totalDavivienda',
+        TRANSFERENCIA: 'totalTransferencias',
+      };
 
-      switch (data.metodoPago) {
-        case 'EFECTIVO':
-          await tx.arqueo.update({
-            where: {
-              id: arqueo.id,
-            },
-            data: {
-              totalEfectivo: {
-                increment: total,
-              },
-              totalFacturado: {
-                increment: total,
-              },
-            },
-          });
-          break;
-
-        case 'BAC':
-          await tx.arqueo.update({
-            where: {
-              id: arqueo.id,
-            },
-            data: {
-              totalBac: {
-                increment: total,
-              },
-              totalFacturado: {
-                increment: total,
-              },
-            },
-          });
-          break;
-
-        case 'FICOHSA':
-          await tx.arqueo.update({
-            where: {
-              id: arqueo.id,
-            },
-            data: {
-              totalFicohsa: {
-                increment: total,
-              },
-              totalFacturado: {
-                increment: total,
-              },
-            },
-          });
-          break;
-
-        case 'DAVIVIENDA':
-          await tx.arqueo.update({
-            where: {
-              id: arqueo.id,
-            },
-            data: {
-              totalDavivienda: {
-                increment: total,
-              },
-              totalFacturado: {
-                increment: total,
-              },
-            },
-          });
-          break;
-
-        case 'TRANSFERENCIA':
-          await tx.arqueo.update({
-            where: {
-              id: arqueo.id,
-            },
-            data: {
-              totalTransferencias: {
-                increment: total,
-              },
-              totalFacturado: {
-                increment: total,
-              },
-            },
-          });
-          break;
+      const campo = campoMetodo[data.metodoPago];
+      if (campo) {
+        await tx.arqueo.update({
+          where: { id: arqueo.id },
+          data: {
+            [campo]: { increment: total },
+            totalFacturado: { increment: total },
+          },
+        });
       }
 
-      // ==========================================
-      // ACTUALIZAR ESTADO DEL PEDIDO
-      // ==========================================
+      // ACTUALIZAR PEDIDO
       await tx.pedidos.update({
-        where: {
-          id,
-        },
-        data: {
-          estado: 'FACTURADO',
-        },
+        where: { id },
+        data: { estado: 'FACTURADO' },
       });
 
-      return venta;
+      // RETORNAR con vendedor
+      return {
+        ...venta,
+        vendedor: pedido.usuario?.perfil?.nombre || 'N/A',
+      };
     });
   }
 }

@@ -1,95 +1,104 @@
-<div class="container-fluid py-4">
-  <div class="card">
-    <!-- HEADER -->
-    <div class="card-body d-flex justify-content-between align-items-center border-bottom">
-      <div>
-        <h4 class="mb-0">Proveedores</h4>
-        <small class="text-muted">Gestión de proveedores</small>
-      </div>
+<section class="container-fluid py-4 bg-body-tertiary min-vh-100">
+  <!-- HEADER -->
+  <header class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="mb-1 fw-semibold">Proveedores</h4>
 
-      <a routerLink="/proveedores/nuevo" class="btn btn-primary">
-        <i class="fas fa-plus me-2"></i>
-        Nuevo proveedor
-      </a>
+      <small class="text-muted"> Gestión de proveedores </small>
     </div>
 
-    <!-- TABLE -->
-    <div class="card-body pt-3">
-      <div class="table-responsive">
-        <table class="table table-hover align-middle w-100">
-          <thead class="table-light">
-            <tr>
-              <th style="width: 180px">RTN / Código</th>
-              <th>Nombre</th>
-              <th class="text-center" style="width: 140px">Acciones</th>
-            </tr>
-          </thead>
+    <a routerLink="/proveedores/nuevo" class="btn btn-primary rounded-3 px-3">
+      <i class="fas fa-plus me-2"></i>
+      Nuevo proveedor
+    </a>
+  </header>
 
-          <tbody>
-            <tr *ngFor="let p of proveedores">
-              <td class="fw-semibold">
-                {{ p.rtn || p.id }}
-              </td>
+  <!-- TABLE -->
+  <article class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <!-- HEAD -->
+        <thead class="table-light">
+          <tr>
+            <th class="erp-th ps-4" style="width: 180px">RTN / Código</th>
 
-              <td>
-                <i class="fas fa-truck text-muted me-2"></i>
-                {{ p.proveedor }}
-              </td>
+            <th class="erp-th">Nombre</th>
 
-              <td class="text-center">
-                <button
-                  class="btn btn-sm btn-outline-primary"
-                  (click)="abrirCategorias(p)"
-                  title="Asignar categorías"
-                >
-                  <i class="fas fa-tags"></i>
-                </button>
-              </td>
-            </tr>
+            <th class="erp-th text-center pe-4" style="width: 140px">Acciones</th>
+          </tr>
+        </thead>
 
-            <!-- EMPTY STATE -->
-            <tr *ngIf="!proveedores || proveedores.length === 0">
-              <td colspan="3" class="text-center text-muted py-4">
-                <i class="fas fa-inbox me-2"></i>
-                No hay proveedores registrados
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+        <!-- BODY -->
+        <tbody>
+          <tr *ngFor="let p of proveedores">
+            <td class="ps-4 fw-semibold text-muted">
+              {{ p.rtn || p.id }}
+            </td>
+
+            <td class="fw-medium text-dark">
+              <i class="fas fa-truck text-muted me-2"></i>
+              {{ p.proveedor }}
+            </td>
+
+            <td class="text-center pe-4">
+              <button
+                class="btn btn-light btn-sm border rounded-3"
+                (click)="abrirCategorias(p)"
+                title="Asignar categorías"
+              >
+                <i class="fas fa-tags text-primary"></i>
+              </button>
+            </td>
+          </tr>
+
+          <!-- EMPTY -->
+          <tr *ngIf="!proveedores || proveedores.length === 0">
+            <td colspan="3" class="text-center py-5 text-muted">
+              <i class="fas fa-inbox fa-lg d-block mb-2"></i>
+
+              No hay proveedores registrados
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </div>
-</div>
-<div class="modal-backdrop" *ngIf="mostrarModal">
-  <div class="modal-container bg-white p-4 rounded shadow">
-    <h5 class="mb-3">
-      <i class="fas fa-tags me-2 text-primary"></i>
-      Asignar categorías
-    </h5>
+  </article>
 
-    <p class="text-muted mb-3">
-      {{ proveedorSeleccionado?.proveedor }}
-    </p>
+  <!-- MODAL -->
+  <div *ngIf="mostrarModal" class="erp-modal-backdrop">
+    <div class="erp-modal">
+      <h5 class="mb-2 fw-semibold">
+        <i class="fas fa-tags me-2 text-primary"></i>
+        Asignar categorías
+      </h5>
 
-    <div class="mb-3">
-      <div *ngFor="let c of categorias" class="form-check mb-2">
-        <input
-          class="form-check-input"
-          type="checkbox"
-          [checked]="categoriasSeleccionadas.includes(c.id)"
-          (change)="toggleCategoria(c.id, $event.target.checked)"
-        />
+      <small class="text-muted d-block mb-3">
+        {{ proveedorSeleccionado?.proveedor }}
+      </small>
 
-        <label class="form-check-label">
-          {{ c.nombre }}
+      <div class="d-grid gap-2 mb-3">
+        <label
+          *ngFor="let c of categorias"
+          class="d-flex align-items-center gap-2 p-2 border rounded-3"
+        >
+          <input
+            type="checkbox"
+            class="form-check-input m-0"
+            [checked]="categoriasSeleccionadas.includes(c.id)"
+            (change)="toggleCategoria(c.id, $event.target.checked)"
+          />
+
+          <span>
+            {{ c.nombre }}
+          </span>
         </label>
       </div>
-    </div>
 
-    <div class="text-end">
-      <button class="btn btn-secondary me-2" (click)="cerrarModal()">Cancelar</button>
+      <div class="d-flex justify-content-end gap-2">
+        <button class="btn btn-light border rounded-3" (click)="cerrarModal()">Cancelar</button>
 
-      <button class="btn btn-primary" (click)="guardarCategorias()">Guardar</button>
+        <button class="btn btn-primary rounded-3" (click)="guardarCategorias()">Guardar</button>
+      </div>
     </div>
   </div>
-</div>
+</section>

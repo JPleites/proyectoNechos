@@ -1,92 +1,105 @@
-<div class="container-fluid py-4">
-  <div class="card">
-    <!-- HEADER -->
-    <div class="card-body d-flex justify-content-between align-items-center">
-      <div>
-        <h4 class="mb-0">Pedidos</h4>
-        <small class="text-muted">Gestión de pedidos</small>
-      </div>
-    </div>
+<section class="container-fluid py-4 bg-body-tertiary min-vh-100">
+  <!-- HEADER -->
+  <header class="mb-4">
+    <h4 class="mb-1 fw-semibold">Pedidos</h4>
 
-    <div class="card-body pt-0">
-      <!-- TABLE -->
-      <div class="table-responsive">
-        <table class="table table-hover align-middle w-100">
-          <thead class="table-light">
-            <tr>
-              <th style="width: 120px">ID</th>
-              <th>Cliente</th>
-              <th>Estado</th>
-              <th>Fecha</th>
-              <th>Total</th>
-              <th class="text-center" style="width: 140px">Acciones</th>
-            </tr>
-          </thead>
+    <small class="text-muted"> Gestión de pedidos del sistema </small>
+  </header>
 
-          <tbody>
-            <tr *ngFor="let p of pedidos">
-              <td class="fw-semibold">{{ p.id }}</td>
+  <!-- TABLE CARD -->
+  <article class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <!-- HEADER -->
+        <thead class="table-light">
+          <tr>
+            <th class="ps-4" style="width: 120px">ID</th>
 
-              <td>
-                <i class="fas fa-user text-muted me-2"></i>
-                {{ p.cliente?.nombre || 'Consumidor Final' }}
-              </td>
+            <th>Cliente</th>
 
-              <td>
-                <span
-                  class="badge"
-                  [ngClass]="{
-                    'bg-warning text-dark': p.estado === 'EN_PROCESO',
-                    'bg-primary': p.estado === 'EN_CAJA',
-                    'bg-success': p.estado === 'FACTURADO',
-                    'bg-danger': p.estado === 'CANCELADO',
-                  }"
-                >
-                  {{ p.estado }}
-                </span>
-              </td>
+            <th>Estado</th>
 
-              <td>
-                {{ p.fecha | date: 'dd/MM/yyyy' }}
-              </td>
+            <th>Fecha</th>
 
-              <td class="text-truncate" style="max-width: 200px">Lps. {{ p.total }}</td>
+            <th>Total</th>
 
-              <td class="text-center">
+            <th class="text-end pe-4" style="width: 220px">Acciones</th>
+          </tr>
+        </thead>
+
+        <!-- BODY -->
+        <tbody>
+          <tr *ngFor="let p of pedidos">
+            <td class="ps-4 fw-semibold text-muted">
+              {{ p.id }}
+            </td>
+
+            <td>
+              <i class="fas fa-user text-muted me-2"></i>
+              {{ p.cliente?.nombre || 'Consumidor Final' }}
+            </td>
+
+            <td>
+              <span
+                class="badge"
+                [ngClass]="{
+                  'bg-warning text-dark': p.estado === 'EN_PROCESO',
+                  'bg-primary': p.estado === 'EN_CAJA',
+                  'bg-success': p.estado === 'FACTURADO',
+                  'bg-danger': p.estado === 'CANCELADO',
+                }"
+              >
+                {{ p.estado }}
+              </span>
+            </td>
+
+            <td>
+              {{ p.fecha | date: 'dd/MM/yyyy' }}
+            </td>
+
+            <td class="fw-semibold">Lps. {{ p.total | number: '1.2-2' }}</td>
+
+            <!-- ACTIONS -->
+            <td class="text-end pe-4">
+              <!-- ACCIONES PRIMARIAS -->
+              <div class="d-flex justify-content-end gap-2 flex-wrap">
                 <button
-                  class="btn btn-sm btn-outline-danger"
+                  class="btn btn-light border btn-sm rounded-3"
                   (click)="eliminar(p.id)"
                   title="Eliminar"
                 >
-                  <i class="fas fa-trash"></i>
+                  <i class="fas fa-trash text-danger"></i>
                 </button>
+
                 <button
-                  class="btn btn-success btn-sm"
+                  class="btn btn-primary btn-sm rounded-3"
                   (click)="enviarACaja(p.id)"
                   *ngIf="p.estado === 'EN_PROCESO'"
                 >
                   Enviar a caja
                 </button>
+
                 <button
-                  class="btn btn-warning"
+                  class="btn btn-light border btn-sm rounded-3 text-danger"
                   (click)="cancelarPedido(p.id)"
                   *ngIf="p.estado === 'EN_PROCESO'"
                 >
-                  Cancelar Pedido
+                  Cancelar
                 </button>
-              </td>
-            </tr>
+              </div>
+            </td>
+          </tr>
 
-            <!-- EMPTY STATE -->
-            <tr *ngIf="!pedidos || pedidos.length === 0">
-              <td colspan="6" class="text-center text-muted py-4">
-                <i class="fas fa-inbox me-2"></i>
-                No hay pedidos registrados
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+          <!-- EMPTY -->
+          <tr *ngIf="!pedidos || pedidos.length === 0">
+            <td colspan="6" class="text-center py-5 text-muted">
+              <i class="fas fa-inbox fa-lg d-block mb-2"></i>
+
+              No hay pedidos registrados
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </div>
-</div>
+  </article>
+</section>

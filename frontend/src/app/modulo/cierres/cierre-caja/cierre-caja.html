@@ -1,184 +1,134 @@
-<div class="container-fluid py-4">
-  <div class="card h-100 d-flex flex-column">
+<div class="erp-page">
+  <div class="erp-card d-flex flex-column h-100">
     <!-- HEADER -->
-    <div class="card-body border-bottom flex-shrink-0">
-      <h4 class="mb-0">
-        <i class="fas fa-cash-register me-2 text-primary"></i>
+    <header class="erp-card-header">
+      <h4 class="erp-title d-flex align-items-center gap-2">
+        <i class="fas fa-cash-register text-primary"></i>
         Cierre de Caja
       </h4>
-      <small class="text-muted">Control de arqueo diario</small>
-    </div>
+      <p class="erp-subtitle">Control de arqueo diario</p>
+    </header>
 
-    <!-- CONTENIDO SCROLL -->
-    <div class="card-body flex-grow-1 overflow-auto">
+    <!-- CONTENIDO -->
+    <div class="erp-section flex-grow-1 overflow-auto">
       <!-- RESUMEN -->
       <div *ngIf="arqueo" class="row g-3 mb-4">
-        <div class="col-md-4 col-lg-2">
-          <div class="p-3 border rounded bg-light text-center">
-            <div class="text-muted small">Efectivo</div>
-            <div class="fw-bold">L {{ arqueo.totalEfectivo }}</div>
-          </div>
-        </div>
-
-        <div class="col-md-4 col-lg-2">
-          <div class="p-3 border rounded bg-light text-center">
-            <div class="text-muted small">BAC</div>
-            <div class="fw-bold">L {{ arqueo.totalBac }}</div>
-          </div>
-        </div>
-
-        <div class="col-md-4 col-lg-2">
-          <div class="p-3 border rounded bg-light text-center">
-            <div class="text-muted small">Ficohsa</div>
-            <div class="fw-bold">L {{ arqueo.totalFicohsa }}</div>
-          </div>
-        </div>
-
-        <div class="col-md-4 col-lg-2">
-          <div class="p-3 border rounded bg-light text-center">
-            <div class="text-muted small">Davivienda</div>
-            <div class="fw-bold">L {{ arqueo.totalDavivienda }}</div>
-          </div>
-        </div>
-
-        <div class="col-md-4 col-lg-2">
-          <div class="p-3 border rounded bg-light text-center">
-            <div class="text-muted small">Transferencias</div>
-            <div class="fw-bold">L {{ arqueo.totalTransferencias }}</div>
-          </div>
-        </div>
-
-        <div>
-          <div class="p-3 border rounded bg-light text-center">
-            <div class="text-muted small">Total</div>
-            <div class="fw-bold">L {{ arqueo.totalFacturado }}</div>
+        <div
+          class="col-6 col-md-4 col-lg-2"
+          *ngFor="
+            let item of [
+              { label: 'Efectivo', value: arqueo.totalEfectivo },
+              { label: 'BAC', value: arqueo.totalBac },
+              { label: 'Ficohsa', value: arqueo.totalFicohsa },
+              { label: 'Davivienda', value: arqueo.totalDavivienda },
+              { label: 'Transferencias', value: arqueo.totalTransferencias },
+              { label: 'Total', value: arqueo.totalFacturado },
+            ]
+          "
+        >
+          <div class="erp-card-soft text-center p-3">
+            <div class="erp-muted small">{{ item.label }}</div>
+            <div class="fw-bold">L {{ item.value }}</div>
           </div>
         </div>
       </div>
-    </div>
 
-    <hr />
+      <hr />
 
-    <!-- INPUTS -->
-    <h6 class="mb-3 text-muted">Recuento físico</h6>
+      <!-- INPUTS -->
+      <h6 class="erp-section-title">Recuento físico</h6>
 
-    <div class="row g-3">
-      <div class="col-md-4 col-lg-2">
-        <div class="form-outline">
+      <div class="row g-3">
+        <div class="col-6 col-md-4 col-lg-2">
+          <label class="erp-label">Efectivo</label>
           <input
+            class="erp-input form-control"
             type="number"
-            class="form-control"
             [(ngModel)]="efectivoContado"
             (input)="calcularDiferencia()"
           />
-          <label class="form-label">Efectivo</label>
         </div>
-      </div>
 
-      <div class="col-md-4 col-lg-2">
-        <div class="form-outline">
+        <div class="col-6 col-md-4 col-lg-2">
+          <label class="erp-label">BAC</label>
           <input
+            class="erp-input form-control"
             type="number"
-            class="form-control"
             [(ngModel)]="bacContado"
             (input)="calcularDiferencia()"
           />
-          <label class="form-label">BAC</label>
         </div>
-      </div>
 
-      <div class="col-md-4 col-lg-2">
-        <div class="form-outline">
+        <div class="col-6 col-md-4 col-lg-2">
+          <label class="erp-label">Ficohsa</label>
           <input
+            class="erp-input form-control"
             type="number"
-            class="form-control"
             [(ngModel)]="ficohsaContado"
             (input)="calcularDiferencia()"
           />
-          <label class="form-label">Ficohsa</label>
         </div>
-      </div>
 
-      <div class="col-md-4 col-lg-2">
-        <div class="form-outline">
+        <div class="col-6 col-md-4 col-lg-2">
+          <label class="erp-label">Davivienda</label>
           <input
+            class="erp-input form-control"
             type="number"
-            class="form-control"
             [(ngModel)]="daviviendaContado"
             (input)="calcularDiferencia()"
           />
-          <label class="form-label">Davivienda</label>
         </div>
-      </div>
 
-      <div class="col-md-4 col-lg-2">
-        <div class="form-outline">
+        <div class="col-6 col-md-4 col-lg-2">
+          <label class="erp-label">Transferencias</label>
           <input
+            class="erp-input form-control"
             type="number"
-            class="form-control"
             [(ngModel)]="transferenciaContado"
             (input)="calcularDiferencia()"
           />
-          <label class="form-label">Transferencias</label>
+        </div>
+      </div>
+
+      <!-- DIFERENCIAS -->
+      <div class="mt-4">
+        <h6 class="erp-section-title">Desglose de diferencias</h6>
+
+        <div class="list-group">
+          <div
+            class="list-group-item d-flex justify-content-between"
+            *ngFor="
+              let d of [
+                { label: 'Efectivo', value: diferencias.efectivo },
+                { label: 'BAC', value: diferencias.bac },
+                { label: 'Ficohsa', value: diferencias.ficohsa },
+                { label: 'Davivienda', value: diferencias.davivienda },
+                { label: 'Transferencias', value: diferencias.transferencia },
+              ]
+            "
+          >
+            <span>{{ d.label }}</span>
+            <span [ngClass]="d.value >= 0 ? 'text-success fw-semibold' : 'text-danger fw-semibold'">
+              L {{ d.value }}
+            </span>
+          </div>
+
+          <div class="list-group-item d-flex justify-content-between fw-bold bg-light">
+            <span>Total</span>
+            <span [ngClass]="diferencias.total >= 0 ? 'text-success' : 'text-danger'">
+              L {{ diferencias.total }}
+            </span>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- DIFERENCIAS -->
-    <div class="mt-4">
-      <h6 class="mb-3 text-muted">Desglose de diferencias</h6>
-
-      <div class="list-group shadow-sm">
-        <div class="list-group-item d-flex justify-content-between">
-          <span>Efectivo</span>
-          <span [ngClass]="diferencias.efectivo >= 0 ? 'text-success' : 'text-danger'">
-            L {{ diferencias.efectivo }}
-          </span>
-        </div>
-
-        <div class="list-group-item d-flex justify-content-between">
-          <span>BAC</span>
-          <span [ngClass]="diferencias.bac >= 0 ? 'text-success' : 'text-danger'">
-            L {{ diferencias.bac }}
-          </span>
-        </div>
-
-        <div class="list-group-item d-flex justify-content-between">
-          <span>Ficohsa</span>
-          <span [ngClass]="diferencias.ficohsa >= 0 ? 'text-success' : 'text-danger'">
-            L {{ diferencias.ficohsa }}
-          </span>
-        </div>
-
-        <div class="list-group-item d-flex justify-content-between">
-          <span>Davivienda</span>
-          <span [ngClass]="diferencias.davivienda >= 0 ? 'text-success' : 'text-danger'">
-            L {{ diferencias.davivienda }}
-          </span>
-        </div>
-
-        <div class="list-group-item d-flex justify-content-between">
-          <span>Transferencias</span>
-          <span [ngClass]="diferencias.transferencia >= 0 ? 'text-success' : 'text-danger'">
-            L {{ diferencias.transferencia }}
-          </span>
-        </div>
-
-        <div class="list-group-item d-flex justify-content-between fw-bold bg-light">
-          <span>Total</span>
-          <span [ngClass]="diferencias.total >= 0 ? 'text-success' : 'text-danger'">
-            L {{ diferencias.total }}
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- FOOTER FIJO (CORRECTO) -->
-  <div class="card-footer bg-white text-end flex-shrink-0">
-    <button class="btn btn-danger btn-lg" (click)="cerrarCaja()">
-      <i class="fas fa-lock me-2"></i>
-      Cerrar caja
-    </button>
+    <!-- FOOTER -->
+    <footer class="card-footer bg-white text-end border-0">
+      <button class="btn btn-danger btn-lg" (click)="cerrarCaja()">
+        <i class="fas fa-lock me-2"></i>
+        Cerrar caja
+      </button>
+    </footer>
   </div>
 </div>

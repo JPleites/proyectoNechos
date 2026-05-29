@@ -1,60 +1,72 @@
-<div class="container py-4">
+<section class="container-fluid py-4 bg-body-tertiary min-vh-100">
+  <!-- HEADER -->
+  <header class="mb-4">
+    <h4 class="mb-1 fw-semibold">Marcas</h4>
 
-  <div class="card shadow-sm">
+    <small class="text-muted"> Gestión de marcas por proveedor </small>
+  </header>
 
-    <div class="card-body">
-      <h4 class="mb-0">Marcas</h4>
-      <small class="text-muted">Gestión de marcas por proveedor</small>
-    </div>
+  <!-- CARD -->
+  <article class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="card-body p-4">
+      <div class="row g-4">
+        <!-- FORM -->
+        <section class="col-lg-5">
+          <div class="erp-panel h-100">
+            <h6 class="erp-section-title">Nueva marca</h6>
 
-    <div class="card-body">
+            <form [formGroup]="form" (ngSubmit)="guardar()" class="d-grid gap-3">
+              <div>
+                <label class="form-label"> Nombre de marca </label>
 
-      <!-- FORM -->
-      <form [formGroup]="form" (ngSubmit)="guardar()" class="row g-3">
+                <input formControlName="nombre" class="form-control" />
+              </div>
 
-        <div class="col-md-6">
-          <label class="form-label">Nombre de marca</label>
-          <input formControlName="nombre" class="form-control">
-        </div>
+              <div>
+                <label class="form-label"> Proveedor </label>
 
-        <div class="col-md-6">
-          <label class="form-label">Proveedor</label>
-          <select formControlName="proveedorId"
+                <select
+                  formControlName="proveedorId"
                   class="form-select"
-                  (change)="onProveedorChange()">
+                  (change)="onProveedorChange()"
+                >
+                  <option value="">Seleccione</option>
 
-            <option value="">Seleccione</option>
+                  <option *ngFor="let p of proveedores" [value]="p.id">
+                    {{ p.proveedor }}
+                  </option>
+                </select>
+              </div>
 
-            <option *ngFor="let p of proveedores" [value]="p.id">
-              {{ p.proveedor }}
-            </option>
+              <div class="text-end">
+                <button class="btn btn-primary px-4 rounded-3">Crear marca</button>
+              </div>
+            </form>
+          </div>
+        </section>
 
-          </select>
-        </div>
+        <!-- LISTA -->
+        <section class="col-lg-7">
+          <div class="erp-panel">
+            <h6 class="erp-section-title">Marcas del proveedor</h6>
 
-        <div class="col-12 text-end">
-          <button class="btn btn-primary">
-            Crear Marca
-          </button>
-        </div>
+            <div class="d-grid gap-2">
+              <div
+                *ngFor="let m of marcasFiltradas"
+                class="d-flex justify-content-between align-items-center p-3 border rounded-3 bg-white"
+              >
+                <span class="fw-medium text-dark">
+                  {{ m.nombre }}
+                </span>
 
-      </form>
-
-      <hr>
-
-      <!-- LISTA -->
-      <h6>Marcas del proveedor</h6>
-
-      <ul class="list-group">
-        <li class="list-group-item d-flex justify-content-between"
-            *ngFor="let m of marcasFiltradas">
-
-          <span>{{ m.nombre }}</span>
-          <span class="badge bg-secondary">{{ m.marcaID }}</span>
-
-        </li>
-      </ul>
-
+                <span class="erp-badge erp-badge-secondary">
+                  {{ m.marcaID }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
-  </div>
-</div>
+  </article>
+</section>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CierresService } from '../../services/cierres.services';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 export class ConsultaCierres implements OnInit {
   cierres: any[] = [];
 
-  constructor(private service: CierresService) {}
+  constructor(private service: CierresService, private cdRef: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.cargarCierres();
@@ -21,6 +21,8 @@ export class ConsultaCierres implements OnInit {
   cargarCierres() {
     this.service.getCierres().subscribe((data: any) => {
       this.cierres = data;
+      console.log('Cierres cargados:', this.cierres);
+      this.cdRef.detectChanges();
     });
   }
 }

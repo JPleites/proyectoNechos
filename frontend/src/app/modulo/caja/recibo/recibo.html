@@ -1,0 +1,95 @@
+   <div class="recibo" id="recibo-imprimir">
+
+      <!-- ENCABEZADO -->
+      <div class="text-center mb-2">
+        <h5 class="fw-bold mb-0">NECHOS LUBRICANTES</h5>
+        <small>CA13, Choloma, Cortés</small><br>
+        <small>Tel: +504 9594-9477</small>
+        <hr class="my-1">
+      </div>
+
+      <!-- INFO RECIBO -->
+      <div class="mb-1">
+        <div class="d-flex justify-content-between">
+          <small><strong>Recibo #:</strong></small>
+          <small>{{ venta.ventaID }}</small>
+        </div>
+        <div class="d-flex justify-content-between">
+          <small><strong>Fecha:</strong></small>
+          <small>{{ venta.fecha | date: 'dd/MM/yyyy HH:mm' }}</small>
+        </div>
+        <div class="d-flex justify-content-between">
+          <small><strong>Cajero:</strong></small>
+          <small>{{ venta.usuario?.perfil?.nombre || 'N/A' }}</small>
+        </div>
+        <div class="d-flex justify-content-between" *ngIf="pedidoVendedor">
+          <small><strong>Vendedor:</strong></small>
+          <small>{{ pedidoVendedor }}</small>
+        </div>
+      </div>
+
+      <!-- CLIENTE -->
+      <hr class="my-1">
+      <div class="mb-1">
+        <small><strong>Cliente:</strong> {{ venta.cliente?.nombre || 'Consumidor Final' }}</small><br>
+        <small><strong>RTN:</strong> {{ venta.cliente?.rtn || '0000-0000-000000' }}</small>
+      </div>
+
+      <!-- DETALLE -->
+      <hr class="my-1">
+      <table class="w-100 mb-1" style="font-size: 11px;">
+        <thead>
+          <tr>
+            <th style="width:50%">Producto</th>
+            <th class="text-center" style="width:15%">Cant</th>
+            <th class="text-end" style="width:15%">P/U</th>
+            <th class="text-end" style="width:20%">Sub</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let d of venta.detalles">
+            <td>{{ d.nombreProducto }}</td>
+            <td class="text-center">{{ d.cantidad }}</td>
+            <td class="text-end">{{ d.precioUnitario | number:'1.2-2' }}</td>
+            <td class="text-end">{{ d.subtotal | number:'1.2-2' }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- TOTALES -->
+      <hr class="my-1">
+      <div class="d-flex justify-content-between">
+        <small>Subtotal:</small>
+        <small>L {{ venta.subtotal | number:'1.2-2' }}</small>
+      </div>
+      <div class="d-flex justify-content-between">
+        <small>Impuesto (15%):</small>
+        <small>L {{ venta.impuesto | number:'1.2-2' }}</small>
+      </div>
+      <div class="d-flex justify-content-between fw-bold">
+        <span>TOTAL:</span>
+        <span>L {{ venta.total | number:'1.2-2' }}</span>
+      </div>
+
+      <!-- PAGO -->
+      <hr class="my-1">
+      <div class="d-flex justify-content-between">
+        <small>Método de pago:</small>
+        <small>{{ venta.metodoPago }}</small>
+      </div>
+      <div class="d-flex justify-content-between">
+        <small>Total recibido:</small>
+        <small>L {{ venta.totalRecibido | number:'1.2-2' }}</small>
+      </div>
+      <div class="d-flex justify-content-between" *ngIf="venta.metodoPago === 'EFECTIVO'">
+        <small>Cambio:</small>
+        <small>L {{ venta.cambio | number:'1.2-2' }}</small>
+      </div>
+
+      <!-- PIE -->
+      <hr class="my-1">
+      <div class="text-center mt-1">
+        <small>¡Gracias por su compra!</small>
+      </div>
+
+    </div>

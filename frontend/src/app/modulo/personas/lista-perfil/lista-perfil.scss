@@ -1,0 +1,39 @@
+.erp-th{
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: #6c757d !important;
+  border: 0 !important;
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
+  background: #f8f9fa !important;
+}
+
+.erp-badge{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: .42rem .7rem;
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 600;
+}
+
+.erp-badge-success{
+  background: #EAF7EE;
+  color: #146C43;
+}
+
+.erp-badge-secondary{
+  background: #EEF1F4;
+  color: #5C6770;
+}
+
+.table > :not(caption) > * > *{
+  border-bottom-color: #f1f3f5;
+}
+
+.table tbody tr:hover{
+  background: rgba(0,0,0,.015);
+}

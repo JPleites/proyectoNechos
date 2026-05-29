@@ -32,7 +32,6 @@ export class CierresService {
       const arqueo = await tx.arqueo.findFirst({
         where: {
           usuarioCodigo,
-          fecha: { gte: hoy },
         },
         orderBy: { fecha: 'desc' },
       });
@@ -98,6 +97,7 @@ export class CierresService {
           totalFicohsa: 0,
           totalDavivienda: 0,
           totalTransferencias: 0,
+          totalFacturado: 0,
         },
       });
 

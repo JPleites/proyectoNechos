@@ -1,115 +1,159 @@
-<div class="container py-4">
-  <form [formGroup]="form">
-    <!-- CLIENTE -->
-    <div class="card p-3 mb-3">
-      <h4>Nuevo Pedido</h4>
+<section class="container-fluid py-4 bg-body-tertiary min-vh-100">
+  <header class="mb-4">
+    <h4 class="mb-1 fw-semibold">Nuevo pedido</h4>
 
-      <div class="col-md-6">
-        <label>Cliente</label>
+    <small class="text-muted"> Gestión de ventas e inventario </small>
+  </header>
 
-        <!-- 🔍 Buscador -->
-        <input type="text" class="form-control mb-1" placeholder="Buscar por nombre o ID..." />
+  <form [formGroup]="form" class="d-grid gap-4">
+    <!-- PASO 1: CLIENTE -->
+    <article class="erp-panel">
+      <h6 class="erp-section-title">Cliente</h6>
 
-        <!-- 📋 Select filtrado -->
-        <select class="form-control" formControlName="clienteId">
-          <option value="">Seleccionar</option>
+      <div class="d-grid gap-2">
+        <input type="text" class="form-control" placeholder="Buscar por nombre o ID..." />
+
+        <select class="form-select" formControlName="clienteId">
+          <option value="">Seleccionar cliente</option>
+
           <option *ngFor="let c of clientesFiltrados" [value]="c.id">
             #{{ c.rtn }} — {{ c.nombre }}
           </option>
         </select>
       </div>
-    </div>
+    </article>
 
-    <!-- AGREGAR PRODUCTO -->
-    <div class="card p-3 mb-3">
-      <h5>Agregar producto</h5>
+    <!-- PASO 2: PRODUCTO -->
+    <article class="erp-panel">
+      <h6 class="erp-section-title">Agregar producto</h6>
 
-      <div class="row g-2">
+      <div class="row g-3">
+        <!-- CÓDIGO -->
         <div class="col-md-4">
+          <label class="form-label"> Código de barras </label>
+
           <input
             class="form-control"
-            placeholder="Escanear código de barras"
             formControlName="codigoBarra"
+            placeholder="Escanear código"
             (keyup.enter)="buscarProductoPorCodigo()"
           />
         </div>
 
-        <div class="col-md-3">
-          <select class="form-control" formControlName="almacenId">
+        <!-- ALMACÉN -->
+        <div class="col-md-4">
+          <label class="form-label"> Almacén </label>
+
+          <select class="form-select" formControlName="almacenId">
             <option value="">Seleccionar almacén</option>
+
             <option *ngFor="let a of almacenes" [value]="a.id">
               {{ a.almacen }}
             </option>
           </select>
         </div>
-        <div>
+
+        <!-- BOTÓN BUSCAR -->
+        <div class="col-md-4 d-flex align-items-end">
           <button
             type="button"
-            class="btn btn-secondary w-100"
+            class="btn btn-light border w-100"
             (click)="buscarProductoPorCodigo()"
           >
-            Buscar
+            Buscar producto
           </button>
         </div>
-        <div *ngIf="productoEncontrado">
-          <div class="col-md-3">
-            <select class="form-control" formControlName="ubicacion">
-              <option value="">Ubicación</option>
-              <option *ngFor="let u of ubicaciones" [value]="u.ubicacion">
-                {{ u.ubicacion }}
-              </option>
-            </select>
-          </div>
+      </div>
 
-          <div class="col-md-2">
-            <input type="number" class="form-control" formControlName="cantidad" />
-          </div>
+      <!-- DETALLE PRODUCTO -->
+      <div *ngIf="productoEncontrado" class="row g-3 mt-3">
+        <div class="col-md-4">
+          <label class="form-label"> Ubicación </label>
 
-          <div class="col-md-3">
-            <button type="button" class="btn btn-primary w-100" (click)="agregarProducto()">
-              Agregar
-            </button>
-          </div>
+          <select class="form-select" formControlName="ubicacion">
+            <option value="">Seleccionar ubicación</option>
+
+            <option *ngFor="let u of ubicaciones" [value]="u.ubicacion">
+              {{ u.ubicacion }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label"> Cantidad </label>
+
+          <input type="number" class="form-control" formControlName="cantidad" />
+        </div>
+
+        <div class="col-md-3 d-flex align-items-end">
+          <button type="button" class="btn btn-primary w-100" (click)="agregarProducto()">
+            Agregar
+          </button>
         </div>
       </div>
-    </div>
+    </article>
+
+    <!-- PASO 3: CARRITO -->
+    <article class="erp-panel">
+      <h6 class="erp-section-title">Detalle del pedido</h6>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Producto</th>
+              <th>Ubicación</th>
+              <th>Cant.</th>
+              <th>Precio</th>
+              <th>Subtotal</th>
+              <th class="text-end"></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let item of carrito; let i = index">
+              <td class="fw-medium">
+                {{ item.nombreProducto }}
+              </td>
+
+              <td class="text-muted">
+                {{ item.ubicacion }}
+              </td>
+
+              <td>
+                {{ item.cantidad }}
+              </td>
+
+              <td>
+                {{ item.precioUnitario | number: '1.2-2' }}
+              </td>
+
+              <td class="fw-semibold">
+                {{ item.subtotal | number: '1.2-2' }}
+              </td>
+
+              <td class="text-end">
+                <button class="btn btn-light border btn-sm" (click)="eliminarItem(i)">
+                  <i class="fas fa-trash text-danger"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-end mt-3">
+        <h5 class="mb-0">Total: {{ total | number: '1.2-2' }}</h5>
+      </div>
+    </article>
+
+    <!-- ACCIONES -->
+    <footer class="d-flex justify-content-end gap-2">
+      <button class="btn btn-light border rounded-3 px-4">Cancelar</button>
+
+      <button class="btn btn-success rounded-3 px-4" (click)="guardarPedido()">
+        Guardar pedido
+      </button>
+    </footer>
   </form>
-
-  <!-- CARRITO -->
-  <div class="card p-3 mb-3">
-    <h5>Detalle del pedido</h5>
-
-    <table class="table table-sm">
-      <thead>
-        <tr>
-          <th>Producto</th>
-          <th>Ubicación</th>
-          <th>Cant.</th>
-          <th>Precio</th>
-          <th>Subtotal</th>
-          <th></th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <tr *ngFor="let item of carrito; let i = index">
-          <td>{{ item.nombreProducto }}</td>
-          <td>{{ item.ubicacion }}</td>
-          <td>{{ item.cantidad }}</td>
-          <td>{{ item.precioUnitario | number: '1.2-2' }}</td>
-          <td>{{ item.subtotal | number: '1.2-2' }}</td>
-          <td>
-            <button class="btn btn-danger btn-sm" (click)="eliminarItem(i)">X</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <h5 class="text-end">Total: {{ total | number: '1.2-2' }}</h5>
-  </div>
-
-  <!-- ACCIONES -->
-  <div class="text-end">
-    <button class="btn btn-success" (click)="guardarPedido()">Guardar Pedido</button>
-  </div>
-</div>
+</section>

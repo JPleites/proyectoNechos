@@ -1,83 +1,97 @@
-<div class="container py-4">
-  <div class="card">
+<section class="container-fluid py-4 bg-body-tertiary min-vh-100">
+  <article class="card border-0 shadow-sm rounded-4 overflow-hidden">
     <!-- HEADER -->
-    <div class="card-body">
-      <h4 class="mb-0">Ingreso de Inventario</h4>
-      <small class="text-muted">Registrar stock en ubicaciones</small>
-    </div>
+    <header class="card-header bg-white border-bottom px-4 py-3">
+      <h4 class="mb-1 fw-semibold">Ingreso de Inventario</h4>
 
-    <div class="card-body pt-0">
-      <form [formGroup]="form" (ngSubmit)="ingresar()">
-        <div class="row g-3">
-          <!-- 🔎 BUSCAR PRODUCTO -->
+      <small class="text-muted"> Registrar stock en ubicaciones </small>
+    </header>
+
+    <!-- FORM -->
+    <form class="card-body p-4" [formGroup]="form" (ngSubmit)="ingresar()">
+      <!-- BÚSQUEDA -->
+      <section class="erp-panel mb-4">
+        <h6 class="erp-section-title">Producto</h6>
+
+        <div class="row g-3 align-items-end">
           <div class="col-md-4">
-            <div class="form-outline">
-              <input formControlName="productoCodigo" class="form-control" />
-              <label class="form-label">Código producto</label>
-            </div>
-            <button type="button" class="btn btn-primary mt-2" (click)="buscarProducto()">
-              Buscar producto
+            <label class="form-label"> Código producto </label>
+
+            <input formControlName="productoCodigo" class="form-control" />
+          </div>
+
+          <div class="col-md-auto">
+            <button type="button" class="btn btn-primary px-4" (click)="buscarProducto()">
+              <i class="fas fa-search me-2"></i>
+              Buscar
             </button>
           </div>
-          <div *ngIf="productoValido">
-            <!-- 🏬 ALMACÉN -->
-            <div class="col-md-4">
-              <div class="form-outline">
-                <select
-                  formControlName="almacen"
-                  class="form-control"
-                  (change)="cargarUbicaciones()"
-                >
-                  <option value="">Seleccione almacén</option>
-                  <option *ngFor="let a of almacenes" [value]="a.id">
-                    {{ a.almacen }}
-                  </option>
-                </select>
-                <label class="form-label">Almacén</label>
-              </div>
-            </div>
+        </div>
+      </section>
 
-            <!-- 📦 UBICACIÓN -->
-            <div class="col-md-4">
-              <div class="form-outline">
-                <select formControlName="ubicacion" class="form-control">
-                  <option value="">Seleccione ubicación</option>
-                  <option *ngFor="let u of ubicaciones" [value]="u.ubicacion">
-                    {{ u.ubicacion }} ({{ u.estante }}-{{ u.nivel }}-{{ u.deposito }})
-                  </option>
-                </select>
-                <label class="form-label">Ubicación disponible</label>
-              </div>
-            </div>
+      <!-- INVENTARIO -->
+      <section *ngIf="productoValido" class="erp-panel">
+        <h6 class="erp-section-title">Información de ingreso</h6>
 
-            <!-- 🔢 CANTIDAD -->
-            <div class="col-md-4">
-              <div class="form-outline">
-                <input type="number" formControlName="cantidad" class="form-control" />
-                <label class="form-label">Cantidad</label>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="form-outline">
-                <select formControlName="referencia" class="form-control">
-                  <option value="">Seleccione tipo de ingreso</option>
-                  <option value="compra">Compra</option>
-                  <option value="devolucion">Devolución</option>
-                  <option value="ajuste">Ajuste</option>
-                </select>
-                </div>
-            </div>
+        <div class="row g-3">
+          <!-- ALMACÉN -->
+          <div class="col-md-4">
+            <label class="form-label"> Almacén </label>
+
+            <select formControlName="almacen" class="form-select" (change)="cargarUbicaciones()">
+              <option value="">Seleccione almacén</option>
+
+              <option *ngFor="let a of almacenes" [value]="a.id">
+                {{ a.almacen }}
+              </option>
+            </select>
+          </div>
+
+          <!-- UBICACIÓN -->
+          <div class="col-md-4">
+            <label class="form-label"> Ubicación </label>
+
+            <select formControlName="ubicacion" class="form-select">
+              <option value="">Seleccione ubicación</option>
+
+              <option *ngFor="let u of ubicaciones" [value]="u.ubicacion">
+                {{ u.ubicacion }}
+                ({{ u.estante }}-{{ u.nivel }}-{{ u.deposito }})
+              </option>
+            </select>
+          </div>
+
+          <!-- CANTIDAD -->
+          <div class="col-md-4">
+            <label class="form-label"> Cantidad </label>
+
+            <input type="number" formControlName="cantidad" class="form-control" />
+          </div>
+
+          <!-- REFERENCIA -->
+          <div class="col-md-4">
+            <label class="form-label"> Tipo de ingreso </label>
+
+            <select formControlName="referencia" class="form-select">
+              <option value="">Seleccione tipo</option>
+
+              <option value="compra">Compra</option>
+
+              <option value="devolucion">Devolución</option>
+
+              <option value="ajuste">Ajuste</option>
+            </select>
           </div>
         </div>
+      </section>
 
-        <!-- BOTÓN -->
-        <div class="text-end mt-4">
-          <button type="submit" class="btn btn-success">
-            <i class="fas fa-box me-2"></i>
-            Ingresar inventario
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
+      <!-- ACTIONS -->
+      <footer class="d-flex justify-content-end mt-4">
+        <button type="submit" class="btn btn-success rounded-3 px-4">
+          <i class="fas fa-box me-2"></i>
+          Ingresar inventario
+        </button>
+      </footer>
+    </form>
+  </article>
+</section>

@@ -1,63 +1,126 @@
-<div class="container py-4">
-  <div class="d-flex justify-content-between align-items-center mb-3">
+<section class="container-fluid py-4 bg-body-tertiary min-vh-100">
+  <!-- HEADER -->
+  <header class="d-flex justify-content-between align-items-center mb-4">
     <div>
-      <h3 class="mb-0">Colaboradores</h3>
-      <small class="text-muted">Gestión de perfiles y accesos</small>
+      <h4 class="mb-1 fw-semibold">Colaboradores</h4>
+
+      <small class="text-muted"> Gestión de perfiles y accesos </small>
     </div>
 
-    <a  class="btn btn-primary" (click)="crearPerfil()"> + Nuevo colaborador </a>
-    <button class="btn btn-secondary" (click)="cargar()">Actualizar</button>
-  </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-light border rounded-3 px-3" (click)="cargar()">
+        <i class="fas fa-rotate-right me-2"></i>
+        Actualizar
+      </button>
 
-  <!-- TABLE -->
-  <div class="card shadow-sm">
+      <button class="btn btn-primary rounded-3 px-3" (click)="crearPerfil()">
+        <i class="fas fa-plus me-2"></i>
+        Nuevo colaborador
+      </button>
+    </div>
+  </header>
+
+  <!-- TABLE CARD -->
+  <article class="card border-0 shadow-sm rounded-4 overflow-hidden">
     <div class="table-responsive">
-      <table class="table table-hover align-middle">
-        <thead class="table-dark">
+      <table class="table table-hover align-middle mb-0">
+        <!-- HEAD -->
+        <thead class="table-light">
           <tr>
-            <th>ID</th>
-            <th>DNI</th>
-            <th>Nombre</th>
-            <th>Cargo</th>
-            <th>Departamento</th>
-            <th>Usuario</th>
-            <th>Acciones</th>
+            <th class="erp-th ps-4">ID</th>
+
+            <th class="erp-th">DNI</th>
+
+            <th class="erp-th">Nombre</th>
+
+            <th class="erp-th">Cargo</th>
+
+            <th class="erp-th">Departamento</th>
+
+            <th class="erp-th">Usuario</th>
+
+            <th class="erp-th text-center pe-4">Acciones</th>
           </tr>
         </thead>
 
+        <!-- BODY -->
         <tbody>
           <tr *ngFor="let p of perfiles">
-            <td>{{ p.id }}</td>
-            <td>{{ p.dni }}</td>
-            <td>{{ p.nombre }}</td>
-            <td>{{ p.cargo }}</td>
-            <td>{{ p.departamento }}</td>
+            <td class="ps-4 text-muted">#{{ p.id }}</td>
 
-            <!-- USUARIO STATUS -->
             <td>
-              <span *ngIf="p.usuario; else sinUser" class="badge bg-success"> Activo </span>
+              <span class="fw-medium">
+                {{ p.dni }}
+              </span>
+            </td>
+
+            <td class="fw-medium text-dark">
+              {{ p.nombre }}
+            </td>
+
+            <td class="text-muted">
+              {{ p.cargo }}
+            </td>
+
+            <td class="text-muted">
+              {{ p.departamento }}
+            </td>
+
+            <!-- STATUS -->
+            <td>
+              <span *ngIf="p.usuario; else sinUser" class="erp-badge erp-badge-success">
+                Activo
+              </span>
 
               <ng-template #sinUser>
-                <span class="badge bg-secondary">Sin usuario</span>
+                <span class="erp-badge erp-badge-secondary"> Sin usuario </span>
               </ng-template>
             </td>
 
-            <!-- ACCIONES -->
-            <td class="d-flex gap-2">
-              <button class="btn btn-sm btn-info" (click)="verDetalle(p.id)">Ver</button>
+            <!-- ACTIONS -->
+            <td class="text-center pe-4">
+              <div class="d-inline-flex gap-1">
+                <!-- VER -->
+                <button
+                  class="btn btn-light btn-sm border rounded-3"
+                  (click)="verDetalle(p.id)"
+                  title="Ver detalle"
+                >
+                  <i class="fas fa-eye text-muted"></i>
+                </button>
 
-              <button class="btn btn-sm btn-warning" (click)="editar(p.id)">Editar</button>
+                <!-- EDITAR -->
+                <button
+                  class="btn btn-light btn-sm border rounded-3"
+                  (click)="editar(p.id)"
+                  title="Editar"
+                >
+                  <i class="fas fa-pen text-warning"></i>
+                </button>
 
-              <button class="btn btn-sm btn-danger" (click)="eliminar(p.id)">Eliminar</button>
+                <!-- ELIMINAR -->
+                <button
+                  class="btn btn-light btn-sm border rounded-3"
+                  (click)="eliminar(p.id)"
+                  title="Eliminar"
+                >
+                  <i class="fas fa-trash text-danger"></i>
+                </button>
 
-              <!-- SOLO SI NO TIENE USUARIO -->
-              <button *ngIf="!p.usuario" class="btn btn-sm btn-success" (click)="crearUsuario(p)">
-                Crear usuario
-              </button>
+                <!-- CREAR USER -->
+                <button
+                  *ngIf="!p.usuario"
+                  class="btn btn-light btn-sm border rounded-3"
+                  (click)="crearUsuario(p)"
+                  title="Crear usuario"
+                >
+                  <i class="fas fa-user-plus text-success"></i>
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-  </div>
-</div>
+  </article>
+</section>

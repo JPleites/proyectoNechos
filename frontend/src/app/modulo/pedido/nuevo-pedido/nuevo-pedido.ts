@@ -67,11 +67,16 @@ export class NuevoPedidoComponent implements OnInit {
     const q = this.busquedaCliente.toLowerCase();
     return this.clientes.filter(
       (c) => c.nombre.toLowerCase().includes(q) || String(c.id).includes(q),
+      this.cdr.detectChanges(),
     );
   }
 
   buscarProductoPorCodigo() {
     this.ubicaciones = [];
+    this.form.patchValue({
+      ubicacion: '',
+      cantidad: 1,
+    });
     this.productoEncontrado = false;
     const codigo = this.form.value.codigoBarra;
 
@@ -80,21 +85,21 @@ export class NuevoPedidoComponent implements OnInit {
     if (!producto) {
       Swal.fire('No encontrado', 'Producto no existe', 'warning');
       return;
+    } else {
+      this.productoEncontrado = true;
+
+      this.form.patchValue({
+        productoCodigo: producto.codigo,
+      });
+
+      this.cargarUbicaciones(producto.codigo);
     }
-
-    this.productoEncontrado = true;
-
-    this.form.patchValue({
-      productoCodigo: producto.codigo,
-    });
-
-    this.cargarUbicaciones(producto.codigo);
   }
 
   cargarAlmacenes() {
     this.almacenesService.getAlmacenes().subscribe({
       next: (data: any) => {
-        this.almacenes = [...data]; // 👈 fuerza referencia nueva
+        this.almacenes = [...data];
       },
     });
   }
@@ -136,11 +141,11 @@ export class NuevoPedidoComponent implements OnInit {
       subtotal,
     });
 
-    this.form.patchValue({
-      productoCodigo: '',
-      ubicacion: '',
-      cantidad: 1,
-    });
+    // this.form.patchValue({
+    //   productoCodigo: '',
+    //   ubicacion: '',
+    //   cantidad: 1,
+    // });
   }
 
   eliminarItem(index: number) {
@@ -179,6 +184,8 @@ export class NuevoPedidoComponent implements OnInit {
           ubicacion: '',
           cantidad: 1,
         });
+
+        this.productoEncontrado = false;
       },
       error: (err) => {
         console.error(err);

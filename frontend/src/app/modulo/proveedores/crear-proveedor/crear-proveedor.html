@@ -1,53 +1,42 @@
-<div class="container py-4">
-
-  <div class="card" style="max-width: 600px; margin: auto;">
-
+<section class="container-fluid py-4 bg-body-tertiary min-vh-100">
+  <article
+    class="card border-0 shadow-sm rounded-4 overflow-hidden mx-auto"
+    style="max-width: 600px"
+  >
     <!-- HEADER -->
-    <div class="card-body">
-      <h4 class="mb-0">Nuevo Proveedor</h4>
-      <small class="text-muted">Registro de proveedores</small>
-    </div>
+    <header class="card-header bg-white border-bottom px-4 py-3">
+      <h4 class="mb-1 fw-semibold">Nuevo proveedor</h4>
 
-    <div class="card-body pt-0">
+      <small class="text-muted"> Registro de proveedores </small>
+    </header>
 
-      <div class="row g-3">
-
+    <!-- FORM -->
+    <form class="card-body p-4">
+      <div class="d-grid gap-4">
         <!-- RTN -->
-        <div class="col-md-6">
-          <div class="form-outline">
-            <input
-              [(ngModel)]="proveedor.rtn"
-              class="form-control"
-            />
-            <label class="form-label">RTN *</label>
-          </div>
-        </div>
+        <section class="erp-panel">
+          <label class="form-label"> RTN * </label>
+
+          <input [(ngModel)]="proveedor.rtn" name="rtn" class="form-control" />
+        </section>
 
         <!-- NOMBRE -->
-        <div class="col-md-6">
-          <div class="form-outline">
-            <input
-              [(ngModel)]="proveedor.proveedor"
-              class="form-control"
-            />
-            <label class="form-label">Nombre del proveedor *</label>
-          </div>
-        </div>
+        <section class="erp-panel">
+          <label class="form-label"> Nombre del proveedor * </label>
 
+          <input [(ngModel)]="proveedor.proveedor" name="proveedor" class="form-control" />
+        </section>
+
+        <!-- ACTIONS -->
+        <footer class="d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-light border rounded-3 px-4">Cancelar</button>
+
+          <button type="button" class="btn btn-primary rounded-3 px-4" (click)="guardar()">
+            <i class="fas fa-truck me-2"></i>
+            Guardar proveedor
+          </button>
+        </footer>
       </div>
-
-      <!-- BOTÓN -->
-      <div class="text-end mt-4">
-
-        <button class="btn btn-primary" (click)="guardar()">
-          <i class="fas fa-truck me-2"></i>
-          Guardar
-        </button>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
+    </form>
+  </article>
+</section>

@@ -17,6 +17,13 @@
   background: #f4f5f7;
 }
 
+main {
+  flex: 1;
+  height: 100%;
+  overflow-y: auto; /* 🔥 AQUÍ ESTÁ LA MAGIA */
+  background: #f5f6fa;
+}
+
 // ─── Layout raíz ─────────────────────────────────────────────────
 .nap-layout {
   display: flex;

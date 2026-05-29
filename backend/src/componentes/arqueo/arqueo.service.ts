@@ -13,9 +13,9 @@ export class ArqueoService {
     return this.prisma.arqueo.findFirst({
       where: {
         usuarioCodigo,
-        fecha: {
-          gte: hoy,
-        },
+        // fecha: {
+        //   gte: hoy,
+        // },
       },
       orderBy: {
         fecha: 'desc',

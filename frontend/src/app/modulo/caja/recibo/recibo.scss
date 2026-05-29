@@ -1,0 +1,22 @@
+  .recibo {
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      padding: 8px;
+    }
+    hr { border-top: 1px dashed #000; }
+
+    @media print {
+      body * { visibility: hidden; }
+      #recibo-imprimir, #recibo-imprimir * { visibility: visible; }
+      #recibo-imprimir {
+        position: fixed;
+        top: 0; left: 0;
+        width: 80mm;
+        margin: 0;
+        padding: 4px;
+        font-size: 11px;
+      }
+    }
