@@ -9,7 +9,7 @@ async function bootstrap() {
 
   app.enableCors({
     origin: [
-      'https://tu-frontend.vercel.app',
+      'https://proyecto-nechos.vercel.app/',
       'http://localhost:4200',
     ],
     credentials: true,
