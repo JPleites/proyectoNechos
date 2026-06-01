@@ -1,17 +1,17 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterOutlet, RouterLinkWithHref } from '@angular/router';
+import { Router, RouterOutlet, RouterLinkWithHref, RouterLink, RouterModule } from '@angular/router';
 
 
 @Component({
   selector: 'app-clientes',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLinkWithHref],
+  imports: [CommonModule, RouterOutlet, RouterLinkWithHref, RouterLink, RouterModule],
   templateUrl: './clientes.html',
   styleUrls: ['./clientes.scss']
 })
 export class ClientesComponent {
-  sidebarOpen = true;
+  sidebarOpen = false;
 
   rol = localStorage.getItem('rol');
 

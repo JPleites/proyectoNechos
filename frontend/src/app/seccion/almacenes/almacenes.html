@@ -6,17 +6,18 @@
       </button>
 
       <div class="sidebar-brand" *ngIf="sidebarOpen">
+        <img src="/nechologo1.png" alt="Necho's Logo" class="brand-logo" />
         <span class="brand-text">Necho's</span>
         <span class="brand-sub">Auto Parts</span>
       </div>
 
       <nav class="sidebar-nav">
-        <button class="nav-item" routerLink="crear" routerLinkActive="active">
+        <button class="nav-item" routerLink="crear" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
           <i class="fas fa-warehouse nav-icon"></i>
           <span class="nav-label" *ngIf="sidebarOpen">Añadir Almacén</span>
         </button>
 
-        <button class="nav-item" routerLink="consulta" routerLinkActive="active">
+        <button class="nav-item" routerLink="consulta" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
           <i class="fas fa-boxes nav-icon"></i>
           <span class="nav-label" *ngIf="sidebarOpen">Consultar Almacenes</span>
         </button>
@@ -32,4 +33,6 @@
   <main>
     <router-outlet></router-outlet>
   </main>
+
+  <div class="sidebar-overlay" *ngIf="sidebarOpen" (click)="sidebarOpen = false"></div>
 </div>

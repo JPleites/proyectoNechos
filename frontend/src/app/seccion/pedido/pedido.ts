@@ -10,7 +10,7 @@ import { RouterOutlet, Router, RouterLink, RouterLinkActive } from '@angular/rou
   styleUrls: ['./pedido.scss']
 })
 export class PedidoComponent {
-  sidebarOpen = true;
+  sidebarOpen = false;
 
   rol = localStorage.getItem('rol');
 

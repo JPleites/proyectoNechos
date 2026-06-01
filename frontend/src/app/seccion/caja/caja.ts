@@ -10,7 +10,7 @@ import { RouterOutlet, Router, RouterLink, RouterLinkActive } from '@angular/rou
   styleUrls: ['./caja.scss']
 })
 export class CajaComponent {
-  sidebarOpen = true;
+  sidebarOpen = false;
 rol = localStorage.getItem('rol');
 
   constructor(private router: Router) {}

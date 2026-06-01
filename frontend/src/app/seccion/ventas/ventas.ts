@@ -10,7 +10,7 @@ import { RouterOutlet, Router } from "@angular/router";
   styleUrls: ['./ventas.scss']
 })
 export class VentasComponent {
-  sidebarOpen = true;
+  sidebarOpen = false;
 
   rol = localStorage.getItem('rol');
 

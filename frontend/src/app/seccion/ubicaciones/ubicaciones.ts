@@ -1,16 +1,16 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, Router, RouterLinkWithHref } from "@angular/router";
+import { RouterOutlet, Router, RouterLinkWithHref, RouterLink, RouterModule } from "@angular/router";
 
 @Component({
   selector: 'app-ubicaciones',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLinkWithHref],
+  imports: [CommonModule, RouterOutlet, RouterLinkWithHref, RouterLink, RouterModule],
   templateUrl: './ubicaciones.html',
   styleUrls: ['./ubicaciones.scss']
 })
 export class UbicacionesComponent {
-  sidebarOpen = true;
+  sidebarOpen = false;
   rol = localStorage.getItem('rol');
 
   constructor(private router: Router) {}

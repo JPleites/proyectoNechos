@@ -10,6 +10,7 @@
   --shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.14);
   --red: #dc3545;
   --red-hover: #b02a37;
+  --primary: #5f27cd; // Color base del ecosistema u7
   --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   display: block;
   height: 100vh;
@@ -20,7 +21,7 @@
 main {
   flex: 1;
   height: 100%;
-  overflow-y: auto; /* 🔥 AQUÍ ESTÁ LA MAGIA */
+  overflow-y: auto; /* Mantiene la consistencia del scroll de contenido */
   background: #f5f6fa;
 }
 
@@ -32,19 +33,21 @@ main {
   gap: var(--gap);
   padding: 12px;
   background: #f4f5f7;
+  position: relative;
 }
 
 // ─── SIDEBAR ─────────────────────────────────────────────────────
 .nap-sidebar {
   width: var(--sidebar-expanded);
   min-width: var(--sidebar-expanded);
-  transition: width var(--transition), min-width var(--transition);
+  transition: width var(--transition), min-width var(--transition), transform var(--transition), box-shadow var(--transition);
   background: #fff;
   border-radius: var(--radius);
   box-shadow: var(--shadow-soft);
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  z-index: 100;
 
   &.collapsed {
     width: var(--sidebar-collapsed);
@@ -62,7 +65,7 @@ main {
 
 // Toggle
 .sidebar-toggle {
-  align-self: flex-end;
+  align-self: center; 
   background: #f4f5f7;
   border: none;
   border-radius: 50%;
@@ -73,32 +76,51 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background var(--transition), box-shadow var(--transition);
+  transition: background var(--transition), box-shadow var(--transition), color var(--transition);
   flex-shrink: 0;
 
   &:hover {
     background: #e9ecef;
     box-shadow: var(--shadow-hover);
+    color: var(--primary);
   }
 }
 
-// Brand
+// Brand (Estilo estandarizado para la marca)
 .sidebar-brand {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 8px 0 12px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 2px dashed #f4f5f7; 
+  gap: 6px;
+
+  .brand-logo {
+    width: 65px;
+    height: 65px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+    transition: transform var(--transition);
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
 
   .brand-text {
-    font-size: 15px;
-    font-weight: 700;
-    color: #222;
+    font-size: 24px; 
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, #222, var(--primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
   .brand-sub {
     font-size: 11px;
+    font-weight: 600;
     color: #888;
-    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
   }
 }
 
@@ -125,44 +147,67 @@ main {
   cursor: pointer;
   text-align: left;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   color: #444;
-  transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+  transition: all var(--transition);
   white-space: nowrap;
   overflow: hidden;
 
+  i.nav-icon {
+    font-size: 16px;
+    width: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    transition: transform var(--transition);
+  }
+
+  // Hover base para estados inactivos
   &:hover {
     background: #f4f5f7;
-    box-shadow: var(--shadow-soft);
-    transform: translateY(-1px);
+    color: var(--primary);
+    transform: translateX(3px);
+
+    i.nav-icon {
+      transform: scale(1.1);
+    }
+  }
+
+  // 🔥 FEATURE: Botón Seleccionado Activo y Flotante Levantado 7u7
+  &.active {
+    background: linear-gradient(135deg, var(--primary), #7158e2);
+    color: #fff;
+    transform: translateY(-2px) translateX(2px); // Suspensión estética fija
+    box-shadow: 0 6px 15px rgba(95, 39, 205, 0.25);
+    
+    i.nav-icon {
+      color: #fff;
+      transform: scale(1.1);
+    }
+
+    // Efecto interactivo al pasar el cursor sobre la opción seleccionada
+    &:hover {
+      background: linear-gradient(135deg, #7158e2, var(--primary));
+      transform: translateY(-4px) translateX(5px); // Feedback de elevación responsivo
+      box-shadow: var(--shadow-hover);
+    }
   }
 }
 
-// Botón Regresar (rojo)
+// Botón Regresar / Salir (rojo)
 .btn-back {
   margin-top: auto;
   color: var(--red);
-  font-weight: 600;
   border: 1.5px solid transparent;
 
   &:hover {
     background: #fff0f1;
     border-color: var(--red);
-    box-shadow: 0 4px 14px rgba(220, 53, 69, 0.2);
+    color: var(--red-hover);
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.1);
   }
-
-  .nav-icon {
-    filter: hue-rotate(180deg) saturate(3) brightness(0.6);
-  }
-}
-
-// Iconos nav
-.nav-icon {
-  width: 22px;
-  height: 22px;
-  object-fit: contain;
-  flex-shrink: 0;
 }
 
 .nav-label {
@@ -202,7 +247,7 @@ main {
   cursor: pointer;
   border-radius: var(--radius-pill);
   padding: 6px 14px;
-  transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+  transition: all var(--transition);
 
   &:hover {
     background: #fff0f1;
@@ -265,8 +310,13 @@ main {
   text-align: center;
 }
 
-// ─── Responsive ───────────────────────────────────────────────────
+// ─── Responsive Celulares (Flotante absoluto con overlay + blur) ────
 @media (max-width: 768px) {
+  .nap-layout {
+    padding: 6px;
+    gap: 8px;
+  }
+
   .nap-grid {
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: auto;
@@ -279,9 +329,36 @@ main {
     font-size: 12px;
   }
 
+  // Estructura colapsada inicial en móviles
   .nap-sidebar {
+    position: relative;
+    width: var(--sidebar-collapsed) !important;
+    min-width: var(--sidebar-collapsed) !important;
+    height: calc(100vh - 12px);
+    transition: all var(--transition);
+  }
+
+  // Animación del menú desplegándose por encima
+  .sidebar-open .nap-sidebar {
     position: absolute;
-    z-index: 100;
-    height: calc(100vh - 24px);
+    left: 6px;
+    top: 6px;
+    height: calc(100vh - 12px);
+    width: var(--sidebar-expanded) !important;
+    min-width: var(--sidebar-expanded) !important;
+    box-shadow: 5px 0 25px rgba(0, 0, 0, 0.15);
+  }
+
+  // Sombreado de fondo translúcido con desenfoque
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 99;
   }
 }

@@ -1,17 +1,21 @@
 <div class="nap-layout" [class.sidebar-open]="sidebarOpen">
   <aside class="nap-sidebar" [class.collapsed]="!sidebarOpen">
     <div class="sidebar-inner">
+      <!-- TOGGLE -->
       <button class="sidebar-toggle" (click)="sidebarOpen = !sidebarOpen" title="Menú">
         <i class="fas fa-bars"></i>
       </button>
 
+      <!-- BRAND (¡Con el logo integrado!) -->
       <div class="sidebar-brand" *ngIf="sidebarOpen">
+        <img src="/nechologo1.png" alt="Necho's Logo" class="brand-logo" />
         <span class="brand-text">Necho's</span>
         <span class="brand-sub">Auto Parts</span>
       </div>
 
+      <!-- NAV (Tus botones originales respetados al 100%) -->
       <nav class="sidebar-nav">
-        <button class="nav-item" (click)="onExample1()">
+        <button class="nav-item" (click)="onExample1()" >
           <i class="fas fa-user-cog nav-icon"></i>
           <span class="nav-label" *ngIf="sidebarOpen">Example 1</span>
         </button>
@@ -22,6 +26,7 @@
         </button>
       </nav>
 
+      <!-- BACK -->
       <button class="btn-back" (click)="onBack()">
         <i class="fas fa-sign-out-alt nav-icon"></i>
         <span class="nav-label" *ngIf="sidebarOpen">Regresar</span>
@@ -32,4 +37,7 @@
   <main>
     <router-outlet></router-outlet>
   </main>
+
+  <!-- Capa oscura flotante con el blur aesthetic :3 -->
+  <div class="sidebar-overlay" *ngIf="sidebarOpen" (click)="sidebarOpen = false"></div>
 </div>

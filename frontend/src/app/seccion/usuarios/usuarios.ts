@@ -1,16 +1,16 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterModule, RouterOutlet} from '@angular/router';
 
 @Component({
   selector: 'app-usuarios',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterModule],
   templateUrl: './usuarios.html',
   styleUrls: ['./usuarios.scss']
 })
 export class UsuariosComponent {
-  sidebarOpen = true;
+  sidebarOpen = false;
 
   rol = localStorage.getItem('rol');
 

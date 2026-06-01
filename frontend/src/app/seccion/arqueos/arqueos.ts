@@ -1,16 +1,16 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, Router } from '@angular/router';
+import { RouterOutlet, Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-arqueos',
   standalone: true,
-  imports: [CommonModule, RouterOutlet],
+  imports: [CommonModule, RouterOutlet, RouterLink],
   templateUrl: './arqueos.html',
   styleUrls: ['./arqueos.scss']
 })
 export class ArqueosComponent {
-  sidebarOpen = true;
+  sidebarOpen = false;
 rol = localStorage.getItem('rol');
 
   constructor(private router: Router) {}

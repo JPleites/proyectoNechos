@@ -1,16 +1,16 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Necesario para que funcione el HTML
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterModule, RouterOutlet} from '@angular/router';
 
 @Component({
   selector: 'app-almacenes',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterModule],
   templateUrl: './almacenes.html',
   styleUrls: ['./almacenes.scss']
 })
 export class AlmacenesComponent {
-  sidebarOpen = true;
+  sidebarOpen = false;
   rol = localStorage.getItem('rol');
 
   constructor(private router: Router) {}

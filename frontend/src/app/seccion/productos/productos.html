@@ -6,8 +6,9 @@
         <i class="fas fa-bars"></i>
       </button>
 
-      <!-- BRAND -->
+      <!-- BRAND (Con el logo integrado perfectamente :3) -->
       <div class="sidebar-brand" *ngIf="sidebarOpen">
+        <img src="/nechologo1.png" alt="Necho's Logo" class="brand-logo" />
         <span class="brand-text">Necho's</span>
         <span class="brand-sub">Auto Parts</span>
       </div>
@@ -19,12 +20,12 @@
           <span class="nav-label" *ngIf="sidebarOpen">Consultar Productos</span>
         </button>
 
-        <button class="nav-item" routerLink="nuevo" routerLinkActive="active">
+        <button class="nav-item" routerLink="nuevo" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
           <i class="fas fa-plus-circle nav-icon"></i>
           <span class="nav-label" *ngIf="sidebarOpen">Nuevo Producto</span>
         </button>
 
-        <button class="nav-item" routerLink="ingreso" routerLinkActive="active">
+        <button class="nav-item" routerLink="ingreso" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
           <i class="fas fa-arrow-down nav-icon text-success"></i>
           <span class="nav-label" *ngIf="sidebarOpen">Ingreso</span>
         </button>
@@ -46,4 +47,7 @@
   <main>
     <router-outlet></router-outlet>
   </main>
+
+  <!-- Capa oscura flotante para móviles -->
+  <div class="sidebar-overlay" *ngIf="sidebarOpen" (click)="sidebarOpen = false"></div>
 </div>

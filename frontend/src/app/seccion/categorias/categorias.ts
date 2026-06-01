@@ -1,16 +1,16 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterOutlet, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-categorias',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterModule],
   templateUrl: './categorias.html',
   styleUrls: ['./categorias.scss']
 })
 export class CategoriasComponent {
-  sidebarOpen = true;
+  sidebarOpen = false;
 
   rol = localStorage.getItem('rol');
 

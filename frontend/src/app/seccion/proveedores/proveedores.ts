@@ -1,17 +1,17 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterOutlet, RouterModule } from '@angular/router';
 
 
 @Component({
   selector: 'app-proveedores',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterModule],
   templateUrl: './proveedores.html',
   styleUrls: ['./proveedores.scss']
 })
 export class ProveedoresComponent {
-  sidebarOpen = true;
+  sidebarOpen = false;
   rol = localStorage.getItem('rol');
 
   constructor(private router: Router) {}

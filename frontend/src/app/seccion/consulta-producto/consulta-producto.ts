@@ -1,16 +1,16 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router, RouterOutlet } from "@angular/router";
+import { RouterLink, Router, RouterOutlet, RouterModule } from "@angular/router";
 
 @Component({
   selector: 'app-consulta-producto',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterOutlet],
+  imports: [CommonModule, RouterLink, RouterOutlet, RouterModule],
   templateUrl: './consulta-producto.html',
   styleUrls: ['./consulta-producto.scss']
 })
 export class ConsultaProductoComponent {
-  sidebarOpen = true;
+  sidebarOpen = false;
   rol = localStorage.getItem('rol');
 
   constructor(private router: Router) {}

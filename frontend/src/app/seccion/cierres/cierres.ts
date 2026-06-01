@@ -1,17 +1,17 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterOutlet, RouterLink } from '@angular/router';
+import { Router, RouterOutlet, RouterLink, RouterModule } from '@angular/router';
 
 
 @Component({
   selector: 'app-cierres',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterModule],
   templateUrl: './cierres.html',
   styleUrls: ['./cierres.scss']
 })
 export class CierresComponent {
-  sidebarOpen = true;
+  sidebarOpen = false;
 
   rol = localStorage.getItem('rol');
 
