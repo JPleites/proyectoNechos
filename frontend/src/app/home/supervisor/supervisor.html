@@ -1,67 +1,54 @@
-<div class="container-fluid overflow-hidden" style="height: 100vh; display: flex; flex-direction: column; padding: 12px; box-sizing: border-box; background-color: #f8f9fa;">
-  
-  <!-- Header Supervisor -->
-  <div class="d-flex justify-content-between align-items-center mb-3" style="padding: 0 10px; background: #fff; border: 1px solid #dee2e6; border-radius: 15px; height: 60px;">
-    
+<div class="container-fluid vh-100 d-flex flex-column p-3 bg-light page-wrapper">
+  <div class="d-flex justify-content-between align-items-center mb-3 bg-white border rounded-pill px-4" style="height: 60px; flex-shrink: 0;">
     <div class="fw-bold" style="font-size: 14px; color: #555;">
       Rol: <span style="color: #28a745;">Supervisor</span>
     </div>
 
     <div class="fw-bold text-dark" style="font-size: 16px;">
-      Bienvenido: <span class="text-secondary">[Nombre de Usuario]</span>
-    </div>
-
-    <div class="d-flex align-items-center" style="cursor: pointer; padding: 5px 12px; border-radius: 10px; transition: 0.3s;" 
-         onmouseover="this.style.background='#fff0f0'" onmouseout="this.style.background='transparent'" (click)="logout()">
-      <span class="me-2 fw-bold" style="font-size: 14px; color: #dc3545;">Cerrar Sesión</span>
-      <i class="fas fa-sign-out-alt text-danger" style="font-size: 22px;"></i>
-    </div>
-
+  <span class="me-2">Bienvenido:</span><span class="text-secondary">[Nombre de Usuario]</span>
   </div>
 
-  <!-- Grid de Módulos (3 columnas) -->
-  <div style="display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 12px; flex-grow: 1;">
+    <div class="logout-btn d-flex align-items-center" (click)="logout()">
+      <span class="me-2 fw-bold text-danger" style="font-size: 14px;">Cerrar Sesión</span>
+      <i class="fas fa-sign-out-alt text-danger" style="font-size: 22px;"></i>
+    </div>
+  </div>
 
-    <!-- Ver/Crear Usuarios -->
+  <div class="modulos-grid grid-supervisor">
+
     <div class="modulo-card" (click)="navigateTo('usuarios')">
       <i class="fas fa-user-cog icon-necho"></i>
-      <div class="mt-2" style="font-size: 14px; font-weight: bold;">Ver/Crear Usuarios</div>
+      <div class="mt-2 text-label">Ver/Crear Usuarios</div>
     </div>
 
-    <!-- Clientes -->
     <div class="modulo-card" (click)="navigateTo('clientes')">
       <i class="fas fa-address-card icon-necho"></i>
-      <div class="mt-2" style="font-size: 14px; font-weight: bold;">Clientes</div>
+      <div class="mt-2 text-label">Clientes</div>
     </div>
 
-    <!-- Inventario -->
     <div class="modulo-card" (click)="navigateTo('inventario')">
       <i class="fas fa-clipboard-check icon-necho"></i>
-      <div class="mt-2" style="font-size: 14px; font-weight: bold;">Inventario</div>
+      <div class="mt-2 text-label">Inventario</div>
     </div>
 
-    <!-- Productos -->
     <div class="modulo-card" (click)="navigateTo('productos')">
       <i class="fas fa-boxes icon-necho"></i>
-      <div class="mt-2" style="font-size: 14px; font-weight: bold;">Productos</div>
+      <div class="mt-2 text-label">Productos</div>
     </div>
 
-    <!-- Arqueos -->
     <div class="modulo-card" (click)="navigateTo('pedidos')">
       <i class="fas fa-cash-register icon-necho"></i>
-      <div class="mt-2" style="font-size: 14px; font-weight: bold;">Pedidos</div>
+      <div class="mt-2 text-label">Pedidos</div>
     </div>
 
-    <!-- Caja -->
     <div class="modulo-card" (click)="navigateTo('caja')">
       <i class="fas fa-file-invoice-dollar icon-necho"></i>
-      <div class="mt-2" style="font-size: 14px; font-weight: bold;">Caja</div>
+      <div class="mt-2 text-label">Caja</div>
     </div>
 
-    <!-- Cierres (Centrado en la fila) -->
-    <div class="modulo-card" style="grid-column: 2;" (click)="navigateTo('cierres')">
+    <div class="modulo-card card-centrada" (click)="navigateTo('cierres')">
       <i class="fas fa-store-slash icon-necho"></i>
-      <div class="mt-2" style="font-size: 14px; font-weight: bold;">Cierres</div>
+      <div class="mt-2 text-label">Cierres</div>
     </div>
 
   </div>

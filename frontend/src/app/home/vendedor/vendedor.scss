@@ -1,23 +1,116 @@
-/* Estándar de Necho's Auto Parts para Vendedores */
+// ─── Variables ────────────────────────────────────────────────────────────────
 :host {
-  --size-icon-vendedor: 86px; 
+  --size-icon-necho: 86px;
+  --color-vendedor: #17a2b8; /* Tu cian precioso para la esencia de Vendedor 7u7 */
 }
 
-/* Reemplazamos la lógica de imagen por icono de fuente */
+// ─── Contenedor principal ─────────────────────────────────────────────────────
+.page-wrapper {
+  overflow: hidden; 
+  height: 100vh;
+}
+
+// ─── Grid de módulos con Scroll Inteligente ───────────────────────────────────
+.modulos-grid {
+  display: grid;
+  // En desktop original: 3 columnas en una sola fila
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  flex-grow: 1;
+
+  // En celular vertical pasa a 2 columnas para que quepan bien los iconos y textos
+  @media (max-width: 575.98px) {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: none;
+
+    // Hacemos que la tercera tarjeta ocupe las 2 columnas abajo para que se vea simétrico y lindo
+    .modulo-card:nth-child(3) {
+      grid-column: span 2;
+    }
+  }
+
+  // ── Scroll en pantallas móviles o pantallas muy bajitas (Horizontal) ──
+  @media (max-width: 575.98px), (max-height: 550px) {
+    overflow-y: scroll;                
+    max-height: calc(100vh - 90px);    
+    padding-bottom: 25px;              
+    padding-right: 6px;                
+    -webkit-overflow-scrolling: touch; 
+
+    // En horizontal volvemos a poner 3 columnas porque el ancho da espacio de sobra
+    @media (min-width: 576px) {
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: none;
+      
+      .modulo-card:nth-child(3) {
+        grid-column: auto; /* Quitamos el span en horizontal */
+      }
+    }
+
+    // ── Estilos de la barra de scroll (Firefox) ──
+    scrollbar-width: thin;
+    scrollbar-color: #a0a0a0 #e9ecef;
+
+    // ── Estilos de la barra de scroll (Chrome, Safari, Edge) ──
+    &::-webkit-scrollbar {
+      width: 6px;
+      display: block !important;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #e9ecef;
+      border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #a0a0a0;
+      border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: #777;
+    }
+  }
+}
+
+// ─── Icono Responsivo ─────────────────────────────────────────────────────────
 .icon-necho {
-  font-size: var(--size-icon-vendedor);
-  height: var(--size-icon-vendedor);
+  font-size: var(--size-icon-necho);
+  height: var(--size-icon-necho);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #444;
   transition: all 0.2s ease-in-out;
+
+  @media (max-width: 767.98px) and (min-width: 576px) {
+    font-size: 64px;
+    height: 64px;
+  }
+
+  @media (max-width: 575.98px), (max-height: 550px) {
+    font-size: 46px;
+    height: 46px;
+  }
 }
 
+// ─── Estilo de Texto para Etiquetas ──────────────────────────────────────────
+.text-label {
+  font-size: 20px; /* Tus textos grandes originales */
+  font-weight: bold;
+  text-align: center;
+  color: #212529;
+
+  @media (max-width: 767.98px) {
+    font-size: 15px; /* Se encoge un poquito en tablets y celulares para que no rompa */
+  }
+}
+
+// ─── Tarjeta de módulo (General) ──────────────────────────────────────────────
 .modulo-card {
   background: #fff;
   border: 1px solid #dee2e6;
-  border-radius: 20px;
+  border-radius: 20px; 
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   display: flex;
@@ -25,19 +118,43 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
-  height: 100%;
+
+  @media (max-width: 575.98px), (max-height: 550px) {
+    padding: 15px 6px;
+    border-radius: 14px;
+  }
 }
 
-/* Hover azulito/cian para Vendedor */
-.modulo-card:hover {
-  transform: translateY(-8px); 
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-  border-color: #17a2b8; 
-  background-color: #f0fbfc; 
+// ─── Personalización Única del Vendedor (Cian) ───
+.grid-vendedor .modulo-card {
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    border-color: var(--color-vendedor);
+    background-color: #f0fbfc; /* Fondo fresco cian suave */
 
-  /* El icono cambia al color del rol */
-  .icon-necho {
-    color: #17a2b8;
-    transform: scale(1.1);
+    .icon-necho {
+      color: var(--color-vendedor);
+      transform: scale(1.1);
+    }
+  }
+}
+
+// ─── Botón Cerrar Sesión ──────────────────────────────────────────────────────
+.logout-btn {
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 20px;
+  transition: background-color 0.25s ease, opacity 0.25s ease, transform 0.2s ease;
+
+  &:hover {
+    background-color: rgba(220, 53, 69, 0.08);
+    opacity: 0.85;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+    opacity: 1;
   }
 }

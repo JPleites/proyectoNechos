@@ -1,22 +1,108 @@
-/* Variable global para controlar el tamaño de los iconos */
+// ─── Variables ────────────────────────────────────────────────────────────────
 :host {
-  --size-icon-cajero: 90px; 
+  --size-icon-necho: 86px;
+  --color-cajero: #f39c12; /* Tu color único para la esencia del Cajero 7u7 */
 }
 
+// ─── Contenedor principal ─────────────────────────────────────────────────────
+.page-wrapper {
+  overflow: hidden; 
+  height: 100vh;
+}
+
+// ─── Grid de módulos con Scroll Inteligente ───────────────────────────────────
+.modulos-grid {
+  display: grid;
+  // Como el cajero solo tiene 4 módulos, en desktop se ve mejor en una cuadrícula de 2x2
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 15px;
+  flex-grow: 1;
+
+  // En celular vertical se queda en 2 columnas con filas automáticas
+  @media (max-width: 575.98px) {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: none;
+  }
+
+  // ── Scroll en pantallas móviles o pantallas muy bajitas (Horizontal) ──
+  @media (max-width: 575.98px), (max-height: 550px) {
+    overflow-y: scroll;                
+    max-height: calc(100vh - 90px);    
+    padding-bottom: 25px;              
+    padding-right: 6px;                
+    -webkit-overflow-scrolling: touch; 
+
+    // En horizontal, mantenemos 2 columnas bien distribuidas
+    @media (min-width: 576px) {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: none;
+    }
+
+    // ── Estilos de la barra de scroll (Firefox) ──
+    scrollbar-width: thin;
+    scrollbar-color: #a0a0a0 #e9ecef;
+
+    // ── Estilos de la barra de scroll (Chrome, Safari, Edge) ──
+    &::-webkit-scrollbar {
+      width: 6px;
+      display: block !important;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #e9ecef;
+      border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #a0a0a0;
+      border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: #777;
+    }
+  }
+}
+
+// ─── Icono Responsivo ─────────────────────────────────────────────────────────
 .icon-necho {
-  font-size: var(--size-icon-cajero);
-  height: var(--size-icon-cajero);
+  font-size: var(--size-icon-necho);
+  height: var(--size-icon-necho);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #444;
   transition: all 0.3s ease;
+
+  @media (max-width: 767.98px) and (min-width: 576px) {
+    font-size: 64px;
+    height: 64px;
+  }
+
+  @media (max-width: 575.98px), (max-height: 550px) {
+    font-size: 46px;
+    height: 46px;
+  }
 }
 
+// ─── Estilo de Texto para Etiquetas ──────────────────────────────────────────
+.text-label {
+  font-size: 18px; 
+  font-weight: bold;
+  text-align: center;
+  color: #212529;
+
+  @media (max-width: 575.98px) {
+    font-size: 14px; /* Un poco más compacto en cel */
+  }
+}
+
+// ─── Tarjeta de módulo (General) ──────────────────────────────────────────────
 .modulo-card {
   background: #fff;
   border: 1px solid #dee2e6;
-  border-radius: 20px; /* Bordes un poco más redondeados para cajeros */
+  border-radius: 20px; /* Bordes redondeados hermosos para el cajero */
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
@@ -25,15 +111,42 @@
   justify-content: center;
   padding: 20px;
 
+  @media (max-width: 575.98px), (max-height: 550px) {
+    padding: 12px 6px;
+    border-radius: 14px;
+  }
+}
+
+// ─── Personalización Única del Cajero (Naranja) ───
+.grid-cajero .modulo-card {
   &:hover {
-    transform: translateY(-8px); /* Salta un poco más al ser botones grandes */
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    border-color: #f39c12; /* Color naranja (Cajero) */
-    background-color: #fffaf0;
+    transform: translateY(-8px); /* Brinco más alto por ser tarjetas grandes */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    border-color: var(--color-cajero);
+    background-color: #fffaf0; /* Fondo cálido naranja suave */
 
     .icon-necho {
-      color: #f39c12;
+      color: var(--color-cajero);
       transform: scale(1.1);
     }
+  }
+}
+
+// ─── Botón Cerrar Sesión ──────────────────────────────────────────────────────
+.logout-btn {
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 20px;
+  transition: background-color 0.25s ease, opacity 0.25s ease, transform 0.2s ease;
+
+  &:hover {
+    background-color: rgba(220, 53, 69, 0.08);
+    opacity: 0.85;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+    opacity: 1;
   }
 }

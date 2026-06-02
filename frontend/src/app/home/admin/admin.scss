@@ -1,20 +1,98 @@
-/* Variable global para controlar el tamaño desde un solo lugar */
+// ─── Variables ────────────────────────────────────────────────────────────────
 :host {
-  --size-icon-necho: 86px; 
+  --size-icon-necho: 86px;
 }
 
-/* Ajuste para los iconos de fuente */
+// ─── Contenedor principal ─────────────────────────────────────────────────────
+.page-wrapper {
+  overflow: hidden; /* Evita que la pantalla completa rebote o se rompa */
+  height: 100vh;
+}
+
+// ─── Grid de módulos con Scroll Inteligente (Vertical y Horizontal) ───────────
+.modulos-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 10px;
+  flex-grow: 1;
+
+  // En tablet se reajustan las columnas
+  @media (max-width: 767.98px) and (min-width: 576px) {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: none;
+  }
+
+  // En modo móvil vertical (pantallas angostas)
+  @media (max-width: 575.98px) {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: none;
+  }
+
+  // ── ¡LA MAGIA PARA EL MODO HORIZONTAL! ──
+  // Si la pantalla es pequeña de ancho O si es muy bajita de alto (Celular Horizontal)
+  @media (max-width: 575.98px), (max-height: 550px) {
+    overflow-y: scroll;                /* Forzamos el scroll siempre que falte espacio vertical */
+    max-height: calc(100vh - 90px);    /* Ajusta el alto libre restando el header */
+    padding-bottom: 25px;              /* Espacio libre abajo para que respire */
+    padding-right: 6px;                /* Espacio para la barra */
+    -webkit-overflow-scrolling: touch; /* Scroll fluido en móviles */
+
+    // Si está en horizontal, ponemos 3 o 4 columnas para que no se vea gigante hacia abajo
+    @media (min-width: 576px) {
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: none;
+    }
+
+    // ── Estilos de la barra de scroll (Firefox) ──
+    scrollbar-width: thin;
+    scrollbar-color: #a0a0a0 #e9ecef;
+
+    // ── Estilos de la barra de scroll (Chrome, Safari, Edge) ──
+    &::-webkit-scrollbar {
+      width: 6px;
+      display: block !important;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #e9ecef;
+      border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #a0a0a0;
+      border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: #777;
+    }
+  }
+}
+
+// ─── Icono Responsivo ─────────────────────────────────────────────────────────
 .icon-necho {
   font-size: var(--size-icon-necho);
   height: var(--size-icon-necho);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #444; /* Color base de los iconos */
-  transition: color 0.3s ease;
+  color: #444;
+  transition: all 0.3s ease;
+
+  @media (max-width: 767.98px) and (min-width: 576px) {
+    font-size: 54px;
+    height: 54px;
+  }
+
+  // Si la pantalla es chica o bajita (horizontal), encogemos el icono para que quepa bien
+  @media (max-width: 575.98px), (max-height: 550px) {
+    font-size: 42px;
+    height: 42px;
+  }
 }
 
-/* Efecto Hover para las tarjetas */
+// ─── Tarjeta de módulo ────────────────────────────────────────────────────────
 .modulo-card {
   background: #fff;
   border: 1px solid #dee2e6;
@@ -29,14 +107,37 @@
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
     border-color: #0d6efd;
     background-color: #eefffe;
 
-    /* El icono también cambia de color al hacer hover */
     .icon-necho {
       color: #0d6efd;
       transform: scale(1.1);
     }
+  }
+
+  @media (max-width: 575.98px), (max-height: 550px) {
+    padding: 8px 4px;
+    border-radius: 10px;
+  }
+}
+
+// ─── Botón Cerrar Sesión ──────────────────────────────────────────────────────
+.logout-btn {
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 20px;
+  transition: background-color 0.25s ease, opacity 0.25s ease, transform 0.2s ease;
+
+  &:hover {
+    background-color: rgba(220, 53, 69, 0.08);
+    opacity: 0.85;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+    opacity: 1;
   }
 }
