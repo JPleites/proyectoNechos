@@ -1,22 +1,50 @@
-  .recibo {
-      width: 100%;
-      max-width: 300px;
-      margin: 0 auto;
-      font-family: 'Courier New', monospace;
-      font-size: 12px;
-      padding: 8px;
-    }
-    hr { border-top: 1px dashed #000; }
+// Estilos normales del recibo
+.recibo {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  padding: 8px;
 
-    @media print {
-      body * { visibility: hidden; }
-      #recibo-imprimir, #recibo-imprimir * { visibility: visible; }
-      #recibo-imprimir {
-        position: fixed;
-        top: 0; left: 0;
-        width: 80mm;
-        margin: 0;
-        padding: 4px;
-        font-size: 11px;
-      }
-    }
+  hr {
+    border-top: 1px dashed #000;
+    border-bottom: none;
+  }
+}
+
+// Estilos de impresión
+@media print {
+  @page {
+    size: 80mm auto;
+    margin: 4mm;
+  }
+
+  // Ocultar TODO
+  body * {
+    visibility: hidden !important;
+  }
+
+  // Mostrar SOLO el recibo
+  #recibo-imprimir,
+  #recibo-imprimir * {
+    visibility: visible !important;
+  }
+
+  #recibo-imprimir {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 72mm !important;
+    margin: 0 !important;
+    padding: 4px !important;
+    font-size: 11px !important;
+    font-family: 'Courier New', monospace !important;
+  }
+
+  // Ocultar el modal y sus botones
+  .modal-header,
+  .modal-footer {
+    display: none !important;
+  }
+}

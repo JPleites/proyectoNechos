@@ -7,6 +7,7 @@ import {
   Delete,
   Put,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { VentasService } from './ventas.service';
 import { AuthGuard } from '../auth/auth.guard';
@@ -19,9 +20,14 @@ import { Roles } from '../auth/roles.decorator';
 export class VentasController {
   constructor(private readonly ventasService: VentasService) {}
 
-    // ✅ facturar
+  // ✅ facturar
   @Post(':id/facturar')
-  facturar(@Param('id') id: string, @Body() data: any) {
-    return this.ventasService.facturarPedido(Number(id), data);
+  facturar(@Param('id') id: string, @Body() data: any, @Req() req: any) {
+    console.log('usuario en token:', req.user); // 👈 Ver el contenido del token
+    return this.ventasService.facturarPedido(
+      Number(id),
+      data,
+      req.user.sub, // 👈 cajero del token
+    );
   }
 }
