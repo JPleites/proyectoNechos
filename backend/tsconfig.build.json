@@ -4,13 +4,8 @@
     "node_modules",
     "test",
     "dist",
-    "**/*spec.ts",
-    "prisma.config.ts",
+    "**/*.spec.ts",
     "prisma",
-    "prisma/seed.ts"
-  ],
-  "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./src"
-  }
+    "prisma.config.ts"
+  ]
 }
