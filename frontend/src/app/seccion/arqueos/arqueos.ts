@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, Router, RouterLink } from '@angular/router';
+import { RouterOutlet, Router,  } from '@angular/router';
 
 @Component({
   selector: 'app-arqueos',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink],
+  imports: [CommonModule, RouterOutlet ],
   templateUrl: './arqueos.html',
   styleUrls: ['./arqueos.scss']
 })

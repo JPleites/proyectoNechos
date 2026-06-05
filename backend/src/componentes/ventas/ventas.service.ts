@@ -24,7 +24,7 @@ export class VentasService {
   // =========================================================
   // FACTURAR PEDIDO
   // =========================================================
-  async facturarPedido(id: number, data: any) {
+  async facturarPedido(id: number, data: any, cajeroCodigo: number) {
     // ✅ Estas consultas ANTES de la transacción
     const pedido = await this.prisma.pedidos.findUnique({
       where: { id },
@@ -102,7 +102,7 @@ export class VentasService {
           metodoPago: data.metodoPago,
           totalRecibido: data.totalRecibido,
           cambio: Number(data.totalRecibido) - Number(pedido.total),
-          usuarioCodigo: pedido.usuarioCodigo,
+          usuarioCodigo: cajeroCodigo,
           detalles: {
             create: pedido.detalles.map((d) => ({
               productoCodigo: d.productoCodigo,

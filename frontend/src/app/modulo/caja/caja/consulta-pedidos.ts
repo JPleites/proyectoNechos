@@ -85,44 +85,46 @@ export class ConsultaPedidos implements OnInit {
     const contenido = document.getElementById('recibo-imprimir')?.innerHTML;
     if (!contenido) return;
 
-    const ventana = window.open('', '_blank', 'width=300,height=600');
-    if (!ventana) return;
+    window.print(); // Esto abrirá el diálogo de impresión del navegador
 
-    ventana.document.write(`
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <title>Recibo</title>
-        <style>
-          @page { size: 80mm auto; margin: 4mm; }
-          body {
-            width: 80mm;
-            margin: 0;
-            padding: 4px;
-            font-family: 'Courier New', monospace;
-            font-size: 11px;
-          }
-          table { width: 100%; border-collapse: collapse; }
-          hr { border-top: 1px dashed #000; border-bottom: none; }
-          .text-center { text-align: center; }
-          .text-end { text-align: right; }
-          .fw-bold { font-weight: bold; }
-          .d-flex { display: flex; }
-          .justify-content-between { justify-content: space-between; }
-          .mb-0 { margin-bottom: 0; }
-          .mb-1 { margin-bottom: 4px; }
-          .mb-2 { margin-bottom: 8px; }
-          .mt-1 { margin-top: 4px; }
-          .my-1 { margin-top: 4px; margin-bottom: 4px; }
-          h5 { font-size: 14px; margin: 0; }
-        </style>
-      </head>
-      <body onload="window.print(); window.close();">
-        ${contenido}
-      </body>
-    </html>
-  `);
-    ventana.document.close();
+  //   const ventana = window.open('', '_blank', 'width=300,height=600');
+  //   if (!ventana) return;
+
+  //   ventana.document.write(`
+  //   <!DOCTYPE html>
+  //   <html>
+  //     <head>
+  //       <title>Recibo</title>
+  //       <style>
+  //         @page { size: 80mm auto; margin: 4mm; }
+  //         body {
+  //           width: 80mm;
+  //           margin: 0;
+  //           padding: 4px;
+  //           font-family: 'Courier New', monospace;
+  //           font-size: 11px;
+  //         }
+  //         table { width: 100%; border-collapse: collapse; }
+  //         hr { border-top: 1px dashed #000; border-bottom: none; }
+  //         .text-center { text-align: center; }
+  //         .text-end { text-align: right; }
+  //         .fw-bold { font-weight: bold; }
+  //         .d-flex { display: flex; }
+  //         .justify-content-between { justify-content: space-between; }
+  //         .mb-0 { margin-bottom: 0; }
+  //         .mb-1 { margin-bottom: 4px; }
+  //         .mb-2 { margin-bottom: 8px; }
+  //         .mt-1 { margin-top: 4px; }
+  //         .my-1 { margin-top: 4px; margin-bottom: 4px; }
+  //         h5 { font-size: 14px; margin: 0; }
+  //       </style>
+  //     </head>
+  //     <body onload="window.print(); window.close();">
+  //       ${contenido}
+  //     </body>
+  //   </html>
+  // `);
+  //   ventana.document.close();
   }
 
   eliminarDetalle(detalleId: number) {
