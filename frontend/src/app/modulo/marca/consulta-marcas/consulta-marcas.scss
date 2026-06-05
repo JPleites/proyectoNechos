@@ -1,0 +1,103 @@
+// ─── Contenedor Principal ─────────────────────────────────────────────────────
+.page-wrapper {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.modulo-header {
+  flex-shrink: 0;
+}
+
+// Control de scroll vertical e inteligente
+.modulo-contenido.panel-scroll {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #dddfe2;
+    border-radius: 4px;
+  }
+}
+
+// ─── Ajuste del Buscador (Compactado) ─────────────────────────────────────────
+.card-body.border-bottom {
+  padding: 14px 20px !important; // Reducimos el relleno interno para que no flote tanto
+}
+
+.erp-input.form-control {
+  border-color: #dee2e6;
+  padding: 10px 14px;
+  font-size: 14px;
+  border-radius: 8px 0 0 8px !important;
+  transition: all 0.2s ease;
+
+  &:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+    background-color: #ffffff;
+  }
+}
+
+.btn-buscar {
+  border-radius: 0 8px 8px 0 !important;
+  transition: all 0.15s ease;
+  
+  &:hover {
+    box-shadow: 0 4px 10px rgba(13, 110, 253, 0.15);
+  }
+}
+
+// ─── Tabla Pegada al Buscador ───────────────────────────────────────────────
+.table-responsive {
+  margin-top: 0 !important; // Evita cualquier separación con el borde inferior del buscador
+}
+
+.erp-table-marcas {
+  width: 100%;
+
+  thead th {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 12px 16px; // Ajustado para compactar la cabecera
+    border-bottom: 1px solid #dee2e6;
+  }
+
+  tbody tr {
+    transition: background-color 0.15s ease;
+
+    // Zebra intercalado sutil para no cansar la vista en monitores grandes
+    &:nth-child(even) {
+      background-color: #fafbfc;
+    }
+  }
+
+  tbody td {
+    padding: 12px 16px; // Espaciado balanceado y nítido para las filas
+    font-size: 14px;
+    color: #343a40;
+    border-bottom: 1px solid #edf2f7;
+  }
+}
+
+// ─── Badge de Código Estilizado ───────────────────────────────────────────────
+.erp-badge-secondary {
+  background-color: #f1f3f5;
+  color: #495057;
+  display: inline-block;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+
+.text-nowrap {
+  white-space: nowrap;
+}

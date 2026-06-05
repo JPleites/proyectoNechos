@@ -1,136 +1,115 @@
-<section class="container-fluid py-4 bg-body-tertiary min-vh-100">
-  <article class="card border-0 shadow-sm rounded-4 overflow-hidden">
-    <!-- HEADER -->
-    <header class="card-header bg-white border-bottom px-4 py-3">
-      <h4 class="mb-1 fw-semibold">Registro de colaborador</h4>
+<div class="container-fluid vh-100 d-flex flex-column p-3 bg-light page-wrapper">
+  
+  <div class="modulo-contenido panel-scroll flex-grow-1 w-100">
+    <article class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100 d-flex flex-column">
+      
+      <header class="card-header border-bottom px-4 py-3 flex-shrink-0">
+        <h4 class="mb-1 fw-semibold text-dark">Registro de colaborador</h4>
+        <small class="text-muted">Gestión de información del personal</small>
+      </header>
 
-      <small class="text-muted"> Gestión de información del personal </small>
-    </header>
+      <form class="card-body p-4 d-flex flex-column h-100 overflow-auto" [formGroup]="form" (ngSubmit)="guardar()">
+        <div class="d-grid gap-4 flex-grow-1">
+          
+          <section class="erp-panel">
+            <h6 class="erp-section-title">Datos del perfil</h6>
 
-    <!-- FORM -->
-    <form class="card-body p-4" [formGroup]="form" (ngSubmit)="guardar()">
-      <div class="d-grid gap-4">
-        <!-- PERFIL -->
-        <section class="erp-panel">
-          <h6 class="erp-section-title">Datos del perfil</h6>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label"> DNI </label>
+                <input formControlName="dni" class="form-control" placeholder="DNI" />
+              </div>
 
-          <div class="row g-3">
-            <div class="col-md-4">
-              <label class="form-label"> DNI </label>
+              <div class="col-md-8">
+                <label class="form-label"> Nombre completo </label>
+                <input formControlName="nombre" class="form-control" placeholder="Nombre" />
+              </div>
 
-              <input formControlName="dni" class="form-control" placeholder="DNI" />
+              <div class="col-md-4">
+                <label class="form-label"> Teléfono </label>
+                <input formControlName="telefono" class="form-control" placeholder="Teléfono" />
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label"> Cargo </label>
+                <input formControlName="cargo" class="form-control" placeholder="Cargo" />
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label"> Departamento </label>
+                <input formControlName="departamento" class="form-control" placeholder="Departamento" />
+              </div>
+
+              <div class="col-12">
+                <label class="form-label"> Dirección </label>
+                <input formControlName="direccion" class="form-control" placeholder="Dirección" />
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label"> Fecha de ingreso </label>
+                <input type="date" formControlName="fechaIngreso" class="form-control" />
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label"> Último ascenso </label>
+                <input type="date" formControlName="fechaUltimoAscenso" class="form-control" />
+              </div>
+            </div>
+          </section>
+
+          <section class="erp-panel">
+            <div class="d-flex justify-content-between align-items-center mb-3 wrapper-switch-header">
+              <div>
+                <h6 class="erp-section-title mb-1 pb-0">Acceso al sistema</h6>
+                <small class="text-muted text-user-erp"> Configuración de usuario ERP </small>
+              </div>
+
+              <div class="form-check form-switch-premium form-switch">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  formControlName="crearUsuario"
+                  id="crearUsuario"
+                />
+                <label class="form-check-label fw-semibold text-dark small" for="crearUsuario"> Crear usuario </label>
+              </div>
             </div>
 
-            <div class="col-md-8">
-              <label class="form-label"> Nombre completo </label>
+            <div *ngIf="form.get('crearUsuario')?.value" class="row g-3 mt-1 pt-2 border-top border-dashed animated fadeIn">
+              <div class="col-md-6">
+                <label class="form-label"> Rol del sistema </label>
+                <select formControlName="rol" class="form-select">
+                  <option value="">Seleccionar rol</option>
+                  <option value="admin">Administrador</option>
+                  <option value="vendedor">Vendedor</option>
+                  <option value="supervisor">Supervisor</option>
+                  <option value="cajero">Cajero</option>
+                </select>
+              </div>
 
-              <input formControlName="nombre" class="form-control" placeholder="Nombre" />
+              <div class="col-md-6">
+                <label class="form-label"> Contraseña </label>
+                <input
+                  type="password"
+                  formControlName="contrasena"
+                  class="form-control"
+                  placeholder="Contraseña"
+                />
+              </div>
             </div>
+          </section>
 
-            <div class="col-md-4">
-              <label class="form-label"> Teléfono </label>
+        </div>
 
-              <input formControlName="telefono" class="form-control" placeholder="Teléfono" />
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label"> Cargo </label>
-
-              <input formControlName="cargo" class="form-control" placeholder="Cargo" />
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label"> Departamento </label>
-
-              <input
-                formControlName="departamento"
-                class="form-control"
-                placeholder="Departamento"
-              />
-            </div>
-
-            <div class="col-12">
-              <label class="form-label"> Dirección </label>
-
-              <input formControlName="direccion" class="form-control" placeholder="Dirección" />
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label"> Fecha de ingreso </label>
-
-              <input type="date" formControlName="fechaIngreso" class="form-control" />
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label"> Último ascenso </label>
-
-              <input type="date" formControlName="fechaUltimoAscenso" class="form-control" />
-            </div>
-          </div>
-        </section>
-
-        <!-- ACCESO -->
-        <section class="erp-panel">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <div>
-              <h6 class="erp-section-title mb-1">Acceso al sistema</h6>
-
-              <small class="text-muted"> Configuración de usuario ERP </small>
-            </div>
-
-            <div class="form-check form-switch">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                formControlName="crearUsuario"
-                id="crearUsuario"
-              />
-
-              <label class="form-check-label" for="crearUsuario"> Crear usuario </label>
-            </div>
-          </div>
-
-          <!-- USUARIO -->
-          <div *ngIf="form.get('crearUsuario')?.value" class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label"> Rol del sistema </label>
-
-              <select formControlName="rol" class="form-select">
-                <option value="">Seleccionar rol</option>
-
-                <option value="admin">Administrador</option>
-
-                <option value="vendedor">Vendedor</option>
-
-                <option value="supervisor">Supervisor</option>
-
-                <option value="cajero">Cajero</option>
-              </select>
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label"> Contraseña </label>
-
-              <input
-                type="password"
-                formControlName="contrasena"
-                class="form-control"
-                placeholder="Contraseña"
-              />
-            </div>
-          </div>
-        </section>
-
-        <!-- ACTIONS -->
-        <footer class="d-flex justify-content-end gap-2">
-          <button type="button" class="btn btn-light border rounded-3 px-4">Cancelar</button>
-
-          <button type="submit" class="btn btn-primary rounded-3 px-4">
-            <i class="fas fa-save me-2"></i>
-            Guardar colaborador
+        <footer class="d-flex justify-content-end gap-2 pt-3 border-top mt-4 flex-shrink-0">
+          <button type="button" class="btn btn-light border rounded-3 px-4 fw-medium btn-cancelar">Cancelar</button>
+          <button type="submit" class="btn btn-primary rounded-3 px-4 fw-medium btn-guardar">
+            <i class="fas fa-save me-2 small"></i> Guardar colaborador
           </button>
         </footer>
-      </div>
-    </form>
-  </article>
-</section>
+      </form>
+
+    </article>
+  </div>
+
+</div>

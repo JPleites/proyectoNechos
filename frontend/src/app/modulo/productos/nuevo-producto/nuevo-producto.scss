@@ -1,0 +1,109 @@
+// ─── Control Maestro de Pantalla Completa ─────────────────────────────────────
+.page-wrapper {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.modulo-header {
+  flex-shrink: 0;
+}
+
+.panel-scroll {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  
+  &::-webkit-scrollbar { width: 5px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: #dddfe2; border-radius: 4px; }
+}
+
+// ─── Caja contenedora de Paneles ERP ──────────────────────────────────────────
+.erp-panel {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 1.4rem;
+}
+
+.erp-section-title {
+  font-size: .8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: #5c636a;
+  margin-bottom: 1.1rem;
+}
+
+.form-label {
+  font-size: .82rem;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: .4rem;
+}
+
+// ─── Entradas e Inputs Uniformes ──────────────────────────────────────────────
+.form-control,
+.form-select {
+  min-height: 40px;
+  border-radius: .7rem;
+  border: 1px solid #dee2e6;
+  font-size: 0.88rem;
+  transition: all .2s ease;
+  
+  &:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 .2rem rgba(13,110,253,.08);
+  }
+}
+
+.erp-input-group {
+  .input-group-text {
+    border-color: #dee2e6;
+    font-size: 0.88rem;
+    border-radius: .7rem 0 0 .7rem;
+    font-weight: 500;
+  }
+  .form-control {
+    border-radius: 0 .7rem .7rem 0;
+  }
+}
+
+// ─── Previsualizador de Imagen ────────────────────────────────────────────────
+.erp-product-card {
+  background-color: #fcfdfe;
+}
+
+.img-preview-container {
+  width: 220px;
+  height: 220px;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-color: #edf0f2 !important;
+  
+  .erp-product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; // Hace que la imagen encaje preciosa sin deformarse
+  }
+}
+
+// ─── Animaciones y Botones de Guardado ─────────────────────────────────────────
+.btn-guardar-erp {
+  min-height: 40px;
+  transition: all 0.2s ease;
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15);
+  }
+}
+
+.btn-cancelar-erp {
+  min-height: 40px;
+  &:hover { background-color: #f1f3f5; }
+}
+
+.shadow-inner { box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+.letter-spacing { letter-spacing: 0.05em; }
+.cursor-pointer { cursor: pointer; }
+.x-small { font-size: 0.72rem; }

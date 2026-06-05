@@ -1,0 +1,122 @@
+// ─── Contenedor Principal ─────────────────────────────────────────────────────
+.page-wrapper {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.modulo-header {
+  flex-shrink: 0;
+}
+
+// Control de scroll vertical suave para la lista
+.modulo-contenido.panel-scroll {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #dddfe2;
+    border-radius: 4px;
+  }
+}
+
+// ─── Tabla de Pedidos Completa ────────────────────────────────────────────────
+.erp-table-pedidos {
+  width: 100%;
+
+  thead th {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 14px 16px;
+    border-bottom: 2px solid #dee2e6;
+  }
+
+  tbody tr {
+    transition: background-color 0.15s ease;
+
+    // Zebra intercalado sutil para no fatigar la vista
+    &:nth-child(even) {
+      background-color: #fafbfc;
+    }
+  }
+
+  tbody td {
+    padding: 12px 16px;
+    font-size: 14px;
+    color: #343a40;
+    border-bottom: 1px solid #edf2f7;
+  }
+}
+
+// ─── Badges de Estados Pastel ──────────────────────────────────────────────────
+.badge-estado {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+}
+
+.status-proceso {
+  background-color: #fef3c7; // Amarillo pastel
+  color: #d97706;
+}
+
+.status-caja {
+  background-color: #dbeafe; // Azul pastel
+  color: #2563eb;
+}
+
+.status-facturado {
+  background-color: #dcfce7; // Verde pastel
+  color: #16a34a;
+}
+
+.status-cancelado {
+  background-color: #fee2e2; // Rojo pastel
+  color: #dc2626;
+}
+
+// ─── Botones e Interacciones ──────────────────────────────────────────────────
+.btn-icono-tabla {
+  background-color: #ffffff;
+  transition: all 0.15s ease;
+  &:hover {
+    background-color: #fff5f5;
+    border-color: #f8d7da !important;
+  }
+}
+
+.btn-accion-proceso {
+  transition: all 0.2s ease;
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(13, 110, 253, 0.2);
+  }
+}
+
+.btn-cancelar-proceso {
+  background-color: #ffffff;
+  transition: all 0.15s ease;
+  &:hover {
+    background-color: #fee2e2;
+    border-color: #fca5a5 !important;
+  }
+}
+
+.row-vacia {
+  background-color: #fdfdfd;
+}
+
+.text-nowrap {
+  white-space: nowrap;
+}

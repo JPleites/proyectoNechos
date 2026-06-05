@@ -1,0 +1,53 @@
+// ─── Contenedor Principal ─────────────────────────────────────────────────────
+.page-wrapper {
+  overflow: hidden;
+  height: 100vh;
+}
+
+// Control de scroll en el contenido
+.modulo-contenido.panel-scroll {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #dddfe2;
+    border-radius: 4px;
+  }
+}
+
+// Tus clases originales con retoques visuales limpios
+.erp-card-soft {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+}
+
+.erp-input.form-control {
+  border-color: #dee2e6;
+  transition: all 0.2s ease;
+
+  &:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+  }
+}
+
+// Estilo para el listado original (se estira en PC de forma natural)
+.list-group {
+  .list-group-item {
+    border-color: #e9ecef;
+  }
+}
+
+// Adaptación limpia solo para móviles
+@media (max-width: 767.98px) {
+  .btn-danger {
+    width: 100%; // Solo el botón se hace grande en el cel para mayor comodidad
+  }
+}

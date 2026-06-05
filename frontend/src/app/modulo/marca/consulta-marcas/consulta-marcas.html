@@ -1,61 +1,57 @@
-<section class="container-fluid py-4 bg-body-tertiary min-vh-100">
-  <!-- HEADER -->
-  <header class="mb-4">
-    <h4 class="mb-1 fw-semibold">Marcas</h4>
-
-    <small class="text-muted"> Listado de marcas registradas </small>
+<div class="container-fluid vh-100 d-flex flex-column p-3 bg-light page-wrapper">
+  
+  <header class="modulo-header mb-3 flex-shrink-0">
+    <h4 class="mb-1 fw-semibold text-dark">Marcas</h4>
+    <small class="text-muted">Listado de marcas registradas</small>
   </header>
 
-  <!-- CARD -->
-  <article class="card border-0 shadow-sm rounded-4 overflow-hidden">
-    <!-- SEARCH -->
-    <div class="card-body border-bottom">
-      <div class="input-group">
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Buscar marca o proveedor..."
-          (input)="buscar()"
-        />
-
-        <button class="btn btn-primary" (click)="buscar()">Buscar</button>
+  <div class="modulo-contenido panel-scroll flex-grow-1 w-100">
+    <article class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100">
+      
+      <div class="card-body border-bottom flex-shrink-0">
+        <div class="input-group container-busqueda" style="max-width: 450px;">
+          <input
+            type="text"
+            class="form-control erp-input"
+            placeholder="Buscar marca o proveedor..."
+            (input)="buscar()"
+          />
+          <button class="btn btn-primary btn-buscar" (click)="buscar()">Buscar</button>
+        </div>
       </div>
-    </div>
 
-    <!-- TABLE -->
-    <div class="table-responsive">
-      <table class="table table-hover align-middle mb-0">
-        <!-- HEADER -->
-        <thead class="table-light">
-          <tr>
-            <th class="erp-th ps-4">Marca</th>
+      <div class="table-responsive flex-grow-1 overflow-auto">
+        <table class="table table-hover align-middle mb-0 erp-table-marcas">
+          <thead class="table-light">
+            <tr>
+              <th class="erp-th ps-4">Marca</th>
+              <th class="erp-th">Código</th>
+              <th class="erp-th pe-4">Proveedor</th>
+            </tr>
+          </thead>
 
-            <th class="erp-th">Código</th>
+          <tbody>
+            <tr *ngFor="let m of marcasFiltradas">
+              <td class="fw-medium text-dark ps-4 text-nowrap">
+                {{ m.nombre }}
+              </td>
 
-            <th class="erp-th pe-4">Proveedor</th>
-          </tr>
-        </thead>
+              <td>
+                <span class="erp-badge erp-badge-secondary px-2 py-0.5 rounded-2 fw-medium small">
+                  {{ m.marcaID }}
+                </span>
+              </td>
 
-        <!-- BODY -->
-        <tbody>
-          <tr *ngFor="let m of marcasFiltradas">
-            <td class="fw-medium text-dark ps-4">
-              {{ m.nombre }}
-            </td>
+              <td class="text-muted pe-4 text-nowrap">
+                <i class="fas fa-truck me-2 small opacity-75"></i>
+                {{ m.proveedorRel?.proveedor }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-            <td>
-              <span class="erp-badge erp-badge-secondary">
-                {{ m.marcaID }}
-              </span>
-            </td>
+    </article>
+  </div>
 
-            <td class="text-muted pe-4">
-              <i class="fas fa-truck me-2"></i>
-              {{ m.proveedorRel?.proveedor }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </article>
-</section>
+</div>

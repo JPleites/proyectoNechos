@@ -1,0 +1,103 @@
+// ─── Contenedor Principal ─────────────────────────────────────────────────────
+.page-wrapper {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.modulo-header {
+  flex-shrink: 0;
+}
+
+// Control de scroll para la tabla del Kardex
+.modulo-contenido.panel-scroll {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #dddfe2;
+    border-radius: 4px;
+  }
+}
+
+// ─── Buscador Estilizado ──────────────────────────────────────────────────────
+.erp-input.form-control {
+  border-color: #dee2e6;
+  padding: 10px 14px;
+  font-size: 14px;
+  border-radius: 8px 0 0 8px !important;
+  transition: all 0.2s ease;
+
+  &:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+    background-color: #ffffff;
+  }
+}
+
+.btn-buscar {
+  border-radius: 0 8px 8px 0 !important;
+  transition: all 0.15s ease;
+  
+  &:hover {
+    box-shadow: 0 4px 10px rgba(13, 110, 253, 0.15);
+  }
+}
+
+// ─── Tabla Expandible de Movimientos ──────────────────────────────────────────
+.erp-table-kardex {
+  width: 100%;
+
+  thead th {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 14px 16px;
+    border-bottom: 2px solid #dee2e6;
+  }
+
+  tbody tr {
+    transition: background-color 0.15s ease;
+
+    // Zebra suave para pantallas grandes
+    &:nth-child(even) {
+      background-color: #fafbfc;
+    }
+  }
+
+  tbody td {
+    padding: 14px 16px;
+    font-size: 14px;
+    color: #343a40;
+    border-bottom: 1px solid #edf2f7;
+  }
+}
+
+// ─── Badges del ERP Personalizados ────────────────────────────────────────────
+.erp-badge {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+
+.erp-badge-success {
+  background-color: #e6f4ea;
+  color: #137333;
+}
+
+.erp-badge-danger {
+  background-color: #fce8e6;
+  color: #c5221f;
+}
+
+.text-nowrap {
+  white-space: nowrap;
+}

@@ -1,0 +1,77 @@
+// ─── Contenedor Principal ─────────────────────────────────────────────────────
+.page-wrapper {
+  overflow: hidden;
+  height: 100vh;
+}
+
+// Control de scroll vertical principal
+.modulo-contenido.panel-scroll {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #dddfe2;
+    border-radius: 4px;
+  }
+}
+
+// ─── TÚ TABLA ERP TUNEADA ─────────────────────────────────────────────────────
+.erp-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  
+  thead th {
+    background-color: #f1f3f5; // Un gris un poquito más marcado para el título
+    color: #495057;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 14px 16px;
+    border-bottom: 2px solid #dee2e6;
+  }
+
+  tbody tr {
+    transition: background-color 0.15s ease;
+
+    // Truco Zebra: Filas intercaladas para no perder la vista en pantallas gigantes
+    &:nth-child(even) {
+      background-color: #f9fbfd; // Un tono azulado/grisáceo súper limpio
+    }
+
+    // Hover elegante: Ilumina toda la fila al pasar el mouse
+    &:hover {
+      background-color: #f1f5f9 !important; 
+      cursor: pointer;
+    }
+  }
+
+  tbody td {
+    padding: 12px 16px;
+    font-size: 13.5px;
+    color: #343a40;
+    border-bottom: 1px solid #edf2f7;
+  }
+
+  // Destacar sutilmente la columna ID
+  tbody td:first-child {
+    color: #6c757d;
+  }
+
+  // Destacar la última columna (Diferencia) con un fondo limpio
+  tbody tr td:last-child {
+    background-color: rgba(248, 249, 250, 0.5);
+  }
+}
+
+// Evita que los montos se rompan en dos líneas
+.text-nowrap, td {
+  white-space: nowrap;
+}

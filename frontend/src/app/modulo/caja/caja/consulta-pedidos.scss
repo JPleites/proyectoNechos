@@ -1,0 +1,166 @@
+// ─── Contenedor Principal ─────────────────────────────────────────────────────
+.page-wrapper {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.modulo-header {
+  flex-shrink: 0;
+}
+
+// ─── Grid Maestra del POS ─────────────────────────────────────────────────────
+.modulo-contenido.main-pos-layout {
+  flex-grow: 1;
+  overflow: hidden; 
+  height: calc(100vh - 100px);
+}
+
+// Control de scroll independiente en desktop
+.panel-scroll {
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #dddfe2;
+    border-radius: 4px;
+  }
+}
+
+// ─── Elementos de la lista (Pedidos izquierdos) ───────────────────────────────
+.erp-list-item {
+  cursor: pointer;
+  background-color: #ffffff;
+  border-color: #e9ecef !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: left; // Por defecto a la izquierda en PC
+
+  .item-text-container {
+    text-align: left;
+  }
+
+  .item-title {
+    color: #495057;
+    font-size: 14px;
+  }
+
+  .badge-monto {
+    background-color: #f8f9fa;
+    color: #212529;
+    border: 1px solid #e9ecef;
+    font-size: 12px;
+    transition: all 0.2s ease;
+  }
+
+  &:hover {
+    transform: translateX(2px);
+    background-color: #fdfdfd;
+    border-color: #ced4da !important;
+  }
+
+  &.active-item {
+    background-color: rgba(13, 110, 253, 0.04) !important;
+    border-color: #0d6efd !important;
+    
+    .item-title {
+      color: #0d6efd;
+    }
+    .badge-monto {
+      background-color: #0d6efd;
+      color: #ffffff;
+      border-color: #0d6efd;
+    }
+  }
+
+  // NUEVO: Ajuste de alineación centrado solo para móviles muy pequeños
+  @media (max-width: 575.98px) {
+    .item-text-container {
+      text-align: center;
+      width: 100%;
+    }
+    
+    .badge-monto {
+      width: 100%;
+      display: block;
+      text-align: center;
+    }
+  }
+}
+
+// ─── Contadores de cantidad (+ y -) ─────────────────────────────────────────
+.btn-counter {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  border: 1px solid #dee2e6;
+  background-color: #ffffff;
+  color: #495057;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background-color: #f1f3f5;
+    border-color: #ced4da;
+    color: #000;
+  }
+}
+
+// ─── Botón de Acción Estilo Plantilla ─────────────────────────────────────────
+.btn-accion {
+  padding: 5px 10px;
+  transition: all 0.2s ease;
+  background: transparent;
+  border: 1px solid #dee2e6 !important;
+
+  &:hover {
+    background-color: rgba(220, 53, 69, 0.06);
+    transform: scale(1.05);
+  }
+}
+
+// ─── Cuadrícula de Métodos de Pago ───────────────────────────────────────────
+.payment-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 8px;
+}
+
+// ─── Cabeceras Uniformes (Mantenidas de la plantilla) ─────────────────────────
+.erp-th {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6c757d;
+}
+.col-min { width: 50px; }
+.max-w-xs { max-width: 260px; }
+
+// ─── Media Query: Adaptabilidad móvil vertical ────────────────────────────────
+@media (max-width: 991.98px), (max-height: 550px) {
+  .modulo-contenido.main-pos-layout {
+    overflow-y: auto !important;
+    height: auto;
+    max-height: calc(100vh - 90px);
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 20px;
+  }
+
+  .panel-scroll {
+    height: auto;
+    overflow: visible;
+  }
+
+  .payment-buttons-grid {
+    grid-template-columns: 1fr;
+  }
+}

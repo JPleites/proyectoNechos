@@ -1,0 +1,106 @@
+// ─── Contenedor Principal ─────────────────────────────────────────────────────
+.page-wrapper {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.modulo-header {
+  flex-shrink: 0;
+}
+
+// ─── Área de Contenido con Scroll Inteligente ──────────────────────────────────
+.modulo-contenido {
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.panel-scroll {
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #dddfe2;
+    border-radius: 4px;
+  }
+}
+
+// ─── Contenedor del Formulario Fijo ───────────────────────────────────────────
+.container-formulario {
+  max-width: 600px;
+  background-color: #ffffff;
+  transition: transform 0.2s ease;
+}
+
+// ─── Etiquetas Estilizadas ───────────────────────────────────────────────────
+.letter-spacing {
+  letter-spacing: 0.05em;
+}
+
+.form-label {
+  font-size: 11px;
+}
+
+// Customización del Input para que luzca moderno al hacer focus
+.form-control {
+  border-color: #dee2e6;
+  padding: 10px 14px;
+  transition: all 0.2s ease;
+
+  &:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+    background-color: #fff;
+  }
+}
+
+// ─── Estilos de Botones (Interactividad Premium) ──────────────────────────────
+.btn-accion {
+  transition: all 0.2s ease;
+  background-color: #ffffff;
+  border-color: #dee2e6 !important;
+  color: #495057;
+
+  &:hover {
+    background-color: #f8f9fa;
+    border-color: #ced4da !important;
+    color: #212529;
+  }
+}
+
+.btn-accion-primario {
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// ─── Adaptabilidad para Dispositivos Móviles ─────────────────────────────────
+@media (max-width: 575.98px) {
+  .container-formulario {
+    max-width: 100%; // Toma todo el ancho en pantallas pequeñas
+    border-radius: 16px !important;
+  }
+
+  footer {
+    flex-direction: column-reverse; // En móvil el botón principal queda arriba para mejor alcance
+    
+    button {
+      width: 100%;
+      padding-top: 12px;
+      padding-bottom: 12px;
+    }
+  }
+}

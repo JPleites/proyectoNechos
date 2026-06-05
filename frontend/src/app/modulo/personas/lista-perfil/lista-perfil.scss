@@ -1,4 +1,32 @@
-.erp-th{
+// ─── Contenedor Maestro ───────────────────────────────────────────────────────
+.page-wrapper {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.modulo-header {
+  flex-shrink: 0;
+}
+
+// Scroll inteligente para la lista de personal
+.modulo-contenido.panel-scroll {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #dddfe2;
+    border-radius: 4px;
+  }
+}
+
+// ─── Tus Estilos de Cabecera e Inputs ─────────────────────────────────────────
+.erp-th {
   font-size: .72rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -10,7 +38,8 @@
   background: #f8f9fa !important;
 }
 
-.erp-badge{
+// ─── Tus Badges Redondeados Conservados ──────────────────────────────────────
+.erp-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -20,20 +49,81 @@
   font-weight: 600;
 }
 
-.erp-badge-success{
+.erp-badge-success {
   background: #EAF7EE;
   color: #146C43;
 }
 
-.erp-badge-secondary{
+.erp-badge-secondary {
   background: #EEF1F4;
   color: #5C6770;
 }
 
-.table > :not(caption) > * > *{
-  border-bottom-color: #f1f3f5;
+// Sutil puntito estético para el estado activo 7u7
+.punto-activo {
+  width: 6px;
+  height: 6px;
+  background-color: #146C43;
+  border-radius: 50%;
+  display: inline-block;
 }
 
-.table tbody tr:hover{
-  background: rgba(0,0,0,.015);
+// Líneas divisoras sutiles de tus filas
+.table > :not(caption) > * > * {
+  border-bottom-color: #f1f3f5;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.table tbody tr {
+  transition: background-color 0.15s ease;
+  
+  &:nth-child(even) {
+    background-color: #fafbfc; // Un sutil toque intercalado para descansar el ojo en PC
+  }
+}
+
+.table tbody tr:hover {
+  background: rgba(0, 0, 0, .015) !important;
+}
+
+// ─── Micro-Interacciones de Botones ───────────────────────────────────────────
+.btn-accion-top {
+  transition: background-color 0.15s ease;
+  &:hover {
+    background-color: #f8f9fa;
+  }
+}
+
+.btn-nuevo-colab {
+  transition: all 0.2s ease;
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15);
+  }
+}
+
+.btn-accion-tabla {
+  background-color: #ffffff;
+  padding: 6px 10px;
+  transition: all 0.15s ease;
+  
+  &:hover {
+    background-color: #f8f9fa;
+    border-color: #ced4da !important;
+  }
+}
+
+.btn-delete-row:hover {
+  background-color: #fff5f5;
+  border-color: #f8d7da !important;
+}
+
+.btn-add-user-row:hover {
+  background-color: #eaf7ee;
+  border-color: #a3cfbb !important;
+}
+
+.text-nowrap {
+  white-space: nowrap;
 }

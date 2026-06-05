@@ -1,47 +1,46 @@
-<section class="container-fluid py-4 bg-body-tertiary min-vh-100">
-  <!-- HEADER -->
-  <header class="mb-4">
-    <h4 class="mb-1 fw-semibold">Almacenes</h4>
+<div class="container-fluid vh-100 d-flex flex-column p-3 bg-light page-wrapper">
 
-    <small class="text-muted"> Gestión de bodegas </small>
+  <!-- HEADER -->
+  <header class="modulo-header mb-3">
+    <h4 class="mb-1 fw-semibold">Almacenes</h4>
+    <small class="text-muted">Gestión de bodegas</small>
   </header>
 
-  <!-- TABLE -->
-  <article class="card border-0 shadow-sm rounded-4 overflow-hidden">
-    <div class="table-responsive">
-      <table class="table table-hover align-middle mb-0">
-        <!-- HEAD -->
-        <thead class="table-light">
-          <tr>
-            <th class="erp-th ps-4" style="width: 120px">ID</th>
+  <!-- CONTENIDO PRINCIPAL -->
+  <div class="modulo-contenido">
+    <article class="card border-0 shadow-sm rounded-4 overflow-hidden">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
 
-            <th class="erp-th">Nombre</th>
+          <!-- HEAD -->
+          <thead class="table-light">
+            <tr>
+              <th class="erp-th ps-4 col-id">ID</th>
+              <th class="erp-th">Nombre</th>
+              <th class="erp-th text-center pe-4 col-acciones">Acciones</th>
+            </tr>
+          </thead>
 
-            <th class="erp-th text-center pe-4" style="width: 140px">Acciones</th>
-          </tr>
-        </thead>
+          <!-- BODY -->
+          <tbody>
+            <tr *ngFor="let a of almacenes">
+              <td class="ps-4 fw-semibold text-muted">#{{ a.almacenID }}</td>
+              <td class="fw-medium text-dark">{{ a.almacen }}</td>
+              <td class="text-center pe-4">
+                <button
+                  class="btn btn-light btn-sm border rounded-3 btn-accion"
+                  (click)="eliminarAlmacen(a.id)"
+                  title="Eliminar"
+                >
+                  <i class="fas fa-trash text-danger"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
 
-        <!-- BODY -->
-        <tbody>
-          <tr *ngFor="let a of almacenes">
-            <td class="ps-4 fw-semibold text-muted">#{{ a.almacenID }}</td>
+        </table>
+      </div>
+    </article>
+  </div>
 
-            <td class="fw-medium text-dark">
-              {{ a.almacen }}
-            </td>
-
-            <td class="text-center pe-4">
-              <button
-                class="btn btn-light btn-sm border rounded-3"
-                (click)="eliminarAlmacen(a.id)"
-                title="Eliminar"
-              >
-                <i class="fas fa-trash text-danger"></i>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </article>
-</section>
+</div>

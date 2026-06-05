@@ -1,0 +1,68 @@
+// ─── Contenedor principal ─────────────────────────────────────────────────────
+.page-wrapper {
+  overflow: hidden;
+  height: 100vh;
+}
+
+// ─── Header del módulo ────────────────────────────────────────────────────────
+.modulo-header {
+  flex-shrink: 0;
+}
+
+// ─── Contenido principal ──────────────────────────────────────────────────────
+.modulo-contenido {
+  flex-grow: 1;
+  overflow: hidden; 
+}
+
+// ─── Contenedor del Formulario ────────────────────────────────────────────────
+.form-container {
+  max-width: 600px; // Mantiene el límite visual limpio en pantallas grandes
+}
+
+// ─── Botones de acción personalizados ─────────────────────────────────────────
+.btn-accion-primario {
+  transition: background-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    opacity: 0.9;
+  }
+
+  &:active {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.btn-accion-secundario {
+  transition: background-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+
+  &:hover {
+    background-color: rgba(108, 117, 125, 0.06); // Sutil hover gris
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// ─── Media Query: comportamiento responsivo en móviles ────────────────────────
+@media (max-width: 575.98px), (max-height: 550px) {
+  .modulo-contenido {
+    overflow-y: auto;
+    max-height: calc(100vh - 100px);
+    -webkit-overflow-scrolling: touch;
+    padding-right: 4px;
+  }
+
+  // En pantallas muy pequeñitas, los botones ocupan todo el ancho de forma ordenada
+  footer {
+    flex-direction: column-reverse; // Envía "Cancelar" abajo en móvil
+    
+    .btn {
+      width: 100%;
+    }
+  }
+}

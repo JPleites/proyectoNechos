@@ -1,80 +1,91 @@
-<div class="container py-4">
-
-  <div class="card">
-
-    <!-- HEADER -->
-    <div class="card-body">
-      <h4 class="mb-0">Salida de Inventario</h4>
-      <small class="text-muted">Registro de egresos de stock</small>
+<div class="container-fluid vh-100 d-flex flex-column p-3 bg-light page-wrapper">
+  
+  <header class="d-flex justify-content-between align-items-center mb-3 flex-shrink-0 modulo-header">
+    <div>
+      <h4 class="mb-1 fw-semibold text-dark">Salida de Inventario</h4>
+      <small class="text-muted">Registrar egresos, mermas o despachos de stock</small>
     </div>
+  </header>
 
-    <div class="card-body pt-0">
+  <div class="modulo-contenido panel-scroll flex-grow-1 w-100">
+    <article class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100 d-flex flex-column">
+      
+      <form class="card-body p-4 d-flex flex-column h-100 overflow-auto" [formGroup]="form" (ngSubmit)="$event.preventDefault(); salir()">
+        <div class="d-grid gap-3 flex-grow-1">
+          
+          <section class="erp-panel shadow-sm border">
+            <h6 class="erp-section-title text-danger">
+              <i class="fas fa-box-open me-1.5"></i>Datos del Movimiento de Egreso
+            </h6>
 
-      <form [formGroup]="form" (ngSubmit)="salir()">
+            <div class="row g-3">
+              
+              <div class="col-md-4">
+                <label class="form-label">Código del producto <span class="text-danger">*</span></label>
+                <div class="input-group erp-input-group">
+                  <span class="input-group-text bg-light text-muted">
+                    <i class="fas fa-barcode"></i>
+                  </span>
+                  <input
+                    formControlName="productoCodigo"
+                    class="form-control"
+                    placeholder="Ej. SKU-1020"
+                  />
+                </div>
+              </div>
 
-        <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label">Ubicación / Pasillo <span class="text-danger">*</span></label>
+                <div class="input-group erp-input-group">
+                  <span class="input-group-text bg-light text-muted">
+                    <i class="fas fa-map-marker-alt"></i>
+                  </span>
+                  <input
+                    formControlName="ubicacion"
+                    class="form-control"
+                    placeholder="Ej. Bodega A - Estante 2"
+                  />
+                </div>
+              </div>
 
-          <!-- Código producto -->
-          <div class="col-md-4">
+              <div class="col-md-4">
+                <label class="form-label">Cantidad a retirar <span class="text-danger">*</span></label>
+                <div class="input-group erp-input-group">
+                  <span class="input-group-text bg-light text-muted">
+                    <i class="fas fa-minus-circle"></i>
+                  </span>
+                  <input
+                    type="number"
+                    formControlName="cantidad"
+                    class="form-control"
+                    placeholder="0"
+                    min="1"
+                  />
+                </div>
+              </div>
 
-            <div class="form-outline">
-              <input
-                formControlName="productoCodigo"
-                class="form-control"
-              />
-              <label class="form-label">Código producto *</label>
             </div>
+          </section>
 
-          </div>
-
-          <!-- Ubicación -->
-          <div class="col-md-4">
-
-            <div class="form-outline">
-              <input
-                formControlName="ubicacion"
-                class="form-control"
-              />
-              <label class="form-label">Ubicación *</label>
+          <div class="alert erp-alert-warning border-0 shadow-inner rounded-3 d-flex align-items-center p-3 mb-0 animated fadeIn">
+            <i class="fas fa-exclamation-triangle text-warning fa-lg me-3"></i>
+            <div>
+              <strong class="text-warning-emphasis d-block mb-0.5">Control de Existencias Crítico</strong>
+              <span class="text-muted small">Por favor, verifica en el sistema que exista suficiente stock físico distribuido en la ubicación seleccionada antes de procesar este retiro.</span>
             </div>
-
-          </div>
-
-          <!-- Cantidad -->
-          <div class="col-md-4">
-
-            <div class="form-outline">
-              <input
-                type="number"
-                formControlName="cantidad"
-                class="form-control"
-              />
-              <label class="form-label">Cantidad a retirar *</label>
-            </div>
-
           </div>
 
         </div>
 
-        <!-- ALERTA VISUAL (opcional UX ERP) -->
-        <div class="alert alert-warning mt-3 mb-0 small">
-          Verifica que exista suficiente stock antes de realizar la salida.
-        </div>
-
-        <!-- BOTÓN -->
-        <div class="text-end mt-4">
-
-          <button type="submit" class="btn btn-danger">
-            <i class="fas fa-arrow-down me-2"></i>
-            Registrar salida
+        <footer class="d-flex justify-content-end mt-4 pt-3 border-top flex-shrink-0">
+          <button type="submit" class="btn btn-danger rounded-3 px-4 fw-medium btn-registrar-salida">
+            <i class="fas fa-shipping-fast me-2 small"></i>
+            Procesar y Registrar Salida
           </button>
-
-        </div>
-
+        </footer>
       </form>
 
-    </div>
-
+    </article>
   </div>
 
 </div>

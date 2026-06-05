@@ -1,72 +1,70 @@
-<section class="container-fluid py-4 bg-body-tertiary min-vh-100">
-  <!-- HEADER -->
-  <header class="mb-4">
-    <h4 class="mb-1 fw-semibold">Marcas</h4>
-
-    <small class="text-muted"> Gestión de marcas por proveedor </small>
+<div class="container-fluid vh-100 d-flex flex-column p-3 bg-light page-wrapper">
+  
+  <header class="modulo-header mb-3 flex-shrink-0">
+    <h4 class="mb-1 fw-semibold text-dark">Marcas</h4>
+    <small class="text-muted">Gestión de marcas por proveedor</small>
   </header>
 
-  <!-- CARD -->
-  <article class="card border-0 shadow-sm rounded-4 overflow-hidden">
-    <div class="card-body p-4">
-      <div class="row g-4">
-        <!-- FORM -->
-        <section class="col-lg-5">
-          <div class="erp-panel h-100">
-            <h6 class="erp-section-title">Nueva marca</h6>
+  <div class="modulo-contenido panel-scroll flex-grow-1 w-100">
+    <article class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100">
+      <div class="card-body p-4 h-100">
+        <div class="row g-4 h-100">
+          
+          <section class="col-lg-5">
+            <div class="erp-panel h-100">
+              <h6 class="erp-section-title fw-semibold text-secondary small text-uppercase mb-3">Nueva marca</h6>
 
-            <form [formGroup]="form" (ngSubmit)="guardar()" class="d-grid gap-3">
-              <div>
-                <label class="form-label"> Nombre de marca </label>
+              <form [formGroup]="form" (ngSubmit)="guardar()" class="d-grid gap-3">
+                <div>
+                  <label class="form-label erp-label small text-muted fw-medium"> Nombre de marca </label>
+                  <input formControlName="nombre" class="form-control erp-input rounded-3" placeholder="Ej. Nike, Samsung..." />
+                </div>
 
-                <input formControlName="nombre" class="form-control" />
-              </div>
+                <div>
+                  <label class="form-label erp-label small text-muted fw-medium"> Proveedor </label>
+                  <select
+                    formControlName="proveedorId"
+                    class="form-select erp-input rounded-3"
+                    (change)="onProveedorChange()"
+                  >
+                    <option value="">Seleccione</option>
+                    <option *ngFor="let p of proveedores" [value]="p.id">
+                      {{ p.proveedor }}
+                    </option>
+                  </select>
+                </div>
 
-              <div>
-                <label class="form-label"> Proveedor </label>
+                <div class="text-end pt-2">
+                  <button class="btn btn-primary px-4 rounded-3 btn-guardar-erp">Crear marca</button>
+                </div>
+              </form>
+            </div>
+          </section>
 
-                <select
-                  formControlName="proveedorId"
-                  class="form-select"
-                  (change)="onProveedorChange()"
+          <section class="col-lg-7">
+            <div class="erp-panel panel-lista-marcas">
+              <h6 class="erp-section-title fw-semibold text-secondary small text-uppercase mb-3">Marcas del proveedor</h6>
+
+              <div class="d-grid gap-2">
+                <div
+                  *ngFor="let m of marcasFiltradas"
+                  class="d-flex justify-content-between align-items-center p-3 border rounded-3 bg-white item-marca"
                 >
-                  <option value="">Seleccione</option>
+                  <span class="fw-medium text-dark">
+                    {{ m.nombre }}
+                  </span>
 
-                  <option *ngFor="let p of proveedores" [value]="p.id">
-                    {{ p.proveedor }}
-                  </option>
-                </select>
-              </div>
-
-              <div class="text-end">
-                <button class="btn btn-primary px-4 rounded-3">Crear marca</button>
-              </div>
-            </form>
-          </div>
-        </section>
-
-        <!-- LISTA -->
-        <section class="col-lg-7">
-          <div class="erp-panel">
-            <h6 class="erp-section-title">Marcas del proveedor</h6>
-
-            <div class="d-grid gap-2">
-              <div
-                *ngFor="let m of marcasFiltradas"
-                class="d-flex justify-content-between align-items-center p-3 border rounded-3 bg-white"
-              >
-                <span class="fw-medium text-dark">
-                  {{ m.nombre }}
-                </span>
-
-                <span class="erp-badge erp-badge-secondary">
-                  {{ m.marcaID }}
-                </span>
+                  <span class="erp-badge erp-badge-secondary px-2 py-0.5 rounded-2 fw-medium small">
+                    {{ m.marcaID }}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+
+        </div>
       </div>
-    </div>
-  </article>
-</section>
+    </article>
+  </div>
+
+</div>

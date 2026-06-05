@@ -1,84 +1,77 @@
-<section class="container-fluid py-4 bg-body-tertiary min-vh-100">
-  <!-- HEADER -->
-  <header class="mb-4">
-    <h4 class="mb-1 fw-semibold">Kardex de inventario</h4>
-
-    <small class="text-muted"> Historial de movimientos de productos </small>
+<div class="container-fluid vh-100 d-flex flex-column p-3 bg-light page-wrapper">
+  
+  <header class="modulo-header mb-3 flex-shrink-0">
+    <h4 class="mb-1 fw-semibold text-dark">Kardex de inventario</h4>
+    <small class="text-muted">Historial de movimientos de productos</small>
   </header>
 
-  <!-- CARD -->
-  <article class="card border-0 shadow-sm rounded-4 overflow-hidden">
-    <div class="card-body">
-      <!-- SEARCH -->
-      <form (ngSubmit)="buscar()" class="mb-4">
-        <div class="input-group">
-          <input
-            name="codigo"
-            [(ngModel)]="codigo"
-            class="form-control"
-            placeholder="Código de producto"
-          />
+  <div class="modulo-contenido panel-scroll flex-grow-1 w-100">
+    <article class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100">
+      <div class="card-body d-flex flex-column h-100 p-4">
+        
+        <form (ngSubmit)="buscar()" class="mb-4 flex-shrink-0">
+          <div class="input-group container-busqueda" style="max-width: 450px;">
+            <input
+              name="codigo"
+              [(ngModel)]="codigo"
+              class="form-control erp-input"
+              placeholder="Código de producto"
+            />
+            <button type="submit" class="btn btn-primary px-4 btn-buscar">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </form>
 
-          <button type="submit" class="btn btn-primary px-4">
-            <i class="fas fa-search"></i>
-          </button>
+        <div class="table-responsive flex-grow-1 overflow-auto">
+          <table class="table table-hover align-middle mb-0 erp-table-kardex">
+            <thead class="table-light">
+              <tr>
+                <th class="erp-th">Fecha</th>
+                <th class="erp-th">Tipo</th>
+                <th class="erp-th">Cantidad</th>
+                <th class="erp-th">Usuario</th>
+                <th class="erp-th">Stock</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let m of movimientos">
+                <td class="text-muted text-nowrap">
+                  {{ m.fecha | date: 'short' }}
+                </td>
+
+                <td>
+                  <span
+                    class="erp-badge px-2.5 py-1 rounded-2 fw-semibold small"
+                    [ngClass]="{
+                      'erp-badge-success': m.tipo === 'ENTRADA',
+                      'erp-badge-danger': m.tipo === 'SALIDA'
+                    }"
+                  >
+                    {{ m.tipo }}
+                  </span>
+                </td>
+
+                <td class="fw-semibold">
+                  {{ m.cantidad }}
+                </td>
+
+                <td class="text-muted text-nowrap">
+                  <i class="fas fa-user me-1 small opacity-75"></i>
+                  {{ m.codigoUsuario }}
+                </td>
+
+                <td class="fw-semibold text-dark">
+                  {{ m.saldo }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </form>
 
-      <!-- TABLE -->
-      <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-          <!-- HEADER -->
-          <thead class="table-light">
-            <tr>
-              <th class="erp-th">Fecha</th>
-
-              <th class="erp-th">Tipo</th>
-
-              <th class="erp-th">Cantidad</th>
-
-              <th class="erp-th">Usuario</th>
-
-              <th class="erp-th">Stock</th>
-            </tr>
-          </thead>
-
-          <!-- BODY -->
-          <tbody>
-            <tr *ngFor="let m of movimientos">
-              <td class="text-muted">
-                {{ m.fecha | date: 'short' }}
-              </td>
-
-              <!-- TIPO -->
-              <td>
-                <span
-                  class="erp-badge"
-                  [ngClass]="{
-                    'erp-badge-success': m.tipo === 'ENTRADA',
-                    'erp-badge-danger': m.tipo === 'SALIDA',
-                  }"
-                >
-                  {{ m.tipo }}
-                </span>
-              </td>
-
-              <td class="fw-semibold">
-                {{ m.cantidad }}
-              </td>
-
-              <td class="text-muted">
-                <i class="fas fa-user me-1"></i>
-                {{ m.codigoUsuario }}
-              </td>
-
-              <td class="fw-semibold">
-                {{ m.saldo }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
       </div>
-    </div>
-  </article>
-</section>
+    </article>
+  </div>
+
+</div>

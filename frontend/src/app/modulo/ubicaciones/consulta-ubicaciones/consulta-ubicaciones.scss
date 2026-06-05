@@ -1,0 +1,83 @@
+// ─── Control Maestro de Pantalla Completa ─────────────────────────────────────
+.page-wrapper {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.modulo-header {
+  flex-shrink: 0;
+}
+
+.panel-scroll {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  
+  &::-webkit-scrollbar { width: 5px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: #dddfe2; border-radius: 4px; }
+}
+
+// ─── Diseño Avanzado de la Tabla ERP ──────────────────────────────────────────
+.erp-th {
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: #6c757d !important;
+  border: 0 !important;
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
+  background: #f8f9fa !important;
+}
+
+.table > :not(caption) > * > * {
+  border-bottom-color: #f1f3f5;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+// Marcador estilizado de Ubicación :3
+.marker-dot {
+  width: 28px;
+  height: 28px;
+  font-size: 0.8rem;
+}
+
+// Badges numéricos limpios para estantes/niveles
+.font-numeric {
+  font-family: var(--bs-font-monospace);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+// ─── Botón de Acción Estilizado ──────────────────────────────────────────────
+.btn-eliminar-erp {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: #fff5f5;
+    border-color: #f8d7da !important;
+  }
+}
+
+.z-index-1 { z-index: 1; }
+
+// ─── Micro-Animaciones de Carga ──────────────────────────────────────────────
+.animated {
+  animation-duration: 0.2s;
+  animation-fill-mode: both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fadeIn { animation-name: fadeIn; }

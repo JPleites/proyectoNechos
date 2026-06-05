@@ -1,61 +1,64 @@
-<div class="erp-page">
-  <div class="erp-card">
-    <!-- HEADER -->
-    <header class="erp-card-header">
-      <h4 class="erp-title">Cierres</h4>
-      <p class="erp-subtitle">Historial de cierres</p>
-    </header>
+<div class="container-fluid vh-100 d-flex flex-column p-3 bg-light page-wrapper">
+  <div class="erp-page modulo-contenido panel-scroll w-100 h-100">
+    <div class="erp-card d-flex flex-column h-100 bg-white p-4 rounded-4 shadow-sm">
+      
+      <header class="erp-card-header mb-3">
+        <h4 class="erp-title fw-semibold text-dark">Cierres</h4>
+        <p class="erp-subtitle text-muted small">Historial de cierres</p>
+      </header>
 
-    <!-- TABLE -->
-    <div class="erp-section p-0">
-      <div class="table-responsive">
-        <table class="table erp-table align-middle mb-0">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Usuario</th>
-              <th>Fecha</th>
-              <th>Efectivo</th>
-              <th>BAC</th>
-              <th>Ficohsa</th>
-              <th>Davivienda</th>
-              <th>Transfer.</th>
-              <th>Retiros</th>
-              <th>Devol.</th>
-              <th>Facturado</th>
-              <th>Recibido</th>
-              <th>Diferencia</th>
-            </tr>
-          </thead>
+      <div class="erp-section p-0 flex-grow-1 overflow-auto">
+        <div class="table-responsive">
+          <table class="table erp-table align-middle mb-0">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Usuario</th>
+                <th>Fecha</th>
+                <th>Efectivo</th>
+                <th>BAC</th>
+                <th>Ficohsa</th>
+                <th>Davivienda</th>
+                <th>Transfer.</th>
+                <th>Retiros</th>
+                <th>Devol.</th>
+                <th>Facturado</th>
+                <th>Recibido</th>
+                <th>Diferencia</th>
+              </tr>
+            </thead>
 
-          <tbody>
-            <tr *ngFor="let c of cierres">
-              <td class="fw-semibold">{{ c.id }}</td>
-              <td>{{ c.usuarioCodigo }}</td>
-              <td>{{ c.fecha | date: 'dd-MM-yyyy' }}</td>
+            <tbody>
+              <tr *ngFor="let c of cierres">
+                <td class="fw-semibold text-muted">#{{ c.id }}</td>
+                <td>{{ c.usuarioCodigo }}</td>
+                <td class="text-nowrap">{{ c.fecha | date: 'dd-MM-yyyy' }}</td>
 
-              <td>L {{ c.totalEfectivo | number: '1.2-2' }}</td>
-              <td>L {{ c.totalBac | number: '1.2-2' }}</td>
-              <td>L {{ c.totalFicohsa | number: '1.2-2' }}</td>
-              <td>L {{ c.totalDavivienda | number: '1.2-2' }}</td>
-              <td>L {{ c.totalTransferencias | number: '1.2-2' }}</td>
+                <td class="text-nowrap">L {{ c.totalEfectivo | number: '1.2-2' }}</td>
+                <td class="text-nowrap">L {{ c.totalBac | number: '1.2-2' }}</td>
+                <td class="text-nowrap">L {{ c.totalFicohsa | number: '1.2-2' }}</td>
+                <td class="text-nowrap">L {{ c.totalDavivienda | number: '1.2-2' }}</td>
+                <td class="text-nowrap">L {{ c.totalTransferencias | number: '1.2-2' }}</td>
 
-              <td>{{ c.totalRetiros | number: '1.2-2' }}</td>
-              <td>{{ c.totalDevoluciones | number: '1.2-2' }}</td>
-              <td>{{ c.totalFacturado | number: '1.2-2' }}</td>
-              <td>{{ c.totalRecibido | number: '1.2-2' }}</td>
+                <td class="text-nowrap">L {{ c.totalRetiros | number: '1.2-2' }}</td>
+                <td class="text-nowrap">L {{ c.totalDevoluciones | number: '1.2-2' }}</td>
+                <td class="text-nowrap">L {{ c.totalFacturado | number: '1.2-2' }}</td>
+                <td class="text-nowrap">L {{ c.totalRecibido | number: '1.2-2' }}</td>
 
-              <td
-                [ngClass]="
-                  c.diferencia >= 0 ? 'text-success fw-semibold' : 'text-danger fw-semibold'
-                "
-              >
-                {{ c.diferencia | number: '1.2-2' }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                <td
+                  class="text-nowrap"
+                  [ngClass]="
+                    c.diferencia >= 0 ? 'text-success fw-semibold' : 'text-danger fw-semibold'
+                  "
+                >
+                  L {{ c.diferencia | number: '1.2-2' }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
+
     </div>
   </div>
 </div>

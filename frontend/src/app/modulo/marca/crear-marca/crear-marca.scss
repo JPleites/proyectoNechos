@@ -1,0 +1,75 @@
+// ─── Contenedor Principal ─────────────────────────────────────────────────────
+.page-wrapper {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.modulo-header {
+  flex-shrink: 0;
+}
+
+// Control de scroll vertical principal
+.modulo-contenido.panel-scroll {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #dddfe2;
+    border-radius: 4px;
+  }
+}
+
+// ─── Inputs y Selects Personalizados ──────────────────────────────────────────
+.erp-input.form-control, .erp-input.form-select {
+  border-color: #dee2e6;
+  padding: 10px 14px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+
+  &:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+    background-color: #ffffff;
+  }
+}
+
+// ─── Lista de Marcas e Interacción ────────────────────────────────────────────
+.panel-lista-marcas {
+  // En pantallas grandes, si hay demasiadas marcas creadas, la lista tendrá su propio scroll interno
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+.item-marca {
+  border-color: #e9ecef !important;
+  transition: all 0.15s ease;
+  
+  &:hover {
+    border-color: #ced4da !important;
+    background-color: #f8f9fa !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.02);
+  }
+}
+
+// Badge de Código Neutral
+.erp-badge-secondary {
+  background-color: #f1f3f5;
+  color: #495057;
+  font-size: 12px;
+}
+
+// Botón primario
+.btn-guardar-erp {
+  transition: all 0.2s ease;
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+  }
+}

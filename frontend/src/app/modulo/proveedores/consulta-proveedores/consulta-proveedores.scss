@@ -1,21 +1,139 @@
-.modal-backdrop {
+// ─── Control Maestro de Pantalla Completa ─────────────────────────────────────
+.page-wrapper {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.modulo-header {
+  flex-shrink: 0;
+}
+
+.panel-scroll {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  
+  &::-webkit-scrollbar { width: 5px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: #dddfe2; border-radius: 4px; }
+}
+
+// ─── Estilos de la Tabla ERP ──────────────────────────────────────────────────
+.erp-th {
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: #6c757d !important;
+  border: 0 !important;
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
+  background: #f8f9fa !important;
+}
+
+.table > :not(caption) > * > * {
+  border-bottom-color: #f1f3f5;
+  padding-top: 13px;
+  padding-bottom: 13px;
+}
+
+.avatar-icon {
+  width: 32px;
+  height: 32px;
+}
+
+.row-selected {
+  background-color: rgba(13, 110, 253, 0.02) !important;
+}
+
+// ─── Estructura del Modal Súper Pro 7u7 ───────────────────────────────────────
+.erp-modal-backdrop {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
-
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.35); // Fondo oscuro tipo slate moderno
+  backdrop-filter: blur(4px); // Efecto esmerilado premium de iOS/Mac bb :3
   display: flex;
   justify-content: center;
   align-items: center;
-
-  z-index: 999;
+  z-index: 1050;
 }
 
-.modal-container {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  width: 400px;
+.erp-modal {
+  background: #ffffff;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
 }
+
+// Checkboxes estilizados interactivos
+.item-checkbox-label {
+  transition: all 0.2s ease;
+  background-color: #ffffff;
+  
+  &:hover {
+    background-color: #f8f9fa;
+    border-color: #ced4da !important;
+  }
+}
+
+.label-checked {
+  background-color: rgba(13, 110, 253, 0.03) !important;
+  border-color: #0d6efd !important;
+}
+
+.erp-checkbox {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  
+  &:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+  }
+}
+
+// ─── Botones e Interacciones ──────────────────────────────────────────────────
+.btn-nuevo {
+  transition: all 0.2s ease;
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15);
+  }
+}
+
+.btn-accion {
+  padding: 5px 12px;
+  background-color: #ffffff;
+  transition: all 0.15s ease;
+  
+  &:hover {
+    background-color: #f1f3f5;
+    border-color: #ced4da !important;
+  }
+}
+
+.letter-spacing-sm { letter-spacing: 0.02em; }
+.cursor-pointer { cursor: pointer; }
+.z-index-1 { z-index: 1; }
+
+// ─── Animaciones Fluidas ──────────────────────────────────────────────────────
+.animated {
+  animation-duration: 0.2s;
+  animation-fill-mode: both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.fadeIn { animation-name: fadeIn; }
+.scaleIn { animation-name: scaleIn; }

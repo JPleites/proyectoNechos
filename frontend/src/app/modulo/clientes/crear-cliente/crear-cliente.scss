@@ -1,0 +1,78 @@
+// ─── Contenedor Principal ─────────────────────────────────────────────────────
+.page-wrapper {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.modulo-header {
+  flex-shrink: 0;
+}
+
+// Control de scroll vertical para el formulario en monitores cortos o laptops
+.modulo-contenido.panel-scroll {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #dddfe2;
+    border-radius: 4px;
+  }
+}
+
+// Estilo de espaciado de letras para subtítulos
+.letter-spacing {
+  letter-spacing: 0.04em;
+}
+
+// ─── Focus premium en los inputs y textareas del ERP ──────────────────────────
+.erp-input.form-control {
+  border-color: #dee2e6;
+  padding: 10px 14px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+
+  &:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+    background-color: #ffffff;
+  }
+}
+
+// ─── Interactividad de Botones ───────────────────────────────────────────────
+.btn-cancelar-erp {
+  transition: background-color 0.15s ease;
+  &:hover {
+    background-color: #f8f9fa;
+    border-color: #ced4da !important;
+  }
+}
+
+.btn-guardar-erp {
+  transition: all 0.2s ease;
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+  }
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// ─── Adaptación Móvil ────────────────────────────────────────────────────────
+@media (max-width: 575.98px) {
+  footer {
+    flex-direction: column-reverse; // Invierte botones en el celular para mejor alcance
+    
+    button {
+      width: 100%;
+      padding-top: 12px;
+      padding-bottom: 12px;
+    }
+  }
+}

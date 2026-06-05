@@ -1,79 +1,81 @@
-<section class="container-fluid py-4 bg-body-tertiary min-vh-100">
-  <!-- HEADER -->
-  <header class="mb-4">
-    <h4 class="mb-1 fw-semibold">Ubicaciones</h4>
-
-    <small class="text-muted"> Gestión de estantes y niveles </small>
+<div class="container-fluid vh-100 d-flex flex-column p-3 bg-light page-wrapper">
+  
+  <header class="d-flex justify-content-between align-items-center mb-3 flex-shrink-0 modulo-header">
+    <div>
+      <h4 class="mb-1 fw-semibold text-dark">Ubicaciones</h4>
+      <small class="text-muted">Gestión de distribución, estantes y niveles del almacén</small>
+    </div>
   </header>
 
-  <!-- TABLE -->
-  <article class="card border-0 shadow-sm rounded-4 overflow-hidden">
-    <div class="table-responsive">
-      <table class="table table-hover align-middle mb-0">
-        <!-- HEAD -->
-        <thead class="table-light">
-          <tr>
-            <th class="erp-th">Ubicación</th>
+  <div class="modulo-contenido panel-scroll flex-grow-1 w-100">
+    <article class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100 d-flex flex-column">
+      
+      <main class="table-responsive flex-grow-1 h-100 overflow-auto">
+        <table class="table table-hover align-middle mb-0 erp-table">
+          <thead class="table-light sticky-top z-index-1">
+            <tr>
+              <th class="erp-th ps-4">Ubicación / Código</th>
+              <th class="erp-th">Almacén</th>
+              <th class="erp-th text-center">Estante</th>
+              <th class="erp-th text-center">Nivel</th>
+              <th class="erp-th text-center">Depósito</th>
+              <th class="erp-th text-center pe-4" style="width: 120px">Acciones</th>
+            </tr>
+          </thead>
 
-            <th class="erp-th">Almacén</th>
+          <tbody>
+            <tr *ngFor="let u of ubicaciones" class="animated fadeIn">
+              <td class="fw-semibold text-dark ps-4">
+                <div class="d-flex align-items-center">
+                  <span class="marker-dot bg-primary-subtle text-primary rounded-circle me-2.5 d-flex align-items-center justify-content-center">
+                    <i class="fas fa-map-marker-alt small"></i>
+                  </span>
+                  <span>{{ u.ubicacion }}</span>
+                </div>
+              </td>
 
-            <th class="erp-th">Estante</th>
+              <td class="text-secondary fw-medium">
+                <div class="d-flex align-items-center">
+                  <i class="fas fa-warehouse text-muted opacity-75 me-2 small"></i>
+                  <span>{{ u.almacen?.almacen }}</span>
+                </div>
+              </td>
 
-            <th class="erp-th">Nivel</th>
+              <td class="text-center text-muted fw-mono">
+                <span class="badge bg-light text-dark border px-2.5 py-1.5 rounded-2 font-numeric">{{ u.estante }}</span>
+              </td>
 
-            <th class="erp-th">Depósito</th>
+              <td class="text-center text-muted fw-mono">
+                <span class="badge bg-light text-dark border px-2.5 py-1.5 rounded-2 font-numeric">{{ u.nivel }}</span>
+              </td>
 
-            <th class="erp-th text-center pe-4" style="width: 120px">Acciones</th>
-          </tr>
-        </thead>
+              <td class="text-center text-muted fw-mono">
+                <span class="badge bg-light text-dark border px-2.5 py-1.5 rounded-2 font-numeric">{{ u.deposito }}</span>
+              </td>
 
-        <!-- BODY -->
-        <tbody>
-          <tr *ngFor="let u of ubicaciones">
-            <td class="fw-medium text-dark ps-4">
-              <i class="fas fa-map-marker-alt text-muted me-2"></i>
-              {{ u.ubicacion }}
-            </td>
+              <td class="text-center pe-4">
+                <button
+                  type="button"
+                  class="btn btn-light btn-sm border rounded-3 btn-eliminar-erp"
+                  (click)="$event.stopPropagation(); eliminar(u.ubicacion)"
+                  title="Eliminar ubicación"
+                >
+                  <i class="fas fa-trash text-danger small"></i>
+                </button>
+              </td>
+            </tr>
 
-            <td class="text-muted">
-              <i class="fas fa-warehouse text-muted me-2"></i>
-              {{ u.almacen?.almacen }}
-            </td>
+            <tr *ngIf="!ubicaciones || ubicaciones.length === 0">
+              <td colspan="6" class="text-center py-5 text-muted small animated fadeIn">
+                <i class="fas fa-boxes fa-2x mb-3 d-block opacity-40 text-secondary"></i>
+                No se han configurado estructuras o ubicaciones físicas aún.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </main>
 
-            <td class="text-muted">
-              {{ u.estante }}
-            </td>
+    </article>
+  </div>
 
-            <td class="text-muted">
-              {{ u.nivel }}
-            </td>
-
-            <td class="text-muted">
-              {{ u.deposito }}
-            </td>
-
-            <!-- ACTIONS -->
-            <td class="text-center pe-4">
-              <button
-                class="btn btn-light btn-sm border rounded-3"
-                (click)="eliminar(u.ubicacion)"
-                title="Eliminar"
-              >
-                <i class="fas fa-trash text-danger"></i>
-              </button>
-            </td>
-          </tr>
-
-          <!-- EMPTY -->
-          <tr *ngIf="!ubicaciones || ubicaciones.length === 0">
-            <td colspan="6" class="text-center py-5 text-muted">
-              <i class="fas fa-inbox fa-lg d-block mb-2"></i>
-
-              No hay ubicaciones registradas
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </article>
-</section>
+</div>
