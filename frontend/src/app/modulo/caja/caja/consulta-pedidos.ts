@@ -55,6 +55,9 @@ export class ConsultaPedidos implements OnInit {
       return;
     }
 
+    // 👈 Abrir ventana ANTES del HTTP (acción directa del usuario)
+    const ventanaRecibo = window.open('', '_blank', 'width=400,height=700');
+
     this.pedidosService
       .facturarPedido(this.pedidoSeleccionado.id, { metodoPago, totalRecibido: this.totalRecibido })
       .subscribe({
@@ -62,7 +65,7 @@ export class ConsultaPedidos implements OnInit {
           this.ventaActual = venta;
           this.vendedorActual = venta.vendedor || 'N/A';
 
-          // abrir modal
+          // Mostrar modal
           const modalEl = document.getElementById('modalRecibo');
           if (modalEl) {
             const modal = new Modal(modalEl);
@@ -74,8 +77,18 @@ export class ConsultaPedidos implements OnInit {
           this.pedidoSeleccionado = null;
           this.cargarPedidos();
           this.cdr.detectChanges();
+
+          // 👈 Esperar que Angular renderice el recibo y luego escribirlo
+          setTimeout(() => {
+            const contenido = document.getElementById('recibo-imprimir')?.innerHTML;
+            if (!contenido || !ventanaRecibo) return;
+
+            ventanaRecibo.document.write(this.generarHtmlRecibo(contenido));
+            ventanaRecibo.document.close();
+          }, 500);
         },
         error: (err) => {
+          ventanaRecibo?.close();
           Swal.fire('Error', err.error?.message || 'No se pudo facturar', 'error');
         },
       });
@@ -85,46 +98,57 @@ export class ConsultaPedidos implements OnInit {
     const contenido = document.getElementById('recibo-imprimir')?.innerHTML;
     if (!contenido) return;
 
-    window.print(); // Esto abrirá el diálogo de impresión del navegador
+    const ventana = window.open('', '_blank', 'width=400,height=700');
+    if (!ventana) return;
 
-  //   const ventana = window.open('', '_blank', 'width=300,height=600');
-  //   if (!ventana) return;
+    ventana.document.write(this.generarHtmlRecibo(contenido));
+    ventana.document.close();
+  }
 
-  //   ventana.document.write(`
-  //   <!DOCTYPE html>
-  //   <html>
-  //     <head>
-  //       <title>Recibo</title>
-  //       <style>
-  //         @page { size: 80mm auto; margin: 4mm; }
-  //         body {
-  //           width: 80mm;
-  //           margin: 0;
-  //           padding: 4px;
-  //           font-family: 'Courier New', monospace;
-  //           font-size: 11px;
-  //         }
-  //         table { width: 100%; border-collapse: collapse; }
-  //         hr { border-top: 1px dashed #000; border-bottom: none; }
-  //         .text-center { text-align: center; }
-  //         .text-end { text-align: right; }
-  //         .fw-bold { font-weight: bold; }
-  //         .d-flex { display: flex; }
-  //         .justify-content-between { justify-content: space-between; }
-  //         .mb-0 { margin-bottom: 0; }
-  //         .mb-1 { margin-bottom: 4px; }
-  //         .mb-2 { margin-bottom: 8px; }
-  //         .mt-1 { margin-top: 4px; }
-  //         .my-1 { margin-top: 4px; margin-bottom: 4px; }
-  //         h5 { font-size: 14px; margin: 0; }
-  //       </style>
-  //     </head>
-  //     <body onload="window.print(); window.close();">
-  //       ${contenido}
-  //     </body>
-  //   </html>
-  // `);
-  //   ventana.document.close();
+  private generarHtmlRecibo(contenido: string): string {
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Recibo</title>
+          
+          <style>
+  @page {
+    size: 80mm auto;
+    margin: 2mm 3mm;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    width: 74mm;
+    margin: 0 auto;
+    padding: 0;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    line-height: 1.3;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  hr { border-top: 1px dashed #000; border-bottom: none; margin: 2px 0; }
+  .text-center { text-align: center; }
+  .text-end { text-align: right; }
+  .fw-bold { font-weight: bold; }
+  .d-flex { display: flex; }
+  .justify-content-between { justify-content: space-between; }
+  .mb-0 { margin-bottom: 0; }
+  .mb-1 { margin-bottom: 2px; }
+  .mb-2 { margin-bottom: 4px; }
+  .mt-1 { margin-top: 2px; }
+  .my-1 { margin-top: 2px; margin-bottom: 2px; }
+  h5 { font-size: 12px; margin: 0 0 2px 0; }
+  small { font-size: 9px; }
+</style>
+        </head>
+        <body onload="window.print();">
+          ${contenido}
+        </body>
+      </html>
+    `;
   }
 
   eliminarDetalle(detalleId: number) {
@@ -140,7 +164,6 @@ export class ConsultaPedidos implements OnInit {
 
       this.pedidosService.eliminarDetalle(detalleId).subscribe({
         next: () => {
-          // actualizar localmente
           this.pedidoSeleccionado.detalles = this.pedidoSeleccionado.detalles.filter(
             (d: any) => d.id !== detalleId,
           );
