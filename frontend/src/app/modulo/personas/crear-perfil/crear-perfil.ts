@@ -15,22 +15,30 @@ export class CrearPerfil {
   form: FormGroup;
   modo: 'crear' | 'editar' = 'crear';
   perfilId: number | null = null;
-ngOnInit() {
-  this.perfilId = Number(this.route.snapshot.paramMap.get('id'));
+  cargos: string[] = [];
 
-  if (this.perfilId) {
-    this.modo = 'editar';
-    this.cargarPerfil(this.perfilId);
+  administracion = ['Gerente', 'Supervisor de tienda'];
+
+  atencionAlCliente = ['Cajero', 'Vendedor', 'Bodeguero'];
+
+  taller = ['Administrador de taller', 'Jefe de taller', 'Mecánico', 'Ayudante de taller'];
+
+  ngOnInit() {
+    this.perfilId = Number(this.route.snapshot.paramMap.get('id'));
+
+    if (this.perfilId) {
+      this.modo = 'editar';
+      this.cargarPerfil(this.perfilId);
+    }
   }
-}
   constructor(
     private fb: FormBuilder,
     private perfilService: PerfilService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {
     this.form = this.fb.group({
-      dni: ['', Validators.required,Validators.minLength(13), Validators.maxLength(13)],
+      dni: ['', Validators.required, Validators.minLength(13), Validators.maxLength(13)],
       nombre: ['', Validators.required, Validators.pattern(/^[a-zA-Z\s]+$/)],
       telefono: ['', Validators.required, Validators.pattern(/^\d{8}$/)],
       cargo: ['', Validators.required],
@@ -45,8 +53,6 @@ ngOnInit() {
       contrasena: [''],
     });
 
-    
-
     // 🔥 lógica: si NO quiere usuario, limpiar campos
     this.form.get('crearUsuario')?.valueChanges.subscribe((value) => {
       if (!value) {
@@ -56,15 +62,37 @@ ngOnInit() {
         });
       }
     });
+
+    this.form.get('departamento')?.valueChanges.subscribe((departamento) => {
+      this.form.patchValue({ cargo: '' });
+
+      switch (departamento) {
+        case 'administracion':
+          this.cargos = this.administracion;
+          break;
+
+        case 'atencionAlCliente':
+          this.cargos = this.atencionAlCliente;
+          break;
+
+        case 'taller':
+          this.cargos = this.taller;
+          break;
+
+        default:
+          this.cargos = [];
+          break;
+      }
+    });
   }
 
   cargarPerfil(id: number) {
-  this.perfilService.getPerfil(id).subscribe({
-    next: (data : any) => {
-      this.form.patchValue(data);
-    }
-  });
-}
+    this.perfilService.getPerfil(id).subscribe({
+      next: (data: any) => {
+        this.form.patchValue(data);
+      },
+    });
+  }
 
   guardar() {
     if (this.form.invalid) {

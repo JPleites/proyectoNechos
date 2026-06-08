@@ -1,5 +1,4 @@
 <div class="container-fluid vh-100 d-flex flex-column p-3 bg-light page-wrapper">
-
   <header class="modulo-header mb-3 flex-shrink-0">
     <h4 class="mb-1 fw-semibold text-dark">Nuevo pedido</h4>
     <small class="text-muted">Gestión de ventas e inventario</small>
@@ -7,31 +6,40 @@
 
   <div class="modulo-contenido panel-scroll flex-grow-1 w-100">
     <form [formGroup]="form" class="d-grid gap-3 form-pedido-container">
-      
       <article class="card border-0 shadow-sm rounded-4 p-4 bg-white erp-panel">
-        <h6 class="erp-section-title fw-semibold text-secondary small text-uppercase mb-3 letter-spacing">
+        <h6
+          class="erp-section-title fw-semibold text-secondary small text-uppercase mb-3 letter-spacing"
+        >
           Paso 1: Cliente
         </h6>
-        <div class="d-grid gap-2" style="max-width: 500px;">
-          <input type="text" class="form-control erp-input rounded-3" placeholder="🔍 Buscar por nombre o ID..." />
+        <div class="d-grid gap-2" style="max-width: 500px">
+          <input
+            type="text"
+            class="form-control erp-input rounded-3"
+            placeholder="🔍 Buscar por nombre o ID..."
+          />
 
           <select class="form-select erp-input rounded-3" formControlName="clienteId">
             <option value="">Seleccionar cliente</option>
             <option *ngFor="let c of clientesFiltrados" [value]="c.id">
-              #{{ c.rtn }} — {{ c.nombre }}
+              {{ c.rtn }} — {{ c.nombre }}
             </option>
           </select>
         </div>
       </article>
 
       <article class="card border-0 shadow-sm rounded-4 p-4 bg-white erp-panel">
-        <h6 class="erp-section-title fw-semibold text-secondary small text-uppercase mb-3 letter-spacing">
+        <h6
+          class="erp-section-title fw-semibold text-secondary small text-uppercase mb-3 letter-spacing"
+        >
           Paso 2: Agregar producto
         </h6>
 
         <div class="row g-3">
           <div class="col-md-4">
-            <label class="form-label erp-label small text-muted fw-medium"> Código de barras </label>
+            <label class="form-label erp-label small text-muted fw-medium">
+              Código de barras
+            </label>
             <input
               class="form-control erp-input rounded-3"
               formControlName="codigoBarra"
@@ -50,6 +58,16 @@
             </select>
           </div>
 
+          <div class="col-md-3">
+            <label class="form-label erp-label small text-muted fw-medium"> Cantidad </label>
+            <input
+              type="number"
+              class="form-control erp-input rounded-3"
+              formControlName="cantidad"
+              min="1"
+            />
+          </div>
+
           <div class="col-md-4 d-flex align-items-end">
             <button
               type="button"
@@ -61,9 +79,14 @@
           </div>
         </div>
 
-        <div *ngIf="productoEncontrado" class="row g-3 mt-2 pt-3 border-top border-dashed animated fadeIn">
+        <div
+          *ngIf="productoEncontrado"
+          class="row g-3 mt-2 pt-3 border-top border-dashed animated fadeIn"
+        >
           <div class="col-md-5">
-            <label class="form-label erp-label small text-muted fw-medium"> Ubicación exacta </label>
+            <label class="form-label erp-label small text-muted fw-medium">
+              Ubicación exacta
+            </label>
             <select class="form-select erp-input rounded-3" formControlName="ubicacion">
               <option value="">Seleccionar ubicación</option>
               <option *ngFor="let u of ubicaciones" [value]="u.ubicacion">
@@ -72,13 +95,12 @@
             </select>
           </div>
 
-          <div class="col-md-3">
-            <label class="form-label erp-label small text-muted fw-medium"> Cantidad </label>
-            <input type="number" class="form-control erp-input rounded-3" formControlName="cantidad" min="1" />
-          </div>
-
           <div class="col-md-4 d-flex align-items-end">
-            <button type="button" class="btn btn-primary w-100 rounded-3 btn-guardar-erp fw-medium" (click)="agregarProducto()">
+            <button
+              type="button"
+              class="btn btn-primary w-100 rounded-3 btn-guardar-erp fw-medium"
+              (click)="agregarProducto()"
+            >
               <i class="fas fa-plus me-1 small"></i> Agregar al detalle
             </button>
           </div>
@@ -86,7 +108,9 @@
       </article>
 
       <article class="card border-0 shadow-sm rounded-4 p-4 bg-white erp-panel">
-        <h6 class="erp-section-title fw-semibold text-secondary small text-uppercase mb-2 letter-spacing">
+        <h6
+          class="erp-section-title fw-semibold text-secondary small text-uppercase mb-2 letter-spacing"
+        >
           Paso 3: Detalle del pedido
         </h6>
 
@@ -96,30 +120,43 @@
               <tr>
                 <th>Producto</th>
                 <th>Ubicación</th>
-                <th style="width: 100px;">Cant.</th>
+                <th style="width: 100px">Cant.</th>
                 <th>Precio</th>
                 <th>Subtotal</th>
-                <th class="text-end" style="width: 80px;"></th>
+                <th class="text-end" style="width: 80px"></th>
               </tr>
             </thead>
 
             <tbody>
               <tr *ngFor="let item of carrito; let i = index">
                 <td class="fw-medium text-dark">{{ item.nombreProducto }}</td>
-                <td class="text-muted"><span class="badge bg-light text-secondary border px-2 py-1">{{ item.ubicacion }}</span></td>
+                <td class="text-muted">
+                  <span class="badge bg-light text-secondary border px-2 py-1">{{
+                    item.ubicacion
+                  }}</span>
+                </td>
                 <td class="fw-medium">{{ item.cantidad }}</td>
                 <td class="text-muted">Lps. {{ item.precioUnitario | number: '1.2-2' }}</td>
                 <td class="fw-semibold text-dark">Lps. {{ item.subtotal | number: '1.2-2' }}</td>
                 <td class="text-end">
-                  <button type="button" class="btn btn-light border btn-sm rounded-3 btn-eliminar-item" (click)="eliminarItem(i)" title="Eliminar item">
+                  <button
+                    type="button"
+                    class="btn btn-light border btn-sm rounded-3 btn-eliminar-item"
+                    (click)="eliminarItem(i)"
+                    title="Eliminar item"
+                  >
                     <i class="fas fa-trash text-danger small"></i>
                   </button>
                 </td>
               </tr>
-              
+
               <tr *ngIf="!carrito || carrito.length === 0">
-                <td colspan="6" class="text-center py-4 text-muted small bg-light bg-opacity-25 rounded-3">
-                  <i class="fas fa-shopping-cart me-2 opacity-50"></i> El detalle del pedido está vacío.
+                <td
+                  colspan="6"
+                  class="text-center py-4 text-muted small bg-light bg-opacity-25 rounded-3"
+                >
+                  <i class="fas fa-shopping-cart me-2 opacity-50"></i> El detalle del pedido está
+                  vacío.
                 </td>
               </tr>
             </tbody>
@@ -128,7 +165,9 @@
 
         <div class="d-flex justify-content-end mt-3 pt-3 border-top">
           <div class="text-end">
-            <small class="text-muted text-uppercase fw-semibold letter-spacing d-block mb-1">Monto Total</small>
+            <small class="text-muted text-uppercase fw-semibold letter-spacing d-block mb-1"
+              >Monto Total</small
+            >
             <h4 class="mb-0 fw-bold text-dark text-nowrap bg-light px-3 py-2 rounded-3 border">
               Lps. {{ total | number: '1.2-2' }}
             </h4>
@@ -137,13 +176,20 @@
       </article>
 
       <footer class="d-flex justify-content-end gap-2 pt-2 mb-4">
-        <button type="button" class="btn btn-light border rounded-3 px-4 fw-medium btn-cancelar-erp">Cancelar</button>
-        <button type="button" class="btn btn-success rounded-3 px-4 fw-medium btn-salvar-pedido" (click)="guardarPedido()">
+        <button
+          type="button"
+          class="btn btn-light border rounded-3 px-4 fw-medium btn-cancelar-erp"
+        >
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn btn-success rounded-3 px-4 fw-medium btn-salvar-pedido"
+          (click)="guardarPedido()"
+        >
           <i class="fas fa-check me-2 small"></i> Guardar pedido
         </button>
       </footer>
-
     </form>
   </div>
-
 </div>

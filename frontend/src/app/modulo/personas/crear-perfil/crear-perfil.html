@@ -1,16 +1,19 @@
 <div class="container-fluid vh-100 d-flex flex-column p-3 bg-light page-wrapper">
-  
   <div class="modulo-contenido panel-scroll flex-grow-1 w-100">
-    <article class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100 d-flex flex-column">
-      
+    <article
+      class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100 d-flex flex-column"
+    >
       <header class="card-header border-bottom px-4 py-3 flex-shrink-0">
         <h4 class="mb-1 fw-semibold text-dark">Registro de colaborador</h4>
         <small class="text-muted">Gestión de información del personal</small>
       </header>
 
-      <form class="card-body p-4 d-flex flex-column h-100 overflow-auto" [formGroup]="form" (ngSubmit)="guardar()">
+      <form
+        class="card-body p-4 d-flex flex-column h-100 overflow-auto"
+        [formGroup]="form"
+        (ngSubmit)="guardar()"
+      >
         <div class="d-grid gap-4 flex-grow-1">
-          
           <section class="erp-panel">
             <h6 class="erp-section-title">Datos del perfil</h6>
 
@@ -31,13 +34,27 @@
               </div>
 
               <div class="col-md-4">
-                <label class="form-label"> Cargo </label>
-                <input formControlName="cargo" class="form-control" placeholder="Cargo" />
+                <label class="form-label"> Departamento </label>
+                <select formControlName="departamento" class="form-select">
+                  <option value="">Seleccionar departamento</option>
+                  <option value="administracion">Administración</option>
+                  <option value="atencionAlCliente">Atención al Cliente</option>
+                  <option value="taller">Taller</option>
+                </select>
               </div>
 
               <div class="col-md-4">
-                <label class="form-label"> Departamento </label>
-                <input formControlName="departamento" class="form-control" placeholder="Departamento" />
+                <div class="col-md-4">
+                  <label class="form-label"> Cargo </label>
+
+                  <select formControlName="cargo" class="form-select">
+                    <option value="">Seleccionar cargo</option>
+
+                    <option *ngFor="let cargo of cargos" [value]="cargo">
+                      {{ cargo }}
+                    </option>
+                  </select>
+                </div>
               </div>
 
               <div class="col-12">
@@ -58,7 +75,9 @@
           </section>
 
           <section class="erp-panel">
-            <div class="d-flex justify-content-between align-items-center mb-3 wrapper-switch-header">
+            <div
+              class="d-flex justify-content-between align-items-center mb-3 wrapper-switch-header"
+            >
               <div>
                 <h6 class="erp-section-title mb-1 pb-0">Acceso al sistema</h6>
                 <small class="text-muted text-user-erp"> Configuración de usuario ERP </small>
@@ -71,11 +90,16 @@
                   formControlName="crearUsuario"
                   id="crearUsuario"
                 />
-                <label class="form-check-label fw-semibold text-dark small" for="crearUsuario"> Crear usuario </label>
+                <label class="form-check-label fw-semibold text-dark small" for="crearUsuario">
+                  Crear usuario
+                </label>
               </div>
             </div>
 
-            <div *ngIf="form.get('crearUsuario')?.value" class="row g-3 mt-1 pt-2 border-top border-dashed animated fadeIn">
+            <div
+              *ngIf="form.get('crearUsuario')?.value"
+              class="row g-3 mt-1 pt-2 border-top border-dashed animated fadeIn"
+            >
               <div class="col-md-6">
                 <label class="form-label"> Rol del sistema </label>
                 <select formControlName="rol" class="form-select">
@@ -98,18 +122,17 @@
               </div>
             </div>
           </section>
-
         </div>
 
         <footer class="d-flex justify-content-end gap-2 pt-3 border-top mt-4 flex-shrink-0">
-          <button type="button" class="btn btn-light border rounded-3 px-4 fw-medium btn-cancelar">Cancelar</button>
+          <button type="button" class="btn btn-light border rounded-3 px-4 fw-medium btn-cancelar">
+            Cancelar
+          </button>
           <button type="submit" class="btn btn-primary rounded-3 px-4 fw-medium btn-guardar">
             <i class="fas fa-save me-2 small"></i> Guardar colaborador
           </button>
         </footer>
       </form>
-
     </article>
   </div>
-
 </div>

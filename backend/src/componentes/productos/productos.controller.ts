@@ -30,12 +30,17 @@ export class ProductosController {
     return this.productosService.buscarProductos(q);
   }
 
-  @Get('ubicaciones/:productoCodigo/:almacenId')
+  @Get('ubicaciones/:productoCodigo/:almacenId/:cantidad')
   getUbicaciones(
     @Param('productoCodigo') productoCodigo: string,
-    @Param('almacenId') almacenId: number,
+    @Param('almacenId') almacenId: string,
+    @Param('cantidad') cantidad: string,
   ) {
-    return this.productosService.obtenerUbicaciones(productoCodigo, almacenId);
+    return this.productosService.obtenerUbicaciones(
+      productoCodigo,
+      Number(almacenId),
+      Number(cantidad),
+    );
   }
 
   @Get('filtros')

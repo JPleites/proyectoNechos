@@ -92,7 +92,7 @@ export class NuevoPedidoComponent implements OnInit {
         productoCodigo: producto.codigo,
       });
 
-      this.cargarUbicaciones(producto.codigo);
+      this.cargarUbicaciones(producto.codigo, this.form.value.almacenId, Number(this.form.value.cantidad));
     }
   }
 
@@ -104,17 +104,16 @@ export class NuevoPedidoComponent implements OnInit {
     });
   }
 
-  cargarUbicaciones(productoCodigo: string) {
-    const almacenId = this.form.value.almacenId;
+  cargarUbicaciones(productoCodigo: string, almacenId: string, cantidad: number) {
 
     if (!almacenId) {
       Swal.fire('Error', 'Selecciona un almacén primero', 'warning');
       return;
     }
 
-    console.log('Producto:', productoCodigo, 'Almacén:', almacenId);
+    console.log('Producto:', productoCodigo, 'Almacén:', almacenId, 'Cantidad:', cantidad);
 
-    this.productosService.getUbicaciones(productoCodigo, almacenId).subscribe((data: any) => {
+    this.productosService.getUbicaciones(productoCodigo, almacenId, cantidad).subscribe((data: any) => {
       this.ubicaciones = data;
 
       console.log('Ubicaciones obtenidas:', data);

@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Productos, Prisma } from '@prisma/client';
-import { GeneradorCodigoService } from 'src/common/services/generador-codigo/generador-codigo.service';
+import { GeneradorCodigoService } from '../../common/services/generador-codigo/generador-codigo.service';
 
 @Injectable()
 export class ProductosService {
@@ -199,12 +199,15 @@ export class ProductosService {
     });
   }
 
-  async obtenerUbicaciones(productoCodigo: string, almacenId: number) {
+  async obtenerUbicaciones(productoCodigo: string, almacenId: number, cantidad: number) {
     return this.prisma.inventario.findMany({
       where: {
         productoCodigo: String(productoCodigo),
         ubicacionRel: {
           almacenId: Number(almacenId),
+          cantidad:{
+            gte: cantidad,
+          }
         },
       },
       include: {
