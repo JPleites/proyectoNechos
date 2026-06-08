@@ -199,15 +199,19 @@ export class ProductosService {
     });
   }
 
-  async obtenerUbicaciones(productoCodigo: string, almacenId: number, cantidad: number) {
+  async obtenerUbicaciones(
+    productoCodigo: string,
+    almacenId: number,
+    cantidad: number,
+  ) {
     return this.prisma.inventario.findMany({
       where: {
         productoCodigo: String(productoCodigo),
+        cantidad: {
+          gte: cantidad,
+        },
         ubicacionRel: {
           almacenId: Number(almacenId),
-          cantidad:{
-            gte: cantidad,
-          }
         },
       },
       include: {
