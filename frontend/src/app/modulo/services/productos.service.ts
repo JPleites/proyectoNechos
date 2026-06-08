@@ -40,7 +40,7 @@ export class ProductosService {
   }
 
   getUbicaciones(productoCodigo: string, almacenId: string, cantidad: number): Observable<any[]> {
-    return this.apiService.get<any[]>(`/productos/ubicaciones/${productoCodigo}/${almacenId}?cantidad=${cantidad}`);
+    return this.apiService.get<any[]>(`/productos/ubicaciones/${productoCodigo}/${almacenId}/${cantidad}`);
   }
 
   filtrosProductos(filtros: any) {

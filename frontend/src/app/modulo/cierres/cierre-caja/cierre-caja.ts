@@ -25,7 +25,7 @@ export class CierreCaja implements OnInit {
     transferencia: 0,
     total: 0,
   };
-  usuarioCodigo = Number(localStorage.getItem('codigo'));
+  usuarioCodigo = Number(localStorage.getItem('codigo')); 
 
   constructor(
     private cierresService: CierresService,

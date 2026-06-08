@@ -73,10 +73,6 @@ export class NuevoPedidoComponent implements OnInit {
 
   buscarProductoPorCodigo() {
     this.ubicaciones = [];
-    this.form.patchValue({
-      ubicacion: '',
-      cantidad: 1,
-    });
     this.productoEncontrado = false;
     const codigo = this.form.value.codigoBarra;
 
@@ -92,7 +88,11 @@ export class NuevoPedidoComponent implements OnInit {
         productoCodigo: producto.codigo,
       });
 
-      this.cargarUbicaciones(producto.codigo, this.form.value.almacenId, Number(this.form.value.cantidad));
+      this.cargarUbicaciones(
+        producto.codigo,
+        this.form.value.almacenId,
+        Number(this.form.value.cantidad),
+      );
     }
   }
 
@@ -105,7 +105,6 @@ export class NuevoPedidoComponent implements OnInit {
   }
 
   cargarUbicaciones(productoCodigo: string, almacenId: string, cantidad: number) {
-
     if (!almacenId) {
       Swal.fire('Error', 'Selecciona un almacén primero', 'warning');
       return;
@@ -113,12 +112,25 @@ export class NuevoPedidoComponent implements OnInit {
 
     console.log('Producto:', productoCodigo, 'Almacén:', almacenId, 'Cantidad:', cantidad);
 
-    this.productosService.getUbicaciones(productoCodigo, almacenId, cantidad).subscribe((data: any) => {
-      this.ubicaciones = data;
+    this.productosService
+      .getUbicaciones(productoCodigo, almacenId, cantidad)
+      .subscribe((data: any) => {
+        if (data && data.length > 0) {
+          Swal.fire('Éxito', 'Ubicaciones obtenidas', 'success');
 
-      console.log('Ubicaciones obtenidas:', data);
-      this.cdr.detectChanges();
-    });
+          this.ubicaciones = data;
+
+          console.log('Ubicaciones obtenidas:', data);
+          this.cdr.detectChanges();
+        } else {
+          Swal.fire(
+            'Error',
+            'No hay ubicaciones disponibles o con suficiente stock para este producto en el almacén seleccionado',
+            'error',
+          );
+          this.productoEncontrado = false;
+        }
+      });
   }
 
   // ➕ AGREGAR AL CARRITO
@@ -127,7 +139,10 @@ export class NuevoPedidoComponent implements OnInit {
 
     const producto = this.productos.find((p) => p.codigo === productoCodigo);
 
-    if (!producto) return;
+    if (!producto || !this.productoEncontrado || !this.form.value.ubicacion){
+      Swal.fire('Error', 'Selecciona un producto, ubicación y cantidad válidos', 'warning');
+      return;
+    };
 
     const subtotal = cantidad * producto.precio;
 
@@ -140,11 +155,11 @@ export class NuevoPedidoComponent implements OnInit {
       subtotal,
     });
 
-    // this.form.patchValue({
-    //   productoCodigo: '',
-    //   ubicacion: '',
-    //   cantidad: 1,
-    // });
+    this.form.patchValue({
+      codigoBarra: '',
+      cantidad: 1,
+      almacenId: '',
+    });
   }
 
   eliminarItem(index: number) {

@@ -1,7 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { Prisma, Ventas } from '@prisma/client';
-import { GeneradorCodigoService } from 'src/common/services/generador-codigo/generador-codigo.service';
+import { GeneradorCodigoService } from '../../common/services/generador-codigo/generador-codigo.service';
 
 @Injectable()
 export class VentasService {
@@ -12,20 +11,17 @@ export class VentasService {
 
   async generarPedidoID() {
     const last = await this.prisma.pedidos.findFirst({
-      orderBy: {
-        id: 'desc',
-      },
+      orderBy: { id: 'desc' },
     });
 
     const nextNumber = last ? last.id + 1 : 1;
-
     return this.codeGen.generate('PED', nextNumber);
   }
+
   // =========================================================
   // FACTURAR PEDIDO
   // =========================================================
   async facturarPedido(id: number, data: any, cajeroCodigo: number) {
-    // ✅ Estas consultas ANTES de la transacción
     const pedido = await this.prisma.pedidos.findUnique({
       where: { id },
       include: {
@@ -36,7 +32,7 @@ export class VentasService {
           },
         },
         usuario: {
-          include: { perfil: true }, // 👈 vendedor
+          include: { perfil: true },
         },
       },
     });
@@ -47,10 +43,10 @@ export class VentasService {
     if (!pedido.detalles.length)
       throw new BadRequestException('El pedido no tiene productos');
 
-    // ✅ Generar IDs antes de la transacción
     const lastVenta = await this.prisma.ventas.findFirst({
       orderBy: { id: 'desc' },
     });
+
     const ventaID = this.codeGen.generate(
       'V',
       lastVenta ? lastVenta.id + 1 : 1,
@@ -59,16 +55,10 @@ export class VentasService {
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
 
-    let arqueo = await this.prisma.arqueo.findFirst({
-      where: {
-        usuarioCodigo: pedido.usuarioCodigo,
-        fecha: { gte: hoy },
-      },
-    });
-
-    // ✅ Ahora sí la transacción — solo operaciones de escritura
     return this.prisma.$transaction(async (tx) => {
+      // =====================================================
       // VALIDAR STOCK
+      // =====================================================
       for (const detalle of pedido.detalles) {
         const inventario = await tx.inventario.findFirst({
           where: {
@@ -81,13 +71,16 @@ export class VentasService {
           throw new BadRequestException(
             `Sin inventario: ${detalle.productoCodigo}`,
           );
+
         if (inventario.cantidad < detalle.cantidad)
           throw new BadRequestException(
             `Stock insuficiente: ${detalle.productoCodigo}`,
           );
       }
 
+      // =====================================================
       // CREAR VENTA
+      // =====================================================
       const venta = await tx.ventas.create({
         data: {
           ventaID,
@@ -121,7 +114,9 @@ export class VentasService {
         },
       });
 
+      // =====================================================
       // DESCONTAR INVENTARIO
+      // =====================================================
       for (const detalle of pedido.detalles) {
         const inventario = await tx.inventario.findFirst({
           where: {
@@ -132,7 +127,9 @@ export class VentasService {
 
         await tx.inventario.update({
           where: { id: inventario!.id },
-          data: { cantidad: { decrement: detalle.cantidad } },
+          data: {
+            cantidad: { decrement: detalle.cantidad },
+          },
         });
 
         await tx.movimientosInventario.create({
@@ -147,20 +144,30 @@ export class VentasService {
         });
       }
 
-      // ARQUEO
+      // =====================================================
+      // ARQUEO (SOLO 1 POR CAJERO POR DÍA)
+      // =====================================================
+      let arqueo = await tx.arqueo.findFirst({
+        where: {
+          usuarioCodigo: cajeroCodigo,
+          fecha: {
+            gte: hoy,
+          },
+        },
+      });
+
       if (!arqueo) {
         const lastArqueo = await tx.arqueo.findFirst({
           orderBy: { id: 'desc' },
         });
-        const arqueoID = this.codeGen.generate(
-          'ARQ',
-          lastArqueo ? lastArqueo.id + 1 : 1,
-        );
 
         arqueo = await tx.arqueo.create({
           data: {
-            arqueoID,
-            usuarioCodigo: pedido.usuarioCodigo,
+            arqueoID: this.codeGen.generate(
+              'ARQ',
+              lastArqueo ? lastArqueo.id + 1 : 1,
+            ),
+            usuarioCodigo: cajeroCodigo,
             totalEfectivo: 0,
             totalBac: 0,
             totalFicohsa: 0,
@@ -173,8 +180,11 @@ export class VentasService {
         });
       }
 
+      // =====================================================
       // SUMAR AL ARQUEO
+      // =====================================================
       const total = Number(pedido.total);
+
       const campoMetodo: Record<string, string> = {
         EFECTIVO: 'totalEfectivo',
         BAC: 'totalBac',
@@ -184,6 +194,7 @@ export class VentasService {
       };
 
       const campo = campoMetodo[data.metodoPago];
+
       if (campo) {
         await tx.arqueo.update({
           where: { id: arqueo.id },
@@ -194,13 +205,14 @@ export class VentasService {
         });
       }
 
+      // =====================================================
       // ACTUALIZAR PEDIDO
+      // =====================================================
       await tx.pedidos.update({
         where: { id },
         data: { estado: 'FACTURADO' },
       });
 
-      // RETORNAR con vendedor
       return {
         ...venta,
         vendedor: pedido.usuario?.perfil?.nombre || 'N/A',

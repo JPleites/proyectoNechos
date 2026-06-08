@@ -6,7 +6,7 @@ import {
 
 import { PrismaService } from '../../prisma/prisma.service';
 import { Clientes, Prisma } from '@prisma/client';
-import { GeneradorCodigoService } from 'src/common/services/generador-codigo/generador-codigo.service';
+import { GeneradorCodigoService } from '../../common/services/generador-codigo/generador-codigo.service';
 
 @Injectable()
 export class ClientesService {

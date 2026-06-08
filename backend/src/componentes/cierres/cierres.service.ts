@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import PDFDocument from 'pdfkit';
-import { GeneradorCodigoService } from 'src/common/services/generador-codigo/generador-codigo.service';
+import { GeneradorCodigoService } from '../../common/services/generador-codigo/generador-codigo.service';
 
 @Injectable()
 export class CierresService {

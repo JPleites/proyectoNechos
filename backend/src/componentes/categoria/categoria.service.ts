@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 
 import { PrismaService } from '../../prisma/prisma.service';
-import { GeneradorCodigoService } from 'src/common/services/generador-codigo/generador-codigo.service';
+import { GeneradorCodigoService } from '../../common/services/generador-codigo/generador-codigo.service';
 
 @Injectable()
 export class CategoriaService {
