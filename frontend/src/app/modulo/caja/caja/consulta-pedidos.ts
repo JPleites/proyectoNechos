@@ -50,50 +50,70 @@ export class ConsultaPedidos implements OnInit {
 
   facturar(metodoPago: string) {
     if (!this.pedidoSeleccionado) return;
-    if (this.totalRecibido < Number(this.pedidoSeleccionado.total)) {
+
+    // Solo validar si el método es EFECTIVO (para tarjetas o transferencias no aplica)
+    if (metodoPago === 'EFECTIVO' && this.totalRecibido < Number(this.pedidoSeleccionado.total)) {
       Swal.fire('Error', 'El monto recibido es insuficiente', 'warning');
       return;
     }
 
-    // 👈 Abrir ventana ANTES del HTTP (acción directa del usuario)
-    const ventanaRecibo = window.open('', '_blank', 'width=400,height=700');
+    Swal.fire({
+      title: 'Confirmar pago',
+      text: `¿Facturar pedido por L ${this.pedidoSeleccionado.total} con ${metodoPago}?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#5f27cd', // El color moradito base de tu ecosistema 7u7
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sí, facturar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      // 1. 🔥 ¡VALIDACIÓN CRÍTICA! Si cancela o cierra el Swal, no hace nada
+      if (!result.isConfirmed) return;
 
-    this.pedidosService
-      .facturarPedido(this.pedidoSeleccionado.id, { metodoPago, totalRecibido: this.totalRecibido })
-      .subscribe({
-        next: (venta: any) => {
-          this.ventaActual = venta;
-          this.vendedorActual = venta.vendedor || 'N/A';
+      // 2. Abrir la ventana inmediatamente después del click del usuario para evitar bloqueos del navegador
+      const ventanaRecibo = window.open('', '_blank', 'width=400,height=700');
 
-          // Mostrar modal
-          const modalEl = document.getElementById('modalRecibo');
-          if (modalEl) {
-            const modal = new Modal(modalEl);
-            modal.show();
-          }
+      this.pedidosService
+        .facturarPedido(this.pedidoSeleccionado.id, {
+          metodoPago,
+          totalRecibido:
+            metodoPago === 'EFECTIVO' ? this.totalRecibido : this.pedidoSeleccionado.total,
+        })
+        .subscribe({
+          next: (venta: any) => {
+            this.ventaActual = venta;
+            this.vendedorActual = venta.vendedor || 'N/A';
 
-          // limpiar
-          this.totalRecibido = 0;
-          this.pedidoSeleccionado = null;
-          this.cargarPedidos();
-          this.cdr.detectChanges();
+            // Mostrar modal de Bootstrap si existe
+            const modalEl = document.getElementById('modalRecibo');
+            if (modalEl) {
+              const modal = new Modal(modalEl);
+              modal.show();
+            }
 
-          // 👈 Esperar que Angular renderice el recibo y luego escribirlo
-          setTimeout(() => {
-            const contenido = document.getElementById('recibo-imprimir')?.innerHTML;
-            if (!contenido || !ventanaRecibo) return;
+            // Limpiar el estado de la pantalla
+            this.totalRecibido = 0;
+            this.pedidoSeleccionado = null;
+            this.cargarPedidos();
+            this.cdr.detectChanges();
 
-            ventanaRecibo.document.write(this.generarHtmlRecibo(contenido));
-            ventanaRecibo.document.close();
-          }, 500);
-        },
-        error: (err) => {
-          ventanaRecibo?.close();
-          Swal.fire('Error', err.error?.message || 'No se pudo facturar', 'error');
-        },
-      });
+            // Esperar que Angular renderice el recibo antes de escribir en la ventana
+            setTimeout(() => {
+              const contenido = document.getElementById('recibo-imprimir')?.innerHTML;
+              if (!contenido || !ventanaRecibo) return;
+
+              ventanaRecibo.document.write(this.generarHtmlRecibo(contenido));
+              ventanaRecibo.document.close();
+            }, 500);
+          },
+          error: (err) => {
+            // Si hay error, cerramos la pestaña huérfana que abrimos
+            ventanaRecibo?.close();
+            Swal.fire('Error', err.error?.message || 'No se pudo facturar', 'error');
+          },
+        });
+    });
   }
-
   imprimir() {
     const contenido = document.getElementById('recibo-imprimir')?.innerHTML;
     if (!contenido) return;

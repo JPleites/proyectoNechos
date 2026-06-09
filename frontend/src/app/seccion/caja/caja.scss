@@ -20,14 +20,19 @@
 
 main {
   flex: 1;
-  height: 100%;
-  overflow-y: auto; /* Mantiene la consistencia del scroll de contenido */
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  min-width: 0;
+  height: calc(100vh - 24px); /* Se adapta perfectamente al padding de 12px del layout raíz */
+  overflow-y: auto; /* ¡Habilita el scroll vertical para que tus botones suban y bajen lindo! 🔄 */
   background: #f5f6fa;
 }
 
 // ─── Layout raíz ─────────────────────────────────────────────────
 .nap-layout {
   display: flex;
+  width: 100vw;
   height: 100vh;
   overflow: hidden;
   gap: var(--gap);
@@ -213,16 +218,6 @@ main {
 .nav-label {
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-// ─── MAIN ────────────────────────────────────────────────────────
-.nap-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap);
-  min-width: 0;
-  overflow: hidden;
 }
 
 // ─── HEADER ──────────────────────────────────────────────────────

@@ -3,6 +3,7 @@ import { ProveedoresService } from '../../services/proveedores.service';
 import { CategoriasService } from '../../services/categorias.service';
 import { CategoriaProveedoresService } from '../../services/categoria-proveedores.service';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
 
 interface Proveedor {
@@ -20,7 +21,7 @@ interface Categoria {
 @Component({
   selector: 'app-consulta-proveedores',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './consulta-proveedores.html',
   styleUrl: './consulta-proveedores.scss',
 })

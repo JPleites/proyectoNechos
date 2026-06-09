@@ -1,7 +1,7 @@
 // ─── Contenedor Principal ─────────────────────────────────────────────────────
 .page-wrapper {
   overflow: hidden;
-  height: 100vh;
+  height: 100%;
 }
 
 .modulo-header {
@@ -12,7 +12,7 @@
 .modulo-contenido.main-pos-layout {
   flex-grow: 1;
   overflow: hidden; 
-  height: calc(100vh - 100px);
+  height: calc(100% - 70px);
 }
 
 // Control de scroll independiente en desktop

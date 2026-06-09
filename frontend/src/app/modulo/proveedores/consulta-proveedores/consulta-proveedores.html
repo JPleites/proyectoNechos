@@ -1,20 +1,25 @@
 <div class="container-fluid vh-100 d-flex flex-column p-3 bg-light page-wrapper">
-  
-  <header class="d-flex justify-content-between align-items-center mb-3 flex-shrink-0 modulo-header">
+  <header
+    class="d-flex justify-content-between align-items-center mb-3 flex-shrink-0 modulo-header"
+  >
     <div>
       <h4 class="mb-1 fw-semibold text-dark">Proveedores</h4>
       <small class="text-muted">Gestión de comercios y asignación de categorías fiscales</small>
     </div>
 
-    <a routerLink="/proveedores/nuevo" class="btn btn-primary rounded-3 px-3 btn-nuevo d-flex align-items-center">
+    <a
+      routerLink="/proveedores/crear"
+      class="btn btn-primary rounded-3 px-3 btn-nuevo d-flex align-items-center"
+    >
       <i class="fas fa-plus me-2 small"></i>
       Nuevo proveedor
     </a>
   </header>
 
   <div class="modulo-contenido panel-scroll flex-grow-1 w-100">
-    <article class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100 d-flex flex-column">
-      
+    <article
+      class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100 d-flex flex-column"
+    >
       <main class="table-responsive flex-grow-1 h-100 overflow-auto">
         <table class="table table-hover align-middle mb-0 erp-table">
           <thead class="table-light sticky-top z-index-1">
@@ -26,14 +31,19 @@
           </thead>
 
           <tbody>
-            <tr *ngFor="let p of proveedores" [class.row-selected]="proveedorSeleccionado?.id === p.id && mostrarModal">
+            <tr
+              *ngFor="let p of proveedores"
+              [class.row-selected]="proveedorSeleccionado?.id === p.id && mostrarModal"
+            >
               <td class="ps-4 fw-semibold text-secondary letter-spacing-sm">
                 {{ p.rtn || p.id }}
               </td>
 
               <td class="fw-medium text-dark">
                 <div class="d-flex align-items-center">
-                  <div class="avatar-icon bg-light text-muted rounded-2 me-2.5 d-flex align-items-center justify-content-center">
+                  <div
+                    class="avatar-icon bg-light text-muted rounded-2 me-2.5 d-flex align-items-center justify-content-center"
+                  >
                     <i class="fas fa-truck small"></i>
                   </div>
                   <span>{{ p.proveedor }}</span>
@@ -62,13 +72,14 @@
           </tbody>
         </table>
       </main>
-
     </article>
   </div>
 
   <div *ngIf="mostrarModal" class="erp-modal-backdrop animated fadeIn" (click)="cerrarModal()">
-    <div class="erp-modal shadow-lg rounded-4 border bg-white animated scaleIn" (click)="$event.stopPropagation()">
-      
+    <div
+      class="erp-modal shadow-lg rounded-4 border bg-white animated scaleIn"
+      (click)="$event.stopPropagation()"
+    >
       <header class="modal-header-erp pb-2 mb-3 border-bottom">
         <h5 class="mb-1 fw-semibold text-dark d-flex align-items-center">
           <i class="fas fa-tags me-2 text-primary"></i>
@@ -79,7 +90,7 @@
         </small>
       </header>
 
-      <main class="modal-body-erp panel-scroll mb-4" style="max-height: 280px;">
+      <main class="modal-body-erp panel-scroll mb-4" style="max-height: 280px">
         <div class="d-grid gap-2 pe-1">
           <label
             *ngFor="let c of categorias"
@@ -98,16 +109,22 @@
       </main>
 
       <footer class="d-flex justify-content-end gap-2 pt-2 border-top">
-        <button type="button" class="btn btn-light border rounded-3 px-3.5 btn-sm fw-medium" (click)="cerrarModal()">
+        <button
+          type="button"
+          class="btn btn-light border rounded-3 px-3.5 btn-sm fw-medium"
+          (click)="cerrarModal()"
+        >
           Cancelar
         </button>
 
-        <button type="button" class="btn btn-primary rounded-3 px-4 btn-sm fw-medium" (click)="guardarCategorias()">
+        <button
+          type="button"
+          class="btn btn-primary rounded-3 px-4 btn-sm fw-medium"
+          (click)="guardarCategorias()"
+        >
           <i class="fas fa-save me-1.5 small"></i>Guardar Cambios
         </button>
       </footer>
-
     </div>
   </div>
-
 </div>

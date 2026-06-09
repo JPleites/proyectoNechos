@@ -1,15 +1,22 @@
 <div class="container-fluid vh-100 d-flex flex-column p-3 bg-light page-wrapper">
-  
-  <header class="d-flex justify-content-between align-items-center mb-3 flex-shrink-0 modulo-header">
+  <header
+    class="d-flex justify-content-between align-items-center mb-3 flex-shrink-0 modulo-header"
+  >
     <div>
       <h4 class="mb-1 fw-semibold text-dark">Nueva Ubicación</h4>
-      <small class="text-muted">Creación de coordenadas logísticas para distribución de stock</small>
+      <small class="text-muted"
+        >Creación de coordenadas logísticas para distribución de stock</small
+      >
     </div>
   </header>
 
-  <div class="modulo-contenido panel-scroll flex-grow-1 w-100 d-flex align-items-start justify-content-center pt-2">
-    <article class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white w-100 animated scaleIn" style="max-width: 700px">
-      
+  <div
+    class="modulo-contenido panel-scroll flex-grow-1 w-100 d-flex align-items-start justify-content-center pt-2"
+  >
+    <article
+      class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white w-100 animated scaleIn"
+      style="max-width: 700px"
+    >
       <header class="card-header bg-white border-bottom px-4 py-3">
         <div class="d-flex align-items-center gap-2">
           <i class="fas fa-map-signs text-primary"></i>
@@ -19,14 +26,20 @@
 
       <form class="card-body p-4" (ngSubmit)="$event.preventDefault(); guardar()">
         <div class="d-grid gap-3.5">
-          
           <section class="erp-panel border shadow-sm">
-            <label class="form-label">Almacén / Bodega General <span class="text-danger">*</span></label>
+            <label class="form-label"
+              >Almacén / Bodega General <span class="text-danger">*</span></label
+            >
             <div class="input-group erp-input-group">
               <span class="input-group-text bg-light text-muted">
                 <i class="fas fa-warehouse"></i>
               </span>
-              <select class="form-select" [(ngModel)]="ubicacion.almacenId" name="almacenId" required>
+              <select
+                class="form-select"
+                [(ngModel)]="ubicacion.almacenId"
+                name="almacenId"
+                required
+              >
                 <option value="">Seleccione almacén</option>
                 <option *ngFor="let a of almacenes" [value]="a.id">
                   {{ a.almacen }}
@@ -43,17 +56,32 @@
             <div class="row g-3">
               <div class="col-md-4">
                 <label class="form-label">Estante / Pasillo</label>
-                <input [(ngModel)]="ubicacion.estante" name="estante" class="form-control text-center fw-semibold text-secondary" placeholder="Ej. 12" />
+                <input
+                  [(ngModel)]="ubicacion.estante"
+                  name="estante"
+                  class="form-control text-center fw-semibold text-secondary"
+                  type="number"
+                />
               </div>
 
               <div class="col-md-4">
                 <label class="form-label">Nivel / Altura</label>
-                <input [(ngModel)]="ubicacion.nivel" name="nivel" class="form-control text-center fw-semibold text-secondary" placeholder="Ej. A" />
+                <input
+                  [(ngModel)]="ubicacion.nivel"
+                  name="nivel"
+                  class="form-control text-center fw-semibold text-secondary"
+                type="number"
+                />
               </div>
 
               <div class="col-md-4">
                 <label class="form-label">Depósito / Caja</label>
-                <input [(ngModel)]="ubicacion.deposito" name="deposito" class="form-control text-center fw-semibold text-secondary" placeholder="Ej. 03" />
+                <input
+                  [(ngModel)]="ubicacion.deposito"
+                  name="deposito"
+                  class="form-control text-center fw-semibold text-secondary"
+                  type="number"
+                />
               </div>
             </div>
           </section>
@@ -63,17 +91,28 @@
               <i class="fas fa-fingerprint me-1.5"></i>Identificador Único Generado
             </h6>
 
-            <div class="erp-code-preview shadow-inner d-flex align-items-center justify-content-center py-3 rounded-3">
+            <div
+              class="erp-code-preview shadow-inner d-flex align-items-center justify-content-center py-3 rounded-3"
+            >
               <i class="fas fa-terminal me-3 text-success opacity-50 small"></i>
               <span class="code-text font-numeric">
-                A{{ ubicacion.almacenId || '?' }} E{{ ubicacion.estante || '?' }} N{{ ubicacion.nivel || '?' }} D{{ ubicacion.deposito || '?' }}
+                A{{ ubicacion.almacenId || '?' }} E{{ ubicacion.estante || '?' }} N{{
+                  ubicacion.nivel || '?'
+                }}
+                D{{ ubicacion.deposito || '?' }}
               </span>
             </div>
-            <small class="text-muted x-small d-block mt-2 text-center">Este código se utilizará como clave única para el escaneo o búsqueda rápida.</small>
+            <small class="text-muted x-small d-block mt-2 text-center"
+              >Este código se utilizará como clave única para el escaneo o búsqueda rápida.</small
+            >
           </section>
 
           <footer class="d-flex justify-content-end gap-2 pt-2 border-top mt-2">
-            <button type="button" routerLink="/ubicaciones" class="btn btn-light border rounded-3 px-4 fw-medium btn-cancelar-erp">
+            <button
+              type="button"
+              routerLink="/ubicaciones"
+              class="btn btn-light border rounded-3 px-4 fw-medium btn-cancelar-erp"
+            >
               Cancelar
             </button>
 
@@ -82,11 +121,8 @@
               Guardar ubicación
             </button>
           </footer>
-
         </div>
       </form>
-
     </article>
   </div>
-
 </div>

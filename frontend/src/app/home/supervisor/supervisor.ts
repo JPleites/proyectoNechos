@@ -7,6 +7,7 @@ import { Component } from '@angular/core';
   styleUrl: './supervisor.scss',
 })
 export class Supervisor {
+  nombre: string = localStorage.getItem('nombre') || 'Usuario';
   navigateTo(modulo: string) {
     if (modulo) {
       window.location.href = modulo;

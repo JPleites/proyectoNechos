@@ -7,6 +7,7 @@ import { Component } from '@angular/core';
   styleUrl: './cajero.scss',
 })
 export class Cajero {
+  nombre: string = localStorage.getItem('nombre') || 'Usuario';
   navigateTo(modulo: string) {
     if (modulo) {
       window.location.href = modulo;

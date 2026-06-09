@@ -116,7 +116,6 @@ export class NuevoPedidoComponent implements OnInit {
       .getUbicaciones(productoCodigo, almacenId, cantidad)
       .subscribe((data: any) => {
         if (data && data.length > 0) {
-          Swal.fire('Éxito', 'Ubicaciones obtenidas', 'success');
 
           this.ubicaciones = data;
 
