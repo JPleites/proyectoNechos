@@ -1,122 +1,123 @@
 <div class="container-fluid vh-100 d-flex flex-column p-3 bg-light page-wrapper">
-  
-  <header class="d-flex justify-content-between align-items-center mb-3 flex-shrink-0 modulo-header">
-    <div>
-      <h4 class="mb-1 fw-semibold text-dark">Colaboradores</h4>
-      <small class="text-muted"> Gestión de perfiles y accesos </small>
-    </div>
+  <header
+    class="d-flex justify-content-between align-items-center mb-3 flex-shrink-0 modulo-header"
+  >
+    <div>
+      <h4 class="mb-1 fw-semibold text-dark">Colaboradores</h4>
+      <small class="text-muted"> Gestión de perfiles y accesos </small>
+    </div>
 
-    <div class="d-flex gap-2">
-      <button class="btn btn-light border rounded-3 px-3 btn-accion-top" (click)="cargar()">
-        <i class="fas fa-rotate-right me-2 small opacity-75"></i>
-        Actualizar
-      </button>
+    <div class="d-flex gap-2">
+      <button class="btn btn-light border rounded-3 px-3 btn-accion-top" (click)="cargar()">
+        <i class="fas fa-rotate-right me-2 small opacity-75"></i>
+        Actualizar
+      </button>
 
-      <button class="btn btn-primary rounded-3 px-3 btn-nuevo-colab" (click)="crearPerfil()">
-        <i class="fas fa-plus me-2 small"></i>
-        Nuevo colaborador
-      </button>
-    </div>
-  </header>
+      <button class="btn btn-primary rounded-3 px-3 btn-nuevo-colab" (click)="crearPerfil()">
+        <i class="fas fa-plus me-2 small"></i>
+        Nuevo colaborador
+      </button>
+    </div>
+  </header>
 
-  <div class="modulo-contenido panel-scroll flex-grow-1 w-100">
-    <article class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100">
-      <div class="table-responsive h-100 overflow-auto">
-        <table class="table table-hover align-middle mb-0 erp-table-colaboradores">
-          
-          <thead class="table-light sticky-top">
-            <tr>
-              <th class="erp-th ps-4" style="width: 90px;">ID</th>
-              <th class="erp-th">DNI</th>
-              <th class="erp-th">Nombre</th>
-              <th class="erp-th">Cargo</th>
-              <th class="erp-th">Departamento</th>
-              <th class="erp-th" style="width: 140px;">Usuario</th>
-              <th class="erp-th text-center pe-4" style="width: 200px;">Acciones</th>
-            </tr>
-          </thead>
+  <div class="modulo-contenido panel-scroll flex-grow-1 w-100">
+    <article class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100">
+      <div class="table-responsive h-100 overflow-auto">
+        <table class="table table-hover align-middle mb-0 erp-table-colaboradores">
+          <thead class="table-light sticky-top">
+            <tr>
+              <th class="erp-th ps-4" style="width: 90px">ID</th>
+              <th class="erp-th">DNI</th>
+              <th class="erp-th">Nombre</th>
+              <th class="erp-th">Cargo</th>
+              <th class="erp-th">Departamento</th>
+              <th class="erp-th" style="width: 140px">Usuario</th>
+              <th class="erp-th text-center pe-4" style="width: 200px">Acciones</th>
+            </tr>
+          </thead>
 
-          <tbody>
-            <tr *ngFor="let p of perfiles">
-              <td class="ps-4 text-muted small fw-semibold">#{{ p.id }}</td>
+          <tbody>
+            <tr *ngFor="let p of perfiles">
+              <td class="ps-4 text-muted small fw-semibold">#{{ p.id }}</td>
 
-              <td class="text-nowrap">
-                <span class="fw-medium text-secondary">
-                  {{ p.dni }}
-                </span>
-              </td>
+              <td class="text-nowrap">
+                <span class="fw-medium text-secondary">
+                  {{ p.dni }}
+                </span>
+              </td>
 
-              <td class="fw-medium text-dark text-nowrap">
-                {{ p.nombre }}
-              </td>
+              <td class="fw-medium text-dark text-nowrap">
+                {{ p.nombre }}
+              </td>
 
-              <td class="text-muted text-nowrap">
-                {{ p.cargo }}
-              </td>
+              <td class="text-muted text-nowrap">
+                {{ p.cargo }}
+              </td>
 
-              <td class="text-muted text-nowrap">
-                {{ p.departamento }}
-              </td>
+              <td class="text-muted text-nowrap">
+                {{ p.departamento }}
+              </td>
 
-              <td>
-                <span *ngIf="p.usuario; else sinUser" class="erp-badge erp-badge-success text-nowrap">
-                  <span class="punto-activo me-1.5"></span> Activo
-                </span>
+              <td>
+                <span
+                  *ngIf="p.usuario; else sinUser"
+                  class="erp-badge erp-badge-success text-nowrap"
+                >
+                  <span class="punto-activo me-1.5"></span> Activo
+                </span>
 
-                <ng-template #sinUser>
-                  <span class="erp-badge erp-badge-secondary text-nowrap"> Sin usuario </span>
-                </ng-template>
-              </td>
+                <ng-template #sinUser>
+                  <span class="erp-badge erp-badge-secondary text-nowrap"> Sin usuario </span>
+                </ng-template>
+              </td>
 
-              <td class="text-center pe-4">
-                <div class="d-inline-flex gap-1.5">
-                  <button
-                    class="btn btn-light btn-sm border rounded-3 btn-accion-tabla"
-                    (click)="verDetalle(p.id)"
-                    title="Ver detalle"
-                  >
-                    <i class="fas fa-eye text-muted small"></i>
-                  </button>
+              <td class="text-center pe-4">
+                <div class="d-inline-flex gap-1.5">
+                  <button
+                    class="btn btn-light btn-sm border rounded-3 btn-accion-tabla"
+                    (click)="verDetalle(p.id)"
+                    title="Ver detalle"
+                  >
+                    <i class="fas fa-eye text-muted small"></i>
+                  </button>
 
-                  <button
-                    class="btn btn-light btn-sm border rounded-3 btn-accion-tabla"
-                    (click)="editar(p.id)"
-                    title="Editar"
-                  >
-                    <i class="fas fa-pen text-warning small"></i>
-                  </button>
+                  <button
+                    class="btn btn-light btn-sm border rounded-3 btn-accion-tabla"
+                    (click)="editar(p.id)"
+                    title="Editar"
+                  >
+                    <i class="fas fa-pen text-warning small"></i>
+                  </button>
 
-                  <button
-                    class="btn btn-light btn-sm border rounded-3 btn-accion-tabla btn-delete-row"
-                    (click)="eliminar(p.id)"
-                    title="Eliminar"
-                  >
-                    <i class="fas fa-trash text-danger small"></i>
-                  </button>
+                  <button
+                    class="btn btn-light btn-sm border rounded-3 btn-accion-tabla btn-delete-row"
+                    (click)="eliminar(p.id)"
+                    title="Eliminar"
+                  >
+                    <i class="fas fa-trash text-danger small"></i>
+                  </button>
 
-                  <button
-                    *ngIf="!p.usuario"
-                    class="btn btn-light btn-sm border rounded-3 btn-accion-tabla btn-add-user-row"
-                    (click)="crearUsuario(p)"
-                    title="Crear usuario"
-                  >
-                    <i class="fas fa-user-plus text-success small"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
+                  <button
+                    *ngIf="!p.usuario"
+                    class="btn btn-light btn-sm border rounded-3 btn-accion-tabla btn-add-user-row"
+                    (click)="crearUsuario(p)"
+                    title="Crear usuario"
+                  >
+                    <i class="fas fa-user-plus text-success small"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
 
-            <tr *ngIf="!perfiles || perfiles.length === 0">
-              <td colspan="7" class="text-center py-5 text-muted small">
-                <i class="fas fa-users-slash fa-2x mb-3 d-block opacity-50"></i>
-                No se encontraron colaboradores registrados
-              </td>
-            </tr>
-          </tbody>
-
-        </table>
-      </div>
-    </article>
-  </div>
-
+            <tr *ngIf="!perfiles || perfiles.length === 0">
+              <td colspan="7" class="text-center py-5 text-muted small">
+                <i class="fas fa-users-slash fa-2x mb-3 d-block opacity-50"></i>
+                No se encontraron colaboradores registrados
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+  </div>
 </div>
