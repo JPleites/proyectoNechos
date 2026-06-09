@@ -1,6 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
-@import '@fortawesome/fontawesome-free/css/all.css';
-@import 'mdb-angular-ui-kit/assets/scss/mdb.scss';
+@use '@fortawesome/fontawesome-free/css/all.css';
+@use 'mdb-angular-ui-kit/assets/scss/mdb.scss';
 
 /* Para Chrome, Safari, Edge y Opera */
 input::-webkit-outer-spin-button,

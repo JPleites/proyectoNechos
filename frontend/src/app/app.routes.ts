@@ -136,7 +136,7 @@ export const routes: Routes = [
               import('./modulo/cierres/consulta-cierres/consulta-cierres').then(
                 (m) => m.ConsultaCierres,
               ),
-          }
+          },
         ],
       },
       {
@@ -210,14 +210,14 @@ export const routes: Routes = [
         children: [
           {
             path: '',
-            redirectTo: 'consulta',
+            redirectTo: 'gestionar',
             pathMatch: 'full',
           },
           {
-            path: 'consulta',
+            path: 'gestionar',
             loadComponent: () =>
-              import('./modulo/productos/consulta-producto/consulta-producto').then(
-                (m) => m.ConsultaProducto,
+              import('./modulo/productos/gestion-productos/gestion-productos').then(
+                (m) => m.GestionProductos,
               ),
           },
           {
@@ -239,6 +239,27 @@ export const routes: Routes = [
             loadComponent: () =>
               import('./modulo/productos/salida-producto/salida-producto').then(
                 (m) => m.SalidaProducto,
+              ),
+          },
+        ],
+      },
+      {
+        path: 'consulta-producto',
+        loadComponent: () =>
+          import('./seccion/consulta-producto/consulta-producto').then(
+            (m) => m.ConsultaProductoComponent,
+          ),
+        children: [
+          {
+            path: '',
+            redirectTo: 'consulta',
+            pathMatch: 'full',
+          },
+          {
+            path: 'consulta',
+            loadComponent: () =>
+              import('./modulo/productos/consulta-producto/consulta-producto').then(
+                (m) => m.ConsultaProducto,
               ),
           },
         ],
@@ -270,9 +291,7 @@ export const routes: Routes = [
           {
             path: 'crear-marca',
             loadComponent: () =>
-              import('./modulo/marca/crear-marca/crear-marca').then(
-                (m) => m.CrearMarca,
-              ),
+              import('./modulo/marca/crear-marca/crear-marca').then((m) => m.CrearMarca),
           },
           {
             path: 'consulta-marcas',

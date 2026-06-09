@@ -24,13 +24,12 @@ interface Inventario {
 }
 
 @Component({
-  selector: 'app-consulta-producto',
-  standalone: true,
+  selector: 'app-gestion-productos',
   imports: [CommonModule, RouterLink, FormsModule],
-  templateUrl: './consulta-producto.html',
-  styleUrl: './consulta-producto.scss',
+  templateUrl: './gestion-productos.html',
+  styleUrl: './gestion-productos.scss',
 })
-export class ConsultaProducto implements OnInit {
+export class GestionProductos implements OnInit {
   productos: Producto[] = [];
   inventarios: Record<string, Inventario[]> = {};
   stockMap: Record<string, number> = {};
@@ -52,7 +51,7 @@ export class ConsultaProducto implements OnInit {
     private categoriasService: CategoriasService,
     private proveedoresService: ProveedoresService,
     private marcaService: MarcaService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
@@ -123,17 +122,17 @@ export class ConsultaProducto implements OnInit {
   cargarFiltros() {
     this.categoriasService.getCategorias().subscribe((data: any) => {
       this.categorias = data;
-    this.cdr.detectChanges();
+      this.cdr.detectChanges();
     });
 
     this.proveedoresService.getProveedores().subscribe((data: any) => {
       this.proveedores = data;
-    this.cdr.detectChanges();
+      this.cdr.detectChanges();
     });
 
     this.marcaService.getMarcas().subscribe((data: any) => {
       this.marcas = data;
-    this.cdr.detectChanges();
+      this.cdr.detectChanges();
     });
   }
 

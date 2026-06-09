@@ -137,6 +137,7 @@ model Pedidos {
 
   cliente Clientes? @relation(fields: [clienteID], references: [id])
   usuario Usuarios  @relation(fields: [usuarioCodigo], references: [codigo])
+  solicitudDescuento SolicitudDescuento[]
 }
 
 model PedidoDetalle {
@@ -147,11 +148,13 @@ model PedidoDetalle {
   cantidad       Int
   precioUnitario Decimal
   subtotal       Decimal
+  descuento      Decimal @default(0)
   pedido         Pedidos @relation(fields: [pedidoID], references: [id])
 
   producto Productos @relation(fields: [productoCodigo], references: [codigo])
 
   ubicacionRel Ubicaciones @relation(fields: [ubicacion], references: [ubicacion])
+  solicitudDescuento SolicitudDescuento[]
 }
 
 model Perfil {
@@ -194,6 +197,7 @@ model Productos {
   movimientos    MovimientosInventario[]
   devoluciones   Devoluciones[]
   pedidoDetalles PedidoDetalle[]
+  solicitudDescuento SolicitudDescuento[]
 }
 
 model Proveedores {
@@ -204,6 +208,31 @@ model Proveedores {
   CategoriaProveedores CategoriaProveedores[]
   productos            Productos[]
   Marca                Marca[]
+}
+
+model SolicitudDescuento {
+  id                   Int      @id @default(autoincrement())
+  solicitudID          String   @unique
+  pedidoDetalleId      Int
+  pedidoId             Int
+  productoCodigo       String
+  vendedorCodigo       Int
+  precioLista          Decimal
+  costoVenta           Decimal
+  porcentajeSolicitado Decimal
+  descuentoSolicitado  Decimal
+  precioFinal          Decimal
+  nivelAprobacion      String   // AUTO | SUPERVISOR_ADMIN | ADMIN
+  estado               String   @default("PENDIENTE") // PENDIENTE | APROBADO | RECHAZADO
+  motivo               String?
+  fecha                DateTime @default(now())
+  aprobadoPorCodigo    Int?
+
+  pedidoDetalle PedidoDetalle @relation(fields: [pedidoDetalleId], references: [id])
+  pedido        Pedidos       @relation(fields: [pedidoId], references: [id])
+  producto      Productos     @relation(fields: [productoCodigo], references: [codigo])
+  vendedor      Usuarios      @relation(fields: [vendedorCodigo], references: [codigo])
+  aprobadoPor   Usuarios?     @relation("Aprobaciones", fields: [aprobadoPorCodigo], references: [codigo])
 }
 
 model Ubicaciones {
@@ -228,6 +257,8 @@ model Usuarios {
   movimientos MovimientosInventario[]
   ventas      Ventas[]
   pedidos     Pedidos[]
+  solicitudDescuentoVendedor SolicitudDescuento[]
+  solicitudDescuentoAprobador SolicitudDescuento[] @relation("Aprobaciones")
 }
 
 model CategoriaProveedores {
