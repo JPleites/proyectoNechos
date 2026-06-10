@@ -17,6 +17,8 @@
             type="text"
             class="form-control erp-input rounded-3"
             placeholder="🔍 Buscar por nombre o ID..."
+            [value]="busquedaCliente"
+            (input)="busquedaCliente = $any($event.target).value"
           />
 
           <select class="form-select erp-input rounded-3" formControlName="clienteId">

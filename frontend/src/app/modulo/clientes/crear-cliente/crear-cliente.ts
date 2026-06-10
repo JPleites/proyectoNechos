@@ -1,29 +1,35 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'; // 👈 Importaciones clave
 import { ClientesService } from '../../services/clientes.service';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-crear-cliente',
-  imports: [FormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule], // 👈 Cambiamos FormsModule por ReactiveFormsModule
   templateUrl: './crear-cliente.html',
   styleUrl: './crear-cliente.scss',
 })
-export class CrearCliente {
-  cliente = {
-    rtn: '',
-    nombre: '',
-    correo: '',
-    telefono: '',
-    direccion: '',
-  };
+export class CrearCliente{
+  // Definimos el FormGroup
+  clienteForm: FormGroup;
 
-  constructor(private clientesService: ClientesService) {}
+  constructor(
+    private fb: FormBuilder, 
+    private clientesService: ClientesService
+  ) {
+    this.clienteForm = this.fb.group({
+      rtn: ['', [Validators.required], Validators.minLength(13), Validators.maxLength(14)],
+      nombre: ['', [Validators.required]],
+      correo: ['', [Validators.required, Validators.email]],
+      telefono: ['', [Validators.maxLength(8), Validators.pattern('^[0-9]*$'), Validators.minLength(8)]],
+      direccion: ['']
+    });
+  }
 
   guardar() {
-    if (!this.cliente.rtn || !this.cliente.nombre || !this.cliente.correo) {
-      Swal.fire('Error', 'Completa los campos obligatorios', 'warning');
+    if (this.clienteForm.invalid) {
+      Swal.fire('Error', 'Completa los campos obligatorios correctamente', 'warning');
       return;
     }
 
@@ -33,15 +39,16 @@ export class CrearCliente {
       didOpen: () => Swal.showLoading()
     });
 
-    this.clientesService.crearCliente(this.cliente).subscribe({
+    this.clientesService.crearCliente(this.clienteForm.value).subscribe({
       next: () => {
         Swal.fire({
           icon: 'success',
           title: 'Cliente creado',
           timer: 1500,
           showConfirmButton: false
+        }).then(() => {
+          this.limpiarFormulario();
         });
-        this.cliente = { rtn: '', nombre: '', correo: '', telefono: '', direccion: '' };
       },
       error: () => {
         Swal.fire('Error', 'Ocurrió un error al crear el cliente', 'error');
@@ -49,4 +56,7 @@ export class CrearCliente {
     });
   }
 
+  limpiarFormulario() {
+    this.clienteForm.reset();
+  }
 }

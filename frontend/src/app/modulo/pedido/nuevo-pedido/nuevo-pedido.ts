@@ -50,24 +50,29 @@ export class NuevoPedidoComponent implements OnInit {
 
   cargarProductos() {
     this.productosService.getProductos().subscribe({
-      next: (data: any) => (this.productos = data),
+      next: (data: any) => {
+        this.productos = data;
+        this.cdr.detectChanges();
+      },
     });
-    this.cdr.detectChanges();
   }
 
   cargarClientes() {
     this.clientesService.getClientes().subscribe({
-      next: (data: any) => (this.clientes = data),
+      next: (data: any) => {
+        this.clientes = data;
+        this.cdr.detectChanges();
+      },
     });
-    this.cdr.detectChanges();
   }
 
   get clientesFiltrados() {
-    if (!this.busquedaCliente) return this.clientes;
+    if (!this.busquedaCliente) {
+      return this.clientes;
+    }
     const q = this.busquedaCliente.toLowerCase();
     return this.clientes.filter(
       (c) => c.nombre.toLowerCase().includes(q) || String(c.id).includes(q),
-      this.cdr.detectChanges(),
     );
   }
 
@@ -116,7 +121,6 @@ export class NuevoPedidoComponent implements OnInit {
       .getUbicaciones(productoCodigo, almacenId, cantidad)
       .subscribe((data: any) => {
         if (data && data.length > 0) {
-
           this.ubicaciones = data;
 
           console.log('Ubicaciones obtenidas:', data);
@@ -138,10 +142,10 @@ export class NuevoPedidoComponent implements OnInit {
 
     const producto = this.productos.find((p) => p.codigo === productoCodigo);
 
-    if (!producto || !this.productoEncontrado || !this.form.value.ubicacion){
+    if (!producto || !this.productoEncontrado || !this.form.value.ubicacion) {
       Swal.fire('Error', 'Selecciona un producto, ubicación y cantidad válidos', 'warning');
       return;
-    };
+    }
 
     const subtotal = cantidad * producto.precio;
 

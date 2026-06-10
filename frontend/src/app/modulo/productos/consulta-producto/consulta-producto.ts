@@ -52,7 +52,7 @@ export class ConsultaProducto implements OnInit {
     private categoriasService: CategoriasService,
     private proveedoresService: ProveedoresService,
     private marcaService: MarcaService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
@@ -70,22 +70,6 @@ export class ConsultaProducto implements OnInit {
       error: (err: any) => console.error(err),
     });
   }
-
-  // 🔥 BUSQUEDA OPTIMIZADA
-  // buscar() {
-  //   if (!this.busqueda) {
-  //     this.cargarProductos();
-  //     return;
-  //   }
-
-  //   this.productosService.buscarProductos(this.busqueda).subscribe({
-  //     next: (data: Producto[]) => {
-  //       this.productos = data ?? [];
-  //       this.stockMap = {}; // reset limpio
-  //     },
-  //     error: (err: any) => console.error(err),
-  //   });
-  // }
 
   // 🔥 INVENTARIO POR PRODUCTO
   verInventario(codigo: string) {
@@ -123,26 +107,31 @@ export class ConsultaProducto implements OnInit {
   cargarFiltros() {
     this.categoriasService.getCategorias().subscribe((data: any) => {
       this.categorias = data;
-    this.cdr.detectChanges();
+      this.cdr.detectChanges();
     });
 
     this.proveedoresService.getProveedores().subscribe((data: any) => {
       this.proveedores = data;
-    this.cdr.detectChanges();
+      this.cdr.detectChanges();
     });
 
     this.marcaService.getMarcas().subscribe((data: any) => {
       this.marcas = data;
-    this.cdr.detectChanges();
+      this.cdr.detectChanges();
     });
   }
 
   aplicarFiltros() {
+    this.productos = [];
+    this.inventarioVisible = null;
+    this.stockMap = {};
+    this.cdr.detectChanges();
     this.productosService.filtrosProductos(this.filtros).subscribe({
       next: (data: any) => {
         this.productos = data ?? [];
         this.stockMap = {};
         console.log('Productos filtrados:', this.productos);
+        this.cdr.detectChanges();
       },
       error: (err) => console.error(err),
     });

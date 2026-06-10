@@ -1,16 +1,13 @@
-<div class="container-fluid vh-100 d-flex flex-column p-3 bg-light page-wrapper">
-
+<div class="container-fluid h-100 d-flex flex-column p-3 bg-light page-wrapper">
   <header class="modulo-header mb-3 flex-shrink-0">
     <h4 class="mb-1 fw-semibold text-dark">Nuevo cliente</h4>
     <small class="text-muted">Registro de clientes del sistema</small>
   </header>
 
   <div class="modulo-contenido panel-scroll flex-grow-1 w-100">
-    <article
-      class="card border-0 shadow-sm rounded-4 overflow-hidden mx-auto bg-white p-2"
-      style="max-width: 850px;"
-    >
-      <form class="card-body p-4">
+    <article class="card border-0 shadow-sm rounded-4 overflow-hidden mx-auto bg-white p-2" style="max-width: 850px">
+      
+      <form [formGroup]="clienteForm" class="card-body p-4">
         <div class="d-grid gap-4">
           <section class="erp-panel">
             <h6 class="erp-section-title fw-semibold text-secondary small text-uppercase letter-spacing mb-3">
@@ -20,29 +17,45 @@
             <div class="row g-3">
               <div class="col-md-4">
                 <label class="form-label erp-label small text-muted fw-medium"> RTN * </label>
-                <input [(ngModel)]="cliente.rtn" name="rtn" class="form-control rounded-3 erp-input" placeholder="Ej. 08011999123456" />
+                <input
+                  formControlName="rtn"
+                  class="form-control rounded-3 erp-input"
+                  placeholder="Ej. 08011999123456"
+                />
               </div>
 
               <div class="col-md-8">
                 <label class="form-label erp-label small text-muted fw-medium"> Nombre * </label>
-                <input [(ngModel)]="cliente.nombre" name="nombre" class="form-control rounded-3 erp-input" placeholder="Nombre completo o razón social" />
+                <input
+                  formControlName="nombre"
+                  class="form-control rounded-3 erp-input"
+                  placeholder="Nombre completo o razón social"
+                />
               </div>
 
               <div class="col-md-6">
                 <label class="form-label erp-label small text-muted fw-medium"> Correo * </label>
-                <input [(ngModel)]="cliente.correo" name="correo" class="form-control rounded-3 erp-input" type="email" placeholder="ejemplo@correo.com" />
+                <input
+                  formControlName="correo"
+                  class="form-control rounded-3 erp-input"
+                  type="email"
+                  placeholder="ejemplo@correo.com"
+                />
               </div>
 
               <div class="col-md-6">
                 <label class="form-label erp-label small text-muted fw-medium"> Teléfono </label>
-                <input [(ngModel)]="cliente.telefono" name="telefono" class="form-control rounded-3 erp-input" placeholder="+504 9999-9999" />
+                <input
+                  formControlName="telefono"
+                  class="form-control rounded-3 erp-input"
+                  placeholder="+504 9999-9999"
+                />
               </div>
 
               <div class="col-12">
                 <label class="form-label erp-label small text-muted fw-medium"> Dirección </label>
                 <textarea
-                  [(ngModel)]="cliente.direccion"
-                  name="direccion"
+                  formControlName="direccion"
                   rows="3"
                   class="form-control rounded-3 erp-input"
                   placeholder="Dirección exacta de facturación..."
@@ -52,9 +65,19 @@
           </section>
 
           <footer class="d-flex justify-content-end gap-2 pt-2 border-top">
-            <button type="button" class="btn btn-light border rounded-3 px-4 fw-medium btn-cancelar-erp">Cancelar</button>
+            <button
+              type="button"
+              class="btn btn-light border rounded-3 px-4 fw-medium btn-cancelar-erp"
+              (click)="limpiarFormulario()"
+            >
+              Cancelar
+            </button>
 
-            <button type="button" class="btn btn-primary rounded-3 px-4 fw-medium btn-guardar-erp" (click)="guardar()">
+            <button
+              type="button"
+              class="btn btn-primary rounded-3 px-4 fw-medium btn-guardar-erp"
+              (click)="guardar()"
+            >
               <i class="fas fa-user-plus me-2 small"></i>
               Guardar cliente
             </button>
@@ -63,5 +86,4 @@
       </form>
     </article>
   </div>
-
 </div>
