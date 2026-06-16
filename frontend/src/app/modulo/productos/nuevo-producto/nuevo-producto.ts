@@ -34,6 +34,8 @@ export class NuevoProducto implements OnInit {
   ) {
     this.form = this.fb.group({
       codigo: ['', Validators.required],
+      codigoProveedor: ['', Validators.required],
+      codigoProducto: ['', Validators.required],
       producto: ['', Validators.required],
       costoCompra: [0, Validators.required],
       costoVenta: [0, Validators.required],

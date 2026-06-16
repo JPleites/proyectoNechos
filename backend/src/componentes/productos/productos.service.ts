@@ -109,6 +109,8 @@ export class ProductosService {
     return this.prisma.productos.create({
       data: {
         codigo: data.codigo,
+        codigoProveedor: data.codigoProveedor,
+        codigoProducto: data.codigoProducto,
         producto: data.producto,
         costoCompra: data.costoCompra,
         costoVenta: data.costoVenta,
@@ -158,6 +160,8 @@ export class ProductosService {
       where: {
         OR: [
           { codigo: { contains: q, mode: 'insensitive' } },
+          { codigoProveedor: { contains: q, mode: 'insensitive' } },
+          { codigoProducto: { contains: q, mode: 'insensitive' } },
           { producto: { contains: q, mode: 'insensitive' } },
           { descripcion: { contains: q, mode: 'insensitive' } },
 
@@ -231,6 +235,8 @@ export class ProductosService {
             ? {
                 OR: [
                   { codigo: { contains: q, mode: 'insensitive' } },
+                  { codigoProveedor: { contains: q, mode: 'insensitive' } },
+                  { codigoProducto: { contains: q, mode: 'insensitive' } },
                   { producto: { contains: q, mode: 'insensitive' } },
                   { descripcion: { contains: q, mode: 'insensitive' } },
 
