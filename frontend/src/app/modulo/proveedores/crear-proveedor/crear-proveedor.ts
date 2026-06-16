@@ -1,25 +1,32 @@
 import { Component } from '@angular/core';
-import { ProveedoresService } from '../../services/proveedores.service';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ProveedoresService } from '../../services/proveedores.service';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-crear-proveedor',
-  imports: [FormsModule, CommonModule],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './crear-proveedor.html',
   styleUrl: './crear-proveedor.scss',
 })
 export class CrearProveedor {
-  proveedor = {
-    rtn: '',
-    proveedor: '',
-  };
 
-  constructor(private service: ProveedoresService) {}
+  form: FormGroup;
+
+  constructor(
+    private fb: FormBuilder,
+    private service: ProveedoresService
+  ) {
+    this.form = this.fb.group({
+      rtn: ['', Validators.required],
+      proveedor: ['', Validators.required],
+    });
+  }
 
   guardar() {
-    if (!this.proveedor.rtn || !this.proveedor.proveedor) {
+    if (this.form.invalid) {
       Swal.fire('Error', 'Completa todos los campos', 'warning');
       return;
     }
@@ -30,7 +37,7 @@ export class CrearProveedor {
       didOpen: () => Swal.showLoading(),
     });
 
-    this.service.crearProveedor(this.proveedor).subscribe({
+    this.service.crearProveedor(this.form.value).subscribe({
       next: () => {
         Swal.fire({
           icon: 'success',
@@ -39,9 +46,8 @@ export class CrearProveedor {
           showConfirmButton: false,
         });
 
-        this.proveedor = { rtn: '', proveedor: '' };
+        this.form.reset();
       },
-
       error: (err) => {
         Swal.fire('Error', err.error?.message || 'Error al crear', 'error');
       },

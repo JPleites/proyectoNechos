@@ -1,35 +1,43 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UbicacionesService } from '../../services/ubicaciones.service';
 import { AlmacenesService } from '../../services/almacenes.service';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-crear-ubicacion',
-  imports: [FormsModule, CommonModule],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './crear-ubicacion.html',
   styleUrl: './crear-ubicacion.scss',
 })
 export class CrearUbicacion implements OnInit {
-  ubicacion = {
-    ubicacion: '',
-    estante: '',
-    nivel: '',
-    almacenId: '',
-    deposito: '',
-  };
 
+  form!: FormGroup;
   almacenes: any[] = [];
 
   constructor(
+    private fb: FormBuilder,
     private ubicacionesService: UbicacionesService,
     private almacenesService: AlmacenesService,
-    private cdr: ChangeDetectorRef,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
+    this.initForm();
     this.cargarAlmacenes();
+  }
+
+  // 🔥 FORM REACTIVE
+  initForm() {
+    this.form = this.fb.group({
+      almacenId: ['', Validators.required],
+      estante: ['', [Validators.required, Validators.min(0)]],
+      nivel: ['', [Validators.required, Validators.min(0)]],
+      deposito: ['', [Validators.required, Validators.min(0)]],
+    });
   }
 
   cargarAlmacenes() {
@@ -40,13 +48,12 @@ export class CrearUbicacion implements OnInit {
   }
 
   guardar() {
-    if (!this.ubicacion.estante || !this.ubicacion.nivel || !this.ubicacion.almacenId) {
+    if (this.form.invalid) {
       Swal.fire('Error', 'Completa todos los campos', 'warning');
       return;
     }
-    const data = {
-      ...this.ubicacion,
-    };
+
+    const data = this.form.value;
 
     Swal.fire({
       title: 'Guardando...',
@@ -63,18 +70,15 @@ export class CrearUbicacion implements OnInit {
           showConfirmButton: false,
         });
 
-        this.ubicacion = {
-          ubicacion: '',
-          estante: '',
-          nivel: '',
-          almacenId: '',
-          deposito: '',
-        };
+        this.form.reset();
       },
-
       error: (err) => {
         Swal.fire('Error', err.error?.message || 'Error al crear', 'error');
       },
     });
+  }
+
+  get f() {
+    return this.form.controls;
   }
 }

@@ -72,6 +72,7 @@ export class NuevoProducto implements OnInit {
       };
 
       // 3. crear producto
+      console.log('URL IMAGEN:', imagenUrl);
       this.productosService.createProducto(data).subscribe({
         next: () => {
           Swal.fire({

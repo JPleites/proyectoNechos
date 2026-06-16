@@ -24,7 +24,7 @@
         </div>
       </header>
 
-      <form class="card-body p-4" (ngSubmit)="$event.preventDefault(); guardar()">
+      <form class="card-body p-4" [formGroup]="form" (ngSubmit)="guardar()">
         <div class="d-grid gap-3.5">
           <section class="erp-panel border shadow-sm">
             <label class="form-label"
@@ -34,12 +34,7 @@
               <span class="input-group-text bg-light text-muted">
                 <i class="fas fa-warehouse"></i>
               </span>
-              <select
-                class="form-select"
-                [(ngModel)]="ubicacion.almacenId"
-                name="almacenId"
-                required
-              >
+              <select class="form-select" formControlName="almacenId">
                 <option value="">Seleccione almacén</option>
                 <option *ngFor="let a of almacenes" [value]="a.id">
                   {{ a.almacen }}
@@ -57,8 +52,7 @@
               <div class="col-md-4">
                 <label class="form-label">Estante / Pasillo</label>
                 <input
-                  [(ngModel)]="ubicacion.estante"
-                  name="estante"
+                  formControlName="estante"
                   class="form-control text-center fw-semibold text-secondary"
                   type="number"
                 />
@@ -67,18 +61,16 @@
               <div class="col-md-4">
                 <label class="form-label">Nivel / Altura</label>
                 <input
-                  [(ngModel)]="ubicacion.nivel"
-                  name="nivel"
+                  formControlName="nivel"
                   class="form-control text-center fw-semibold text-secondary"
-                type="number"
+                  type="number"
                 />
               </div>
 
               <div class="col-md-4">
                 <label class="form-label">Depósito / Caja</label>
                 <input
-                  [(ngModel)]="ubicacion.deposito"
-                  name="deposito"
+                  formControlName="deposito"
                   class="form-control text-center fw-semibold text-secondary"
                   type="number"
                 />
@@ -96,10 +88,10 @@
             >
               <i class="fas fa-terminal me-3 text-success opacity-50 small"></i>
               <span class="code-text font-numeric">
-                A{{ ubicacion.almacenId || '?' }} E{{ ubicacion.estante || '?' }} N{{
-                  ubicacion.nivel || '?'
-                }}
-                D{{ ubicacion.deposito || '?' }}
+                A{{ form.value.almacenId || '?' }}
+                E{{ form.value.estante || '?' }}
+                N{{ form.value.nivel || '?' }}
+                D{{ form.value.deposito || '?' }}
               </span>
             </div>
             <small class="text-muted x-small d-block mt-2 text-center"

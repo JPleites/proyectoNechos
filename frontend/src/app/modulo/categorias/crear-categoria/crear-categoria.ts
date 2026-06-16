@@ -37,7 +37,6 @@ export class CrearCategoria {
           timer: 1500,
           showConfirmButton: false,
         });
-
         this.categoria = { nombre: '' };
       },
 

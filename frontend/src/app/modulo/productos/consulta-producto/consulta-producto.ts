@@ -12,6 +12,7 @@ interface Producto {
   codigo: string;
   producto: string;
   precio: number;
+  imagenUrl?: string;
   marcaRel?: any;
   categoriaRel?: any;
   proveedorRel?: any;
@@ -31,20 +32,27 @@ interface Inventario {
   styleUrl: './consulta-producto.scss',
 })
 export class ConsultaProducto implements OnInit {
+
   productos: Producto[] = [];
+
   inventarios: Record<string, Inventario[]> = {};
   stockMap: Record<string, number> = {};
+
   inventarioVisible: string | null = null;
-  busqueda: string = '';
+
   filtros = {
     q: '',
     categoriaId: '',
     proveedorId: '',
     marcaId: '',
   };
+
   categorias: any[] = [];
   proveedores: any[] = [];
   marcas: any[] = [];
+
+  selectedProduct: Producto | null = null;
+  inventarioModal: Inventario[] = [];
 
   constructor(
     private productosService: ProductosService,
@@ -56,10 +64,13 @@ export class ConsultaProducto implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.cargarProductos();
     this.cargarFiltros();
   }
 
-  // 🔥 CARGA PRODUCTOS
+  // =========================
+  // PRODUCTOS
+  // =========================
   cargarProductos() {
     this.productosService.getProductos().subscribe({
       next: (data: Producto[]) => {
@@ -67,11 +78,34 @@ export class ConsultaProducto implements OnInit {
         this.stockMap = {};
         this.cdr.detectChanges();
       },
-      error: (err: any) => console.error(err),
+      error: (err) => console.error(err),
     });
   }
 
-  // 🔥 INVENTARIO POR PRODUCTO
+  // =========================
+  // MODAL DETALLE
+  // =========================
+  verDetalle(producto: Producto) {
+    this.selectedProduct = producto;
+    this.inventarioModal = [];
+
+    this.inventarioService.getInventarioPorProducto(producto.codigo).subscribe({
+      next: (res: any) => {
+        this.inventarioModal = Array.isArray(res) ? res : (res?.inventario ?? []);
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error(err),
+    });
+  }
+
+  cerrarModal() {
+    this.selectedProduct = null;
+    this.inventarioModal = [];
+  }
+
+  // =========================
+  // STOCK (opcional si lo sigues usando en otro lado)
+  // =========================
   verInventario(codigo: string) {
     if (this.inventarioVisible === codigo) {
       this.inventarioVisible = null;
@@ -87,7 +121,8 @@ export class ConsultaProducto implements OnInit {
 
     this.inventarioService.getInventarioPorProducto(codigo).subscribe({
       next: (res: any) => {
-        const inventario: Inventario[] = Array.isArray(res) ? res : (res?.inventario ?? []);
+        const inventario: Inventario[] =
+          Array.isArray(res) ? res : (res?.inventario ?? []);
 
         this.inventarios[codigo] = inventario;
         this.inventarioVisible = codigo;
@@ -99,11 +134,13 @@ export class ConsultaProducto implements OnInit {
     });
   }
 
-  // 🔥 CALCULAR TODOS LOS STOCKS
   private calcularStock(inventario: Inventario[]): number {
     return inventario.reduce((total, item) => total + (item.cantidad || 0), 0);
   }
 
+  // =========================
+  // FILTROS
+  // =========================
   cargarFiltros() {
     this.categoriasService.getCategorias().subscribe((data: any) => {
       this.categorias = data;
@@ -125,12 +162,10 @@ export class ConsultaProducto implements OnInit {
     this.productos = [];
     this.inventarioVisible = null;
     this.stockMap = {};
-    this.cdr.detectChanges();
+
     this.productosService.filtrosProductos(this.filtros).subscribe({
       next: (data: any) => {
         this.productos = data ?? [];
-        this.stockMap = {};
-        console.log('Productos filtrados:', this.productos);
         this.cdr.detectChanges();
       },
       error: (err) => console.error(err),

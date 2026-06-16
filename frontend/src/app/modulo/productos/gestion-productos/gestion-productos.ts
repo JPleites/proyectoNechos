@@ -12,10 +12,14 @@ interface Producto {
   codigo: string;
   producto: string;
   precio: number;
+  imagenUrl?: string;
   marcaRel?: any;
   categoriaRel?: any;
   proveedorRel?: any;
   descripcion?: string;
+  costoCompra?: number;
+  costoVenta?: number;
+  productoID?: number;
 }
 
 interface Inventario {
@@ -30,20 +34,27 @@ interface Inventario {
   styleUrl: './gestion-productos.scss',
 })
 export class GestionProductos implements OnInit {
+
   productos: Producto[] = [];
+
   inventarios: Record<string, Inventario[]> = {};
   stockMap: Record<string, number> = {};
+
   inventarioVisible: string | null = null;
-  busqueda: string = '';
+
   filtros = {
     q: '',
     categoriaId: '',
     proveedorId: '',
     marcaId: '',
   };
+
   categorias: any[] = [];
   proveedores: any[] = [];
   marcas: any[] = [];
+
+  selectedProduct: Producto | null = null;
+  inventarioModal: Inventario[] = [];
 
   constructor(
     private productosService: ProductosService,
@@ -58,7 +69,9 @@ export class GestionProductos implements OnInit {
     this.cargarFiltros();
   }
 
-  // 🔥 CARGA PRODUCTOS
+  // =========================
+  // PRODUCTOS
+  // =========================
   cargarProductos() {
     this.productosService.getProductos().subscribe({
       next: (data: Producto[]) => {
@@ -66,27 +79,34 @@ export class GestionProductos implements OnInit {
         this.stockMap = {};
         this.cdr.detectChanges();
       },
-      error: (err: any) => console.error(err),
+      error: (err) => console.error(err),
     });
   }
 
-  // 🔥 BUSQUEDA OPTIMIZADA
-  // buscar() {
-  //   if (!this.busqueda) {
-  //     this.cargarProductos();
-  //     return;
-  //   }
+  // =========================
+  // MODAL DETALLE
+  // =========================
+  verDetalle(producto: Producto) {
+    this.selectedProduct = producto;
+    this.inventarioModal = [];
 
-  //   this.productosService.buscarProductos(this.busqueda).subscribe({
-  //     next: (data: Producto[]) => {
-  //       this.productos = data ?? [];
-  //       this.stockMap = {}; // reset limpio
-  //     },
-  //     error: (err: any) => console.error(err),
-  //   });
-  // }
+    this.inventarioService.getInventarioPorProducto(producto.codigo).subscribe({
+      next: (res: any) => {
+        this.inventarioModal = Array.isArray(res) ? res : (res?.inventario ?? []);
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error(err),
+    });
+  }
 
-  // 🔥 INVENTARIO POR PRODUCTO
+  cerrarModal() {
+    this.selectedProduct = null;
+    this.inventarioModal = [];
+  }
+
+  // =========================
+  // STOCK (opcional si lo sigues usando en otro lado)
+  // =========================
   verInventario(codigo: string) {
     if (this.inventarioVisible === codigo) {
       this.inventarioVisible = null;
@@ -102,7 +122,8 @@ export class GestionProductos implements OnInit {
 
     this.inventarioService.getInventarioPorProducto(codigo).subscribe({
       next: (res: any) => {
-        const inventario: Inventario[] = Array.isArray(res) ? res : (res?.inventario ?? []);
+        const inventario: Inventario[] =
+          Array.isArray(res) ? res : (res?.inventario ?? []);
 
         this.inventarios[codigo] = inventario;
         this.inventarioVisible = codigo;
@@ -114,11 +135,13 @@ export class GestionProductos implements OnInit {
     });
   }
 
-  // 🔥 CALCULAR TODOS LOS STOCKS
   private calcularStock(inventario: Inventario[]): number {
     return inventario.reduce((total, item) => total + (item.cantidad || 0), 0);
   }
 
+  // =========================
+  // FILTROS
+  // =========================
   cargarFiltros() {
     this.categoriasService.getCategorias().subscribe((data: any) => {
       this.categorias = data;
@@ -137,11 +160,14 @@ export class GestionProductos implements OnInit {
   }
 
   aplicarFiltros() {
+    this.productos = [];
+    this.inventarioVisible = null;
+    this.stockMap = {};
+
     this.productosService.filtrosProductos(this.filtros).subscribe({
       next: (data: any) => {
         this.productos = data ?? [];
-        this.stockMap = {};
-        console.log('Productos filtrados:', this.productos);
+        this.cdr.detectChanges();
       },
       error: (err) => console.error(err),
     });
