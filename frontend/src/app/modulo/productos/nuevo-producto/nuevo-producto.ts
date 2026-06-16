@@ -22,6 +22,7 @@ export class NuevoProducto implements OnInit {
   proveedores: any[] = [];
   proveedoresFiltrados: any[] = [];
   marcasFiltradas: any[] = [];
+  guardando: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -54,10 +55,16 @@ export class NuevoProducto implements OnInit {
   }
 
   async guardar() {
+    if (this.guardando) {
+      return;
+    }
+
     if (this.form.invalid) {
       Swal.fire('Error', 'Completa los campos obligatorios', 'warning');
       return;
     }
+
+    this.guardando = true;
 
     try {
       let imagenUrl = '';
@@ -89,15 +96,18 @@ export class NuevoProducto implements OnInit {
           this.form.reset();
           this.imagePreview = null;
           this.selectedFile = null;
+          this.guardando = false;
           this.cdr.detectChanges();
         },
         error: (err) => {
           console.error(err);
+          this.guardando = false;
           Swal.fire('Error', 'No se pudo crear el producto', 'error');
         },
       });
     } catch (error) {
       console.error(error);
+      this.guardando = false;
       Swal.fire('Error', 'Error al subir la imagen', 'error');
     }
   }
