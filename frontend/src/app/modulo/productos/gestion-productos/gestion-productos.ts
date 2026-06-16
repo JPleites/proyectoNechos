@@ -20,6 +20,8 @@ interface Producto {
   costoCompra?: number;
   costoVenta?: number;
   productoID?: number;
+  codigoProveedor?: string;
+  codigoProducto?: string;
 }
 
 interface Inventario {

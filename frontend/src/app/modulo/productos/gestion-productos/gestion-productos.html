@@ -136,33 +136,90 @@
       <div class="modal-body">
         <div class="row">
           <!-- IMAGEN -->
-          <div class="col-md-4 text-center">
-            <img
-              [src]="selectedProduct.imagenUrl || 'https://via.placeholder.com/300'"
-              class="img-fluid rounded shadow-sm"
-            />
+          <div class="col-md-4">
+            <div class="product-image-wrapper">
+              <img
+                [src]="selectedProduct.imagenUrl || 'https://via.placeholder.com/300'"
+                class="product-image"
+              />
+            </div>
           </div>
 
           <!-- INFO -->
           <div class="col-md-8">
-            <p><strong>Codigo Interno</strong> {{ selectedProduct.productoID }}</p>
-            <p><strong>Código:</strong> {{ selectedProduct.codigo }}</p>
-            <p><strong>Costo Compra:</strong> L {{ selectedProduct.costoCompra }}</p>
-            <p><strong>Costo Venta:</strong> L {{ selectedProduct.costoVenta }}</p>
-            <p><strong>Precio:</strong> L {{ selectedProduct.precio }}</p>
-            <p><strong>Proveedor:</strong> {{ selectedProduct.proveedorRel?.proveedor }}</p>
-            <p><strong>Categoría:</strong> {{ selectedProduct.categoriaRel?.nombre }}</p>
-            <p><strong>Marca:</strong> {{ selectedProduct.marcaRel?.nombre }}</p>
-            <p><strong>Descripción:</strong> {{ selectedProduct.descripcion }}</p>
+            <div class="product-info">
+              <div class="info-card">
+                <span class="info-label">Código interno</span>
+                <div class="info-value">{{ selectedProduct.productoID }}</div>
+              </div>
+
+              <div class="info-card">
+                <span class="info-label">Código</span>
+                <div class="info-value">{{ selectedProduct.codigo }}</div>
+              </div>
+
+              <div class="info-card">
+                <span class="info-label">Código proveedor</span>
+                <div class="info-value">{{ selectedProduct.codigoProveedor }}</div>
+              </div>
+
+              <div class="info-card">
+                <span class="info-label">Código producto</span>
+                <div class="info-value">{{ selectedProduct.codigoProducto }}</div>
+              </div>
+
+              <div class="info-card">
+                <span class="info-label">Costo compra</span>
+                <div class="info-value">L {{ selectedProduct.costoCompra | number: '1.2-2' }}</div>
+              </div>
+
+              <div class="info-card">
+                <span class="info-label">Costo venta</span>
+                <div class="info-value">L {{ selectedProduct.costoVenta | number: '1.2-2' }}</div>
+              </div>
+
+              <div class="info-card">
+                <span class="info-label">Precio de Venta</span>
+                <div class="info-value">L {{ selectedProduct.precio | number: '1.2-2' }}</div>
+              </div>
+
+              <div class="info-card">
+                <span class="info-label">Proveedor</span>
+                <div class="info-value">
+                  {{ selectedProduct.proveedorRel?.proveedor }}
+                </div>
+              </div>
+
+              <div class="info-card">
+                <span class="info-label">Categoría</span>
+                <div class="info-value">
+                  {{ selectedProduct.categoriaRel?.nombre }}
+                </div>
+              </div>
+
+              <div class="info-card">
+                <span class="info-label">Marca</span>
+                <div class="info-value">
+                  {{ selectedProduct.marcaRel?.nombre }}
+                </div>
+              </div>
+
+              <div class="info-card descripcion-card">
+                <span class="info-label">Descripción</span>
+                <div class="info-value">
+                  {{ selectedProduct.descripcion || 'Sin descripción' }}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
         <hr />
 
         <!-- INVENTARIO -->
-        <h6>Inventario</h6>
+        <h6 class="inventory-title">Inventario por ubicación</h6>
 
-        <table class="table table-sm">
+        <table class="table inventory-table">
           <thead>
             <tr>
               <th>Ubicación</th>
@@ -173,7 +230,11 @@
           <tbody>
             <tr *ngFor="let inv of inventarioModal">
               <td>{{ inv.ubicacion }}</td>
-              <td class="text-end">{{ inv.cantidad }}</td>
+              <td class="text-end">
+                <span class="inventory-badge">
+                  {{ inv.cantidad }}
+                </span>
+              </td>
             </tr>
 
             <tr *ngIf="!inventarioModal">

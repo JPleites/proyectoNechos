@@ -1,0 +1,126 @@
+/* ==========================
+   MODAL PRODUCTO
+   ========================== */
+
+.modal-content {
+  border: none;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+}
+
+.modal-header {
+  background: #fff;
+  border-bottom: 1px solid #eef1f4;
+  padding: 1.25rem 1.5rem;
+}
+
+.modal-title {
+  font-weight: 600;
+  color: #212529;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+/* ==========================
+   IMAGEN
+   ========================== */
+
+.product-image-wrapper {
+  background: #f8f9fa;
+  border: 1px solid #edf0f2;
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+.product-image {
+  width: 100%;
+  max-height: 320px;
+  object-fit: contain;
+  border-radius: 0.75rem;
+}
+
+/* ==========================
+   INFORMACIÓN
+   ========================== */
+
+.product-info {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.info-card {
+  background: #f8f9fa;
+  border: 1px solid #edf0f2;
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+}
+
+.info-label {
+  display: block;
+  font-size: 0.75rem;
+  color: #6c757d;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.info-value {
+  font-weight: 600;
+  color: #212529;
+}
+
+.descripcion-card {
+  grid-column: 1 / -1;
+}
+
+/* ==========================
+   INVENTARIO
+   ========================== */
+
+.inventory-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: #6c757d;
+  margin-bottom: 1rem;
+}
+
+.inventory-table {
+  margin-bottom: 0;
+}
+
+.inventory-table thead th {
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: #6c757d;
+  background: #f8f9fa;
+  border-bottom: 1px solid #eef1f4;
+}
+
+.inventory-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.inventory-badge {
+  background: #eaf7ee;
+  color: #146c43;
+  padding: .35rem .75rem;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+/* ==========================
+   RESPONSIVE
+   ========================== */
+
+@media (max-width: 768px) {
+  .product-info {
+    grid-template-columns: 1fr;
+  }
+}
