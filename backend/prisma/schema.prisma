@@ -152,7 +152,7 @@ model Perfil {
   telefono           String
   cargo              String
   departamento       String
-  dir_departamento   String
+  dir_departamento   String? @default("")
   dir_municipio      String?
   dir_barrio         String?
   direccion          String
