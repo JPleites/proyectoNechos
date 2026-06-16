@@ -262,10 +262,9 @@ export class InventarioService {
     });
 
     return ubicaciones.filter((u) => {
-      // Sin inventario → disponible
-      if (u.inventario.length === 0) return true;
-      // Con inventario del mismo producto → también disponible (suma stock)
-      return u.inventario.some((inv) => inv.productoCodigo === productoCodigo);
+      if (!u.inventario) return true;
+
+      return u.inventario.productoCodigo === productoCodigo;
     });
   }
 

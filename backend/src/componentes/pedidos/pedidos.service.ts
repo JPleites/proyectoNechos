@@ -52,9 +52,9 @@ export class PedidosService {
           usuario: {
             connect: { codigo: usuarioCodigo },
           },
-          cliente: pedidoData.clienteId
-            ? { connect: { id: Number(pedidoData.clienteId) } }
-            : undefined,
+          cliente: {
+            connect: { id: Number(pedidoData.clienteId) },
+          },
         },
       });
 
