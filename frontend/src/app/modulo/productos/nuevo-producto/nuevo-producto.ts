@@ -51,45 +51,79 @@ export class NuevoProducto implements OnInit {
     this.cargarProveedores();
   }
 
-  guardar() {
+  async guardar() {
     if (this.form.invalid) {
       Swal.fire('Error', 'Completa los campos obligatorios', 'warning');
       return;
     }
 
-    this.productosService.createProducto(this.form.value).subscribe({
-      next: () => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Producto creado',
-          timer: 1500,
-          showConfirmButton: false,
-        }).then(() => {
-          this.router.navigate(['/productos/consulta']);
-        });
-      },
-      error: (err) => {
-        console.error(err);
-        Swal.fire('Error', 'No se pudo crear el producto', 'error');
-      },
+    try {
+      let imagenUrl = '';
+
+      // 1. subir imagen si existe
+      if (this.selectedFile) {
+        imagenUrl = await this.subirImagen();
+      }
+
+      // 2. construir payload final
+      const data = {
+        ...this.form.value,
+        imagenUrl,
+      };
+
+      // 3. crear producto
+      this.productosService.createProducto(data).subscribe({
+        next: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Producto creado',
+            timer: 1500,
+            showConfirmButton: false,
+          }).then(() => {
+            this.router.navigate(['/productos/consulta']);
+          });
+
+          this.form.reset();
+          this.imagePreview = null;
+          this.selectedFile = null;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error(err);
+          Swal.fire('Error', 'No se pudo crear el producto', 'error');
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      Swal.fire('Error', 'Error al subir la imagen', 'error');
+    }
+  }
+
+  async subirImagen(): Promise<string> {
+    const formData = new FormData();
+    formData.append('file', this.selectedFile as File);
+
+    return new Promise((resolve, reject) => {
+      this.productosService.uploadImage(formData).subscribe({
+        next: (res: any) => resolve(res.url),
+        error: (err) => reject(err),
+      });
     });
   }
 
   onImageSelected(event: any) {
     const file = event.target.files[0];
-
     if (!file) return;
 
     this.selectedFile = file;
 
     const reader = new FileReader();
-
     reader.onload = () => {
       this.imagePreview = reader.result;
+      this.cdr.detectChanges();
     };
 
     reader.readAsDataURL(file);
-    this.cdr.detectChanges();
   }
 
   cargarCategorias() {

@@ -27,6 +27,8 @@ import { PedidoModule } from './componentes/pedidos/pedidos.module';
 import { CommonModule } from './common/common/common.module';
 import { GeneradorCodigoModule } from './common/services/generador-codigo/generador-codigo.module';
 import { MarcaModule } from './componentes/marca/marca.module';
+import { UploadController } from './componentes/upload/upload.controller';
+import { UploadModule } from './componentes/upload/upload.module';
 
 ConfigModule.forRoot();
 
@@ -52,8 +54,9 @@ ConfigModule.forRoot();
     CommonModule,
     GeneradorCodigoModule,
     MarcaModule,
+    UploadModule,
   ],
-  controllers: [AppController, VentasController, MovimientosinventarioController],
+  controllers: [AppController, VentasController, MovimientosinventarioController, UploadController],
   providers: [AppService, PrismaService, VentasService, MovimientosinventarioService],
 })
 export class AppModule {}

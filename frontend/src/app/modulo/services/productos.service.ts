@@ -9,6 +9,10 @@ export interface Producto {
   marca?: string;
 }
 
+export interface UploadResponse {
+  url: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -27,6 +31,10 @@ export class ProductosService {
     return this.apiService.post<Producto>('/productos', data);
   }
 
+  uploadImage(file: FormData): Observable<UploadResponse> {
+    return this.apiService.post<UploadResponse>('/upload/imagen', file);
+  }
+
   updateProducto(codigo: string, data: any): Observable<Producto> {
     return this.apiService.put<Producto>(`/productos/${codigo}`, data);
   }
@@ -40,7 +48,9 @@ export class ProductosService {
   }
 
   getUbicaciones(productoCodigo: string, almacenId: string, cantidad: number): Observable<any[]> {
-    return this.apiService.get<any[]>(`/productos/ubicaciones/${productoCodigo}/${almacenId}/${cantidad}`);
+    return this.apiService.get<any[]>(
+      `/productos/ubicaciones/${productoCodigo}/${almacenId}/${cantidad}`,
+    );
   }
 
   filtrosProductos(filtros: any) {

@@ -116,6 +116,7 @@ export class ProductosService {
         descuento: data.descuento ?? 0,
         descripcion: data.descripcion ?? '',
         productoID,
+        imagenUrl: data.imagenUrl ?? '',
         categoriaRel: { connect: { id: categoria.id } },
         proveedorRel: { connect: { id: proveedor.id } },
         marcaRel: { connect: { id: marca.id } },

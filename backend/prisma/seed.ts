@@ -1,6 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { PrismaPg } from '@prisma/adapter-pg';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
@@ -20,8 +23,8 @@ async function main() {
       cargo: 'Administrador',
       departamento: 'Sistemas',
       direccion: 'Calle Falsa 123',
-      fechaIngreso: new Date('2026-05-26'),
-      fechaUltimoAscenso: new Date('2026-05-26'),
+      fechaIngreso: new Date('2026-06-15'),
+      fechaUltimoAscenso: new Date('2026-06-15'),
     },
   });
 

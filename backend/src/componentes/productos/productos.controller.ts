@@ -79,7 +79,6 @@ export class ProductosController {
     });
   }
 
-  // Nuevo endpoint para obtener el inventario de un producto
   @Get(':id/inventario')
   getInventario(@Param('id') id: string) {
     return this.productosService.productoConInventario(id);

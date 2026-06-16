@@ -48,6 +48,7 @@ export class PedidosService {
           impuesto: pedidoData.impuesto,
           descuento: pedidoData.descuento,
           total: pedidoData.total,
+          aprobado: pedidoData.aprobado,
           usuario: {
             connect: { codigo: usuarioCodigo },
           },
