@@ -56,15 +56,18 @@ model Cierres {
 }
 
 model Clientes {
-  id        Int       @id @default(autoincrement())
-  clienteID String    @unique
-  rtn       String    @unique
-  nombre    String
-  correo    String?
-  telefono  String?
-  direccion String
-  pedidos   Pedidos[]
-  ventas    Ventas[]
+  id           Int       @id @default(autoincrement())
+  clienteID    String    @unique
+  rtn          String    @unique
+  nombre       String
+  correo       String?
+  telefono     String?
+  departamento String?
+  municipio    String?
+  barrio       String?
+  direccion    String?
+  pedidos      Pedidos[]
+  ventas       Ventas[]
 }
 
 model Devoluciones {
@@ -149,6 +152,9 @@ model Perfil {
   telefono           String
   cargo              String
   departamento       String
+  dir_departamento   String
+  dir_municipio      String?
+  dir_barrio         String?
   direccion          String
   fechaIngreso       DateTime
   fechaUltimoAscenso DateTime

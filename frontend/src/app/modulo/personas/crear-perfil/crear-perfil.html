@@ -44,17 +44,35 @@
               </div>
 
               <div class="col-md-4">
-                <div class="col-md-4">
-                  <label class="form-label"> Cargo </label>
+                <label class="form-label"> Cargo </label>
 
-                  <select formControlName="cargo" class="form-select">
-                    <option value="">Seleccionar cargo</option>
+                <select formControlName="cargo" class="form-select">
+                  <option value="">Seleccionar cargo</option>
 
-                    <option *ngFor="let cargo of cargos" [value]="cargo">
-                      {{ cargo }}
-                    </option>
-                  </select>
-                </div>
+                  <option *ngFor="let cargo of cargos" [value]="cargo">
+                    {{ cargo }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label"> Departamento de residencia </label>
+                <select formControlName="dir_departamento" class="form-select">
+                  <option value="">Seleccionar departamento</option>
+                  <option *ngFor="let dept of departamento" [value]="dept">
+                    {{ dept }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="col-md-6" *ngIf="municipiosFiltrados.length > 0">
+                <label class="form-label"> Municipio de residencia</label>
+                <select formControlName="dir_municipio" class="form-select">
+                  <option value="">Seleccionar municipio</option>
+                  <option *ngFor="let mun of municipiosFiltrados" [value]="mun">
+                    {{ mun }}
+                  </option>
+                </select>
               </div>
 
               <div class="col-12">

@@ -16,11 +16,31 @@ export class CrearPerfil {
   modo: 'crear' | 'editar' = 'crear';
   perfilId: number | null = null;
   cargos: string[] = [];
+  municipiosFiltrados: string[] = [];
+
+  departamento = [
+    'Cortés',
+    'Atlántida',
+    'Santa Bárbara',
+    'Yoro',
+    'Colón',
+    'Gracias a Dios',
+    'Islas de la Bahía',
+    'Olancho',
+    'El Paraíso',
+    'Intibucá',
+    'Lempira',
+    'Ocotepeque',
+    'Copán',
+    'Valle',
+    'La Paz',
+    'Francisco Morazán',
+    'Comayagua',
+    'Choluteca',
+  ];
 
   administracion = ['Gerente', 'Supervisor de tienda'];
-
   atencionAlCliente = ['Cajero', 'Vendedor', 'Bodeguero'];
-
   taller = ['Administrador de taller', 'Jefe de taller', 'Mecánico', 'Ayudante de taller'];
 
   ngOnInit() {
@@ -43,6 +63,9 @@ export class CrearPerfil {
       telefono: ['', Validators.required, Validators.pattern(/^\d{8}$/)],
       cargo: ['', Validators.required],
       departamento: ['', Validators.required],
+      dir_departamento: [''],
+      dir_municipio: [''],
+      dir_barrio: [''],
       direccion: ['', Validators.required],
       fechaIngreso: ['', Validators.required],
       fechaUltimoAscenso: ['', Validators.required],
@@ -84,6 +107,30 @@ export class CrearPerfil {
           break;
       }
     });
+
+    this.form.get('dir_departamento')?.valueChanges.subscribe((departamento) => {
+  // reset municipio siempre
+  this.form.patchValue({ dir_municipio: '' });
+
+  if (departamento === 'Cortés') {
+    this.municipiosFiltrados = [
+      'San Pedro Sula',
+      'Choloma',
+      'Puerto Cortés',
+      'Omoa',
+      'La Lima',
+      'San Manuel',
+      'Villanueva',
+      'Pimienta',
+      'Potrerillos',
+      'San Francisco de Yojoa',
+      'San Antonio de Cortés',
+      'Santa Cruz de Yojoa',
+    ];
+  } else {
+    this.municipiosFiltrados = [];
+  }
+});
   }
 
   cargarPerfil(id: number) {
