@@ -165,8 +165,8 @@ model Productos {
   id                 Int                     @id @default(autoincrement())
   productoID         String                  @unique
   codigo             String                  @unique
-  codigoProveedor    String                  @unique
-  codigoProducto     String                  @unique
+  codigoProveedor    String?
+  codigoProducto     String?
   producto           String
   costoCompra        Decimal
   costoVenta         Decimal
