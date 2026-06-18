@@ -35,7 +35,7 @@ export class NuevoProducto implements OnInit {
     private marcaService: MarcaService,
   ) {
     this.form = this.fb.group({
-      codigo: ['', Validators.required],
+      codigo: [''],
       codigoProveedor: [''],
       codigoProducto: [''],
       producto: ['', Validators.required],
