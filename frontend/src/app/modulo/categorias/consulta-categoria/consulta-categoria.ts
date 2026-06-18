@@ -62,8 +62,20 @@ export class ConsultaCategoria implements OnInit {
   }
 
   eliminar(id: string) {
-    this.service.eliminarCategoria(id).subscribe(() => {
-      this.cargar();
+    Swal.fire({
+      title: '¿Eliminar categoría?',
+      text: 'Esta acción no se puede deshacer',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (!result.isConfirmed) return;
+
+      this.service.eliminarCategoria(id).subscribe({
+        next: () => this.cargar(),
+        error: (err) => Swal.fire('Error', err.error?.message || 'No se pudo eliminar', 'error'),
+      });
     });
   }
 
