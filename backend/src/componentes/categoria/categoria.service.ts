@@ -24,11 +24,20 @@ export class CategoriaService {
       },
     });
 
-    const siguienteNumero = ultimaCategoria
-      ? ultimaCategoria.id + 1
-      : 1;
+    const siguienteNumero = ultimaCategoria ? ultimaCategoria.id + 1 : 1;
 
     return this.codeGen.generate('CAT', siguienteNumero);
+  }
+
+  // =========================
+  // GENERAR SUBCATEGORIA ID
+  // =========================
+  async generarSubCategoriaID() {
+    const ultima = await this.prisma.subCategoria.findFirst({
+      orderBy: { id: 'desc' },
+    });
+    const siguiente = ultima ? ultima.id + 1 : 1;
+    return this.codeGen.generate('SCAT', siguiente);
   }
 
   // =========================
@@ -42,6 +51,7 @@ export class CategoriaService {
             proveedor: true,
           },
         },
+        subCategorias: true,
       },
       orderBy: {
         nombre: 'asc',
@@ -61,16 +71,25 @@ export class CategoriaService {
             proveedor: true,
           },
         },
+        subCategorias: true,
       },
     });
 
     if (!categoria) {
-      throw new NotFoundException(
-        'Categoría no encontrada',
-      );
+      throw new NotFoundException('Categoría no encontrada');
     }
 
     return categoria;
+  }
+
+  // =========================
+  // LISTAR SUBCATEGORIAS POR CATEGORIA
+  // =========================
+  async findSubCategorias(categoriaId: number) {
+    return this.prisma.subCategoria.findMany({
+      where: { categoriaId },
+      orderBy: { nombre: 'asc' },
+    });
   }
 
   // =========================
@@ -88,9 +107,7 @@ export class CategoriaService {
     });
 
     if (existe) {
-      throw new BadRequestException(
-        'La categoría ya existe',
-      );
+      throw new BadRequestException('La categoría ya existe');
     }
 
     // Generar código interno
@@ -104,6 +121,39 @@ export class CategoriaService {
     });
   }
 
+  async createSubCategoria(data: any) {
+    const categoria = await this.prisma.categoria.findUnique({
+      where: { id: Number(data.categoriaId) },
+    });
+
+    if (!categoria) {
+      throw new NotFoundException('Categoría no encontrada');
+    }
+
+    const existe = await this.prisma.subCategoria.findFirst({
+      where: {
+        nombre: { equals: data.nombre, mode: 'insensitive' },
+        categoriaId: Number(data.categoriaId),
+      },
+    });
+
+    if (existe) {
+      throw new BadRequestException(
+        'La subcategoría ya existe en esta categoría',
+      );
+    }
+
+    const subCategoriaID = await this.generarSubCategoriaID();
+
+    return this.prisma.subCategoria.create({
+      data: {
+        subCategoriaID,
+        nombre: data.nombre,
+        categoria: { connect: { id: Number(data.categoriaId) } },
+      },
+    });
+  }
+
   // =========================
   // ACTUALIZAR
   // =========================
@@ -113,9 +163,7 @@ export class CategoriaService {
     });
 
     if (!categoria) {
-      throw new NotFoundException(
-        'Categoría no encontrada',
-      );
+      throw new NotFoundException('Categoría no encontrada');
     }
 
     // Validar duplicado de nombre
@@ -133,9 +181,7 @@ export class CategoriaService {
       });
 
       if (existe) {
-        throw new BadRequestException(
-          'Ya existe una categoría con ese nombre',
-        );
+        throw new BadRequestException('Ya existe una categoría con ese nombre');
       }
     }
 
@@ -154,9 +200,7 @@ export class CategoriaService {
     });
 
     if (!categoria) {
-      throw new NotFoundException(
-        'Categoría no encontrada',
-      );
+      throw new NotFoundException('Categoría no encontrada');
     }
 
     return this.prisma.categoria.delete({
@@ -165,21 +209,29 @@ export class CategoriaService {
   }
 
   // =========================
+  // ELIMINAR SUBCATEGORIA
+  // =========================
+  async deleteSubCategoria(id: number) {
+    const sub = await this.prisma.subCategoria.findUnique({ where: { id } });
+
+    if (!sub) {
+      throw new NotFoundException('Subcategoría no encontrada');
+    }
+
+    return this.prisma.subCategoria.delete({ where: { id } });
+  }
+
+  // =========================
   // ASIGNAR PROVEEDOR
   // =========================
-  async asignarProveedor(
-    categoriaId: number,
-    proveedorId: number,
-  ) {
+  async asignarProveedor(categoriaId: number, proveedorId: number) {
     // Validar categoría
     const categoria = await this.prisma.categoria.findUnique({
       where: { id: categoriaId },
     });
 
     if (!categoria) {
-      throw new NotFoundException(
-        'Categoría no encontrada',
-      );
+      throw new NotFoundException('Categoría no encontrada');
     }
 
     // Validar proveedor
@@ -188,26 +240,21 @@ export class CategoriaService {
     });
 
     if (!proveedor) {
-      throw new NotFoundException(
-        'Proveedor no encontrado',
-      );
+      throw new NotFoundException('Proveedor no encontrado');
     }
 
     // Evitar duplicados
-    const existe =
-      await this.prisma.categoriaProveedores.findUnique({
-        where: {
-          categoriaId_proveedorId: {
-            categoriaId,
-            proveedorId,
-          },
+    const existe = await this.prisma.categoriaProveedores.findUnique({
+      where: {
+        categoriaId_proveedorId: {
+          categoriaId,
+          proveedorId,
         },
-      });
+      },
+    });
 
     if (existe) {
-      throw new BadRequestException(
-        'El proveedor ya está asignado',
-      );
+      throw new BadRequestException('El proveedor ya está asignado');
     }
 
     return this.prisma.categoriaProveedores.create({
@@ -221,10 +268,7 @@ export class CategoriaService {
   // =========================
   // QUITAR PROVEEDOR
   // =========================
-  async quitarProveedor(
-    categoriaId: number,
-    proveedorId: number,
-  ) {
+  async quitarProveedor(categoriaId: number, proveedorId: number) {
     return this.prisma.categoriaProveedores.delete({
       where: {
         categoriaId_proveedorId: {

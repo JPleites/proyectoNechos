@@ -20,6 +20,11 @@
           <span class="nav-label" *ngIf="sidebarOpen">Añadir Categoría</span>
         </button>
 
+        <button class="nav-item" routerLink="crear-subcategoria" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <i class="fas fa-folder-plus nav-icon"></i>
+          <span class="nav-label" *ngIf="sidebarOpen">Añadir Subcategoría</span>
+        </button>
+
         <button class="nav-item" routerLink="consulta" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
           <i class="fas fa-tags nav-icon"></i>
           <span class="nav-label" *ngIf="sidebarOpen">Consultar Categorías</span>

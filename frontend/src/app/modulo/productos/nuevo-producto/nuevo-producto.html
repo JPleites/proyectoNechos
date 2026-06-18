@@ -162,6 +162,18 @@
                   </select>
                 </div>
 
+                <div class="col-md-4" *ngIf="subCategorias.length > 0">
+                  <label class="form-label"
+                    >Subcategoría <small class="text-muted">(opcional)</small></label
+                  >
+                  <select formControlName="subCategoria" class="form-select">
+                    <option value="">Sin subcategoría</option>
+                    <option *ngFor="let s of subCategorias" [value]="s.id">
+                      {{ s.nombre }}
+                    </option>
+                  </select>
+                </div>
+
                 <div class="col-md-4">
                   <label class="form-label">Proveedor autorizado</label>
                   <select
@@ -204,8 +216,9 @@
               <button
                 type="button"
                 class="btn btn-light border rounded-3 px-4 fw-medium btn-cancelar-erp"
+                (click)="limpiarFormulario()"
               >
-                Cancelar
+                Limpiar
               </button>
 
               <button

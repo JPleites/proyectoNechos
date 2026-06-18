@@ -22,6 +22,7 @@ export class NuevoProducto implements OnInit {
   proveedores: any[] = [];
   proveedoresFiltrados: any[] = [];
   marcasFiltradas: any[] = [];
+  subCategorias: any[] = [];
   guardando: boolean = false;
 
   constructor(
@@ -45,6 +46,7 @@ export class NuevoProducto implements OnInit {
       proveedor: ['', Validators.required],
       marca: ['', Validators.required],
       categoria: ['', Validators.required],
+      subCategorias: [''],
       descripcion: [''],
     });
   }
@@ -112,6 +114,12 @@ export class NuevoProducto implements OnInit {
     }
   }
 
+  limpiarFormulario() {
+    this.form.reset();
+    this.imagePreview = null;
+    this.selectedFile = null;
+  }
+
   async subirImagen(): Promise<string> {
     const formData = new FormData();
     formData.append('file', this.selectedFile as File);
@@ -155,15 +163,19 @@ export class NuevoProducto implements OnInit {
 
   onCategoriaChange() {
     const categoriaId = this.form.get('categoria')?.value;
-
     const categoria = this.categorias.find((c) => Number(c.id) === Number(categoriaId));
 
     if (!categoria) return;
 
     this.proveedoresFiltrados = categoria.CategoriaProveedores.map((cp: any) => cp.proveedor);
+    this.form.patchValue({ proveedor: '', subCategoria: '' });
+    this.subCategorias = [];
 
-    // limpiar proveedor seleccionado
-    this.form.patchValue({ proveedor: '' });
+    this.categoriasService.getSubCategorias(Number(categoriaId)).subscribe((data: any) => {
+      this.subCategorias = data ?? [];
+      this.cdr.detectChanges();
+    });
+
     this.cdr.detectChanges();
   }
 

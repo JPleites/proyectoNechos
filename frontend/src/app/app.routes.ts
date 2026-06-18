@@ -114,6 +114,13 @@ export const routes: Routes = [
                 (m) => m.CrearCategoria,
               ),
           },
+          {
+            path: 'crear-subcategoria',
+            loadComponent: () =>
+              import('./modulo/categorias/crear-subcategorias/crear-subcategorias').then(
+                (m) => m.CrearSubcategorias,
+              ),
+          },
         ],
       },
       {

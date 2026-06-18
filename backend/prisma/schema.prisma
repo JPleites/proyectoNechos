@@ -35,6 +35,16 @@ model Categoria {
   nombre               String
   CategoriaProveedores CategoriaProveedores[]
   Productos            Productos[]
+  subCategorias        subCategoria[]
+}
+
+model subCategoria {
+  id             Int         @id @default(autoincrement())
+  subCategoriaID String      @unique
+  nombre         String
+  categoriaId    Int
+  categoria      Categoria   @relation(fields: [categoriaId], references: [id])
+  productos      Productos[]
 }
 
 model Cierres {
@@ -152,7 +162,7 @@ model Perfil {
   telefono           String
   cargo              String
   departamento       String
-  dir_departamento   String? @default("")
+  dir_departamento   String?   @default("")
   dir_municipio      String?
   dir_barrio         String?
   direccion          String
@@ -164,7 +174,7 @@ model Perfil {
 model Productos {
   id                 Int                     @id @default(autoincrement())
   productoID         String                  @unique
-  codigo             String                  @unique
+  codigo             String?                 @unique
   codigoProveedor    String?
   codigoProducto     String?
   producto           String
@@ -174,6 +184,7 @@ model Productos {
   descuento          Decimal
   descripcion        String
   categoriaId        Int
+  subCategoriaId     Int?
   proveedorId        Int
   marcaId            Int
   imagenUrl          String?
@@ -182,6 +193,7 @@ model Productos {
   movimientos        MovimientosInventario[]
   pedidoDetalles     PedidoDetalle[]
   categoriaRel       Categoria               @relation(fields: [categoriaId], references: [id])
+  subCategoria       subCategoria?           @relation(fields: [subCategoriaId], references: [id])
   marcaRel           Marca                   @relation(fields: [marcaId], references: [id])
   proveedorRel       Proveedores             @relation(fields: [proveedorId], references: [id])
   solicitudDescuento SolicitudDescuento[]

@@ -18,6 +18,31 @@ import { Roles } from '../auth/roles.decorator';
 export class CategoriaController {
   constructor(private readonly service: CategoriaService) {}
 
+  @Get('subcategorias/todas')
+  findTodasSubCategorias() {
+    return this.service.findSubCategorias(0); // o crea un método findAll
+  }
+
+  @Get(':id/subcategorias')
+  findSubCategorias(@Param('id') id: string) {
+    return this.service.findSubCategorias(Number(id));
+  }
+
+  @Roles('admin', 'supervisor')
+  @Post(':id/subcategorias')
+  createSubCategoria(@Param('id') id: string, @Body() data: any) {
+    return this.service.createSubCategoria({
+      ...data,
+      categoriaId: Number(id),
+    });
+  }
+
+  @Roles('admin', 'supervisor')
+  @Delete('subcategorias/:subId')
+  deleteSubCategoria(@Param('subId') subId: string) {
+    return this.service.deleteSubCategoria(Number(subId));
+  }
+
   @Get()
   findAll() {
     return this.service.findAll();

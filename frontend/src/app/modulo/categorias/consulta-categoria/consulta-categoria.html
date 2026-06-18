@@ -1,59 +1,89 @@
 <div class="container-fluid vh-100 d-flex flex-column p-3 bg-light page-wrapper">
-
-  <header class="modulo-header d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-3">
+  <header
+    class="modulo-header d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-3"
+  >
     <div>
       <h4 class="mb-1 fw-semibold">Categorías</h4>
-      <small class="text-muted">Gestión de categorías</small>
+      <small class="text-muted">Gestión de categorías y subcategorías</small>
     </div>
-
-    <a routerLink="/categorias/crear" class="btn btn-primary rounded-3 px-3 shadow-sm btn-nuevo">
-      <i class="fas fa-plus me-2"></i>
-      Nueva categoría
-    </a>
+    <div class="d-flex gap-2">
+      <a
+        routerLink="/categorias/crear-subcategoria"
+        class="btn btn-outline-primary rounded-3 px-3 shadow-sm"
+      >
+        <i class="fas fa-sitemap me-2"></i>Nueva subcategoría
+      </a>
+      <a routerLink="/categorias/crear" class="btn btn-primary rounded-3 px-3 shadow-sm btn-nuevo">
+        <i class="fas fa-plus me-2"></i>Nueva categoría
+      </a>
+    </div>
   </header>
 
   <div class="modulo-contenido">
     <article class="card border-0 shadow-sm rounded-4 overflow-hidden">
       <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
-
           <thead class="table-light">
             <tr>
-              <th class="erp-th ps-4 col-id">ID</th>
+              <th class="erp-th ps-4">ID</th>
               <th class="erp-th">Nombre</th>
-              <th class="erp-th text-center pe-4 col-acciones">Acciones</th>
+              <th class="erp-th">Subcategorías</th>
+              <th class="erp-th text-center pe-4">Acciones</th>
             </tr>
           </thead>
-
           <tbody>
-            <tr *ngFor="let c of categorias">
-              <td class="ps-4 fw-semibold text-muted">{{ c.categoriaID }}</td>
-              <td class="fw-medium text-dark">
-                <i class="fas fa-tag text-muted me-2 small"></i>
-                {{ c.nombre }}
-              </td>
-              <td class="text-center pe-4">
-                <button
-                  class="btn btn-light btn-sm border rounded-3 btn-accion"
-                  (click)="eliminar(c.id)"
-                  title="Eliminar"
-                >
-                  <i class="fas fa-trash text-danger"></i>
-                </button>
-              </td>
-            </tr>
-
+            <ng-container *ngFor="let c of categorias">
+              <tr>
+                <td class="ps-4 fw-semibold text-muted">{{ c.categoriaID }}</td>
+                <td class="fw-medium text-dark">
+                  <i class="fas fa-tag text-muted me-2 small"></i>
+                  {{ c.nombre }}
+                </td>
+                <td>
+                  <!-- Sin subcategorías -->
+                  <span
+                    *ngIf="!c.subCategorias || c.subCategorias.length === 0"
+                    class="text-muted small fst-italic"
+                  >
+                    Sin subcategorías
+                  </span>
+                  <!-- Con subcategorías -->
+                  <div *ngIf="c.subCategorias?.length > 0" class="d-flex flex-wrap gap-1">
+                    <span
+                      *ngFor="let s of c.subCategorias"
+                      class="badge bg-light text-dark border d-flex align-items-center gap-1"
+                    >
+                      {{ s.nombre }}
+                      <button
+                        type="button"
+                        class="btn-close btn-close-sm"
+                        style="font-size: 0.5rem"
+                        title="Eliminar subcategoría"
+                        (click)="eliminarSubCategoria(s.id, c.id)"
+                      ></button>
+                    </span>
+                  </div>
+                </td>
+                <td class="text-center pe-4">
+                  <button
+                    class="btn btn-light btn-sm border rounded-3 btn-accion"
+                    (click)="eliminar(c.id)"
+                    title="Eliminar categoría"
+                  >
+                    <i class="fas fa-trash text-danger"></i>
+                  </button>
+                </td>
+              </tr>
+            </ng-container>
             <tr *ngIf="!categorias || categorias.length === 0">
-              <td colspan="3" class="text-center py-5 text-muted bg-white">
+              <td colspan="4" class="text-center py-5 text-muted bg-white">
                 <i class="fas fa-inbox fa-2x d-block mb-2 opacity-50"></i>
                 <div class="small fw-medium">No hay categorías registradas</div>
               </td>
             </tr>
           </tbody>
-
         </table>
       </div>
     </article>
   </div>
-
 </div>

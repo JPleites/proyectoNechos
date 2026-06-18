@@ -3,6 +3,7 @@ import { CategoriasService } from '../../services/categorias.service';
 import { CommonModule } from '@angular/common';
 import { ProveedoresService } from '../../services/proveedores.service';
 import { RouterLink } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-consulta-categoria',
@@ -20,7 +21,7 @@ export class ConsultaCategoria implements OnInit {
   constructor(
     private service: CategoriasService,
     private proveedoresService: ProveedoresService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
@@ -63,6 +64,24 @@ export class ConsultaCategoria implements OnInit {
   eliminar(id: string) {
     this.service.eliminarCategoria(id).subscribe(() => {
       this.cargar();
+    });
+  }
+
+  eliminarSubCategoria(subId: number, categoriaId: number) {
+    Swal.fire({
+      title: '¿Eliminar subcategoría?',
+      text: 'Esta acción no se puede deshacer',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (!result.isConfirmed) return;
+
+      this.service.eliminarSubCategoria(subId).subscribe({
+        next: () => this.cargar(),
+        error: (err) => Swal.fire('Error', err.error?.message || 'No se pudo eliminar', 'error'),
+      });
     });
   }
 }

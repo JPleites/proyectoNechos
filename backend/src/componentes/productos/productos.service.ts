@@ -122,6 +122,9 @@ export class ProductosService {
         categoriaRel: { connect: { id: categoria.id } },
         proveedorRel: { connect: { id: proveedor.id } },
         marcaRel: { connect: { id: marca.id } },
+        ...(data.subCategoria
+          ? { subCategoria: { connect: { id: Number(data.subCategoria) } } }
+          : {}),
       },
     });
   }

@@ -12,6 +12,18 @@ export class CategoriasService {
     return this.api.get<any[]>('/categorias');
   }
 
+  getSubCategorias(categoriaId: number): Observable<any[]> {
+    return this.api.get<any[]>(`/categorias/${categoriaId}/subcategorias`);
+  }
+
+  createSubCategoria(categoriaId: number, data: any): Observable<any> {
+    return this.api.post(`/categorias/${categoriaId}/subcategorias`, data);
+  }
+
+  eliminarSubCategoria(subId: number): Observable<any> {
+  return this.api.delete(`/categorias/subcategorias/${subId}`);
+}
+
   crearCategoria(data: any): Observable<any> {
     return this.api.post<any>('/categorias', data);
   }
