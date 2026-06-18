@@ -68,7 +68,7 @@ export class CategoriaController {
   @Roles('admin', 'supervisor')
   @Delete(':id')
   delete(@Param('id') id: number) {
-    return this.service.delete(id);
+    return this.service.delete(Number(id));
   }
 
   @Roles('admin', 'supervisor')
