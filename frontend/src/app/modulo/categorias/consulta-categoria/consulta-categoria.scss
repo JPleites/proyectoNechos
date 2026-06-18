@@ -26,9 +26,34 @@
 .modulo-contenido {
   flex-grow: 1;
   overflow: hidden;
+  height: 0; // Fuerza a Flexbox a calcular el alto exacto sobrante
 }
 
-// ─── Columnas de la tabla (Heredadas de tu base) ──────────────────────────────
+// ─── Personalización del scroll interno ───────────────────────────────────────
+.table-responsive {
+  scrollbar-width: thin;
+  scrollbar-color: #a0a0a0 #e9ecef;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+    display: block !important;
+  }
+  &::-webkit-scrollbar-track {
+    background: #e9ecef;
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #a0a0a0;
+    border-radius: 10px;
+    &:hover {
+      background-color: #777;
+    }
+  }
+}
+
+// ─── Columnas de la tabla ─────────────────────────────────────────────────────
 .col-id       { width: 150px; }
 .col-acciones { width: 140px; }
 
@@ -41,7 +66,6 @@
     transform: translateY(-1px);
     opacity: 0.85;
   }
-
   &:active {
     transform: translateY(0);
     opacity: 1;
@@ -59,43 +83,11 @@
   padding-bottom: 12px;
 }
 
-// ─── Media Query: Móvil y pantallas cortas ────────────────────────────────────
-@media (max-width: 575.98px), (max-height: 550px) {
-  
+// ─── Media Query: Móvil ───────────────────────────────────────────────────────
+@media (max-width: 575.98px) {
   .modulo-header {
-    // En celular el botón de "Nueva categoría" pasa abajo de forma ordenada
-    .btn-nuevo {
-      width: 100%;
-      text-align: center;
-    }
-  }
-
-  .modulo-contenido {
-    overflow-y: scroll;
-    max-height: calc(100vh - 140px); // Ajustado por el alto extra del botón en móvil
-    -webkit-overflow-scrolling: touch;
-    padding-right: 6px;
-
-    scrollbar-width: thin;
-    scrollbar-color: #a0a0a0 #e9ecef;
-
-    &::-webkit-scrollbar {
-      width: 6px;
-      display: block !important;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: #e9ecef;
-      border-radius: 10px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background-color: #a0a0a0;
-      border-radius: 10px;
-    }
-
-    &::-webkit-scrollbar-thumb:hover {
-      background-color: #777;
+    .d-flex {
+      width: 100%; // Hace que el grupo de botones use todo el ancho
     }
   }
 }
