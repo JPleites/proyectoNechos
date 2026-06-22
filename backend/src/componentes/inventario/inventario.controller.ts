@@ -54,25 +54,25 @@ export class InventarioController {
     return this.inventarioService.salidaProducto(data, req.user.sub);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.inventarioService.inventario({
-      id: Number(id),
-    });
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.inventarioService.inventario({
+  //     id: Number(id),
+  //   });
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.inventarioService.deleteInventario({
-      id: Number(id),
-    });
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.inventarioService.deleteInventario({
+  //     id: Number(id),
+  //   });
+  // }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() data: any) {
-    return this.inventarioService.updateInventario({
-      where: { id: Number(id) },
-      data,
-    });
-  }
+  // @Put(':id')
+  // update(@Param('id') id: string, @Body() data: any) {
+  //   return this.inventarioService.updateInventario({
+  //     where: { id: Number(id) },
+  //     data,
+  //   });
+  // }
 }
