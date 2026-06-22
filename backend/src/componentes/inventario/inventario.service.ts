@@ -260,14 +260,14 @@ export class InventarioService {
       orderBy: { estante: 'asc' , nivel: 'asc', deposito: 'asc' },
     });
 
-    return ubicaciones.filter((u) => {
-      // 1. Si el arreglo de inventario está vacío, la ubicación está libre (disponible)
-      //if (u.inventario.length === 0) return true;
+    // return ubicaciones.filter((u) => {
+    //   // 1. Si el arreglo de inventario está vacío, la ubicación está libre (disponible)
+    //   if (u.inventario.length === 0) return true;
 
-      // 2. Si tiene inventario, filtramos si contiene el código del producto que buscas
-      return u.inventario.some(
-        (item) => item.productoCodigo === productoCodigo,
-      );
-    });
+    //   // 2. Si tiene inventario, filtramos si contiene el código del producto que buscas
+    //   return u.inventario.some(
+    //     (item) => item.productoCodigo === productoCodigo,
+    //   );
+    // });
   }
 }
