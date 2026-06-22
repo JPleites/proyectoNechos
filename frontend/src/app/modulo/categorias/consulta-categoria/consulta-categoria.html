@@ -19,6 +19,24 @@
     </div>
   </header>
 
+  <!-- BUSCADOR -->
+  <div class="mb-3">
+    <div class="input-group" style="max-width: 350px">
+      <span class="input-group-text bg-white border-end-0">
+        <i class="fas fa-search text-muted small"></i>
+      </span>
+      <input
+        type="text"
+        class="form-control border-start-0"
+        placeholder="Buscar categoría o subcategoría..."
+        [(ngModel)]="busqueda"
+      />
+      <button *ngIf="busqueda" class="btn btn-light border border-start-0" (click)="busqueda = ''">
+        <i class="fas fa-times text-muted small"></i>
+      </button>
+    </div>
+  </div>
+
   <div class="modulo-contenido">
     <article class="card border-0 shadow-sm rounded-4 overflow-hidden">
       <div class="table-responsive">
@@ -32,7 +50,7 @@
             </tr>
           </thead>
           <tbody>
-            <ng-container *ngFor="let c of categorias">
+            <ng-container *ngFor="let c of categoriasFiltradas">
               <tr>
                 <td class="ps-4 fw-semibold text-muted">{{ c.categoriaID }}</td>
                 <td class="fw-medium text-dark">
@@ -75,7 +93,7 @@
                 </td>
               </tr>
             </ng-container>
-            <tr *ngIf="!categorias || categorias.length === 0">
+            <tr *ngIf="categoriasFiltradas.length === 0">
               <td colspan="4" class="text-center py-5 text-muted bg-white">
                 <i class="fas fa-inbox fa-2x d-block mb-2 opacity-50"></i>
                 <div class="small fw-medium">No hay categorías registradas</div>

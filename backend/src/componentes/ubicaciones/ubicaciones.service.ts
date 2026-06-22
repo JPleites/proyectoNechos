@@ -1,9 +1,13 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class UbicacionesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   // 🔍 Obtener una ubicación
   async findOne(id: string) {
@@ -16,38 +20,41 @@ export class UbicacionesService {
     });
   }
 
-  // 📋 Listar ubicaciones
+  // 📋 Listar ubicaciones ordenadas por nombre
   async findAll() {
     return this.prisma.ubicaciones.findMany({
       include: {
         almacen: true,
         inventario: true,
       },
+      orderBy: [
+        { almacenId: 'asc' },
+        { nivel: 'asc' },
+        { estante: 'asc' },
+        { deposito: 'asc' },
+      ],
     });
   }
 
   // ➕ Crear ubicación
   async create(data: any) {
-    const { almacenId, estante, nivel, deposito } = data;
+    const almacenId = Number(data.almacenId);
 
-    // 1. Validar almacén
     const almacen = await this.prisma.almacenes.findUnique({
-      where: { id: Number(almacenId) },
+      where: { id: almacenId },
     });
 
     if (!almacen) {
       throw new BadRequestException('El almacén no existe');
     }
 
-    // 2. Generar código de ubicación
     const ubicacion = [
       almacen.almacenID,
-      `N${nivel}`,
-      `E${estante}`,
-      `D${deposito}`,
+      `N${Number(data.nivel)}`,
+      `E${Number(data.estante)}`,
+      `D${Number(data.deposito)}`,
     ].join('');
 
-    // 3. Validar duplicado
     const existe = await this.prisma.ubicaciones.findUnique({
       where: { ubicacion },
     });
@@ -56,26 +63,32 @@ export class UbicacionesService {
       throw new BadRequestException('La ubicación ya existe');
     }
 
-    // 4. Crear ubicación
     return this.prisma.ubicaciones.create({
       data: {
         ubicacion,
-        estante: Number(estante),
-        nivel: Number(nivel),
-        deposito: Number(deposito),
-        almacenId: Number(almacenId),
+        estante: Number(data.estante),
+        nivel: Number(data.nivel),
+        deposito: Number(data.deposito),
+        almacenId,
       },
     });
   }
 
   // ✏️ Actualizar ubicación
   async update(id: string, data: any) {
-    const { estante, nivel, deposito, almacenId } = data;
+    const ubicacionExistente = await this.prisma.ubicaciones.findUnique({
+      where: { ubicacion: id },
+    });
 
-    // validar almacén si viene
-    if (almacenId) {
+    if (!ubicacionExistente) {
+      throw new NotFoundException('La ubicación no existe');
+    }
+
+    if (data.almacenId) {
       const almacen = await this.prisma.almacenes.findUnique({
-        where: { id: Number(almacenId) },
+        where: {
+          id: Number(data.almacenId),
+        },
       });
 
       if (!almacen) {
@@ -86,18 +99,32 @@ export class UbicacionesService {
     return this.prisma.ubicaciones.update({
       where: { ubicacion: id },
       data: {
-        ...(estante !== undefined && { estante: Number(estante) }),
-        ...(nivel !== undefined && { nivel: Number(nivel) }),
-        ...(deposito !== undefined && { deposito: Number(deposito) }),
-        ...(almacenId !== undefined && {
-          almacenId: Number(almacenId),
+        ...(data.estante !== undefined && {
+          estante: Number(data.estante),
+        }),
+        ...(data.nivel !== undefined && {
+          nivel: Number(data.nivel),
+        }),
+        ...(data.deposito !== undefined && {
+          deposito: Number(data.deposito),
+        }),
+        ...(data.almacenId !== undefined && {
+          almacenId: Number(data.almacenId),
         }),
       },
     });
   }
 
-  // 🗑️ Eliminar
+  // 🗑️ Eliminar ubicación
   async delete(id: string) {
+    const ubicacion = await this.prisma.ubicaciones.findUnique({
+      where: { ubicacion: id },
+    });
+
+    if (!ubicacion) {
+      throw new NotFoundException('La ubicación no existe');
+    }
+
     return this.prisma.ubicaciones.delete({
       where: { ubicacion: id },
     });

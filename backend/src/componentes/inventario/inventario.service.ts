@@ -6,96 +6,95 @@ import { Inventario, Prisma } from '@prisma/client';
 export class InventarioService {
   constructor(private prisma: PrismaService) {}
 
-  async inventario(
-    inventarioWhereUniqueInput: Prisma.InventarioWhereUniqueInput,
-  ): Promise<Inventario | null> {
+  // ==============================
+  // 🔍 OBTENER UN INVENTARIO
+  // ==============================
+  async inventario(params: {
+    productoCodigo: string;
+    ubicacion: string;
+  }): Promise<Inventario | null> {
+    const { productoCodigo, ubicacion } = params;
+
     return this.prisma.inventario.findUnique({
-      where: inventarioWhereUniqueInput,
+      where: {
+        productoCodigo_ubicacion: {
+          productoCodigo,
+          ubicacion,
+        },
+      },
+      include: {
+        producto: true,
+        ubicacionRel: true,
+      },
     });
   }
 
+  // ==============================
+  // 📋 LISTAR INVENTARIO
+  // ==============================
   async inventarios(params: {
     skip?: number;
     take?: number;
-    cursor?: Prisma.InventarioWhereUniqueInput;
     where?: Prisma.InventarioWhereInput;
     orderBy?: Prisma.InventarioOrderByWithRelationInput;
   }): Promise<Inventario[]> {
-    const { skip, take, cursor, where, orderBy } = params;
+    const { skip, take, where, orderBy } = params;
+
     return this.prisma.inventario.findMany({
       skip,
       take,
-      cursor,
       where,
       orderBy,
+      include: {
+        producto: true,
+        ubicacionRel: true,
+      },
     });
   }
 
-  async createInventario(
-    data: Prisma.InventarioCreateInput,
-  ): Promise<Inventario> {
-    return this.prisma.inventario.create({
-      data,
-    });
-  }
-
-  async updateInventario(params: {
-    where: Prisma.InventarioWhereUniqueInput;
-    data: Prisma.InventarioUpdateInput;
-  }): Promise<Inventario> {
-    const { where, data } = params;
-    return this.prisma.inventario.update({
-      data,
-      where,
-    });
-  }
-
-  async deleteInventario(
-    where: Prisma.InventarioWhereUniqueInput,
-  ): Promise<Inventario> {
-    return this.prisma.inventario.delete({
-      where,
-    });
-  }
-
+  // ==============================
+  // ➕ INGRESO DE PRODUCTO
+  // ==============================
   async ingresoProducto(
     data: {
       productoCodigo: string;
       ubicacion: string;
       cantidad: number;
-      referencia: string;
+      referencia?: string;
     },
     usuarioCodigo: number,
   ) {
     const { productoCodigo, ubicacion, cantidad, referencia } = data;
 
-    // 🔍 1. Validar producto
+    // 🔍 validar producto
     const producto = await this.prisma.productos.findUnique({
       where: { codigo: productoCodigo },
     });
 
-    if (!producto) {
-      throw new Error('El producto no existe');
-    }
+    if (!producto) throw new Error('El producto no existe');
 
-    // 🔍 2. Validar ubicación
+    // 🔍 validar ubicación
     const ubicacionExiste = await this.prisma.ubicaciones.findUnique({
       where: { ubicacion },
     });
 
-    if (!ubicacionExiste) {
-      throw new Error('La ubicación no existe');
-    }
+    if (!ubicacionExiste) throw new Error('La ubicación no existe');
 
-    // 🔍 3. Verificar si la ubicación ya está ocupada
-    const inventarioExistente = await this.prisma.inventario.findUnique({
-      where: { ubicacion },
-    });
+    const key = {
+      productoCodigo_ubicacion: {
+        productoCodigo,
+        ubicacion,
+      },
+    };
 
     return await this.prisma.$transaction(async (tx) => {
+      const inventarioExistente = await tx.inventario.findUnique({
+        where: key,
+      });
+
       let inventario;
 
-      // 🟢 SI NO EXISTE → CREAR
+      // 🟢 si no existe → crear
       if (!inventarioExistente) {
         inventario = await tx.inventario.create({
           data: {
@@ -105,21 +104,16 @@ export class InventarioService {
           },
         });
       } else {
-        // 🔴 Si existe pero es OTRO producto → error
-        if (inventarioExistente.productoCodigo !== productoCodigo) {
-          throw new Error('La ubicación ya está ocupada por otro producto');
-        }
-
-        // 🟡 Si es el mismo producto → SUMAR
+        // 🟡 sumar cantidad
         inventario = await tx.inventario.update({
-          where: { id: inventarioExistente.id },
+          where: key,
           data: {
             cantidad: inventarioExistente.cantidad + cantidad,
           },
         });
       }
 
-      // 📦 4. Registrar movimiento
+      // 📦 movimiento
       await tx.movimientosInventario.create({
         data: {
           productoCodigo,
@@ -127,6 +121,7 @@ export class InventarioService {
           cantidad,
           usuarioCodigo,
           referencia,
+          ubicacion,
         },
       });
 
@@ -134,6 +129,9 @@ export class InventarioService {
     });
   }
 
+  // ==============================
+  // ➖ SALIDA DE PRODUCTO
+  // ==============================
   async salidaProducto(
     data: {
       productoCodigo: string;
@@ -144,28 +142,27 @@ export class InventarioService {
   ) {
     const { productoCodigo, ubicacion, cantidad } = data;
 
-    // 🔍 1. Validar producto
     const producto = await this.prisma.productos.findUnique({
       where: { codigo: productoCodigo },
     });
 
-    if (!producto) {
-      throw new Error('El producto no existe');
-    }
+    if (!producto) throw new Error('El producto no existe');
 
-    // 🔍 2. Validar inventario en esa ubicación
-    const inventario = await this.prisma.inventario.findFirst({
-      where: {
+    const key = {
+      productoCodigo_ubicacion: {
         productoCodigo,
         ubicacion,
       },
+    };
+
+    const inventario = await this.prisma.inventario.findUnique({
+      where: key,
     });
 
     if (!inventario) {
-      throw new Error('No hay inventario en esa ubicación');
+      throw new Error('No existe inventario en esa ubicación');
     }
 
-    // 🔍 3. Validar stock suficiente
     if (inventario.cantidad < cantidad) {
       throw new Error('Stock insuficiente');
     }
@@ -173,30 +170,30 @@ export class InventarioService {
     return await this.prisma.$transaction(async (tx) => {
       let resultado;
 
-      // 🟡 Si queda en 0 → eliminar registro
+      // 🟡 si queda en 0 → eliminar
       if (inventario.cantidad === cantidad) {
         await tx.inventario.delete({
-          where: { id: inventario.id },
+          where: key,
         });
 
         resultado = { message: 'Producto agotado en esa ubicación' };
       } else {
-        // 🔻 Restar cantidad
         resultado = await tx.inventario.update({
-          where: { id: inventario.id },
+          where: key,
           data: {
             cantidad: inventario.cantidad - cantidad,
           },
         });
       }
 
-      // 📦 Registrar movimiento
+      // 📦 movimiento
       await tx.movimientosInventario.create({
         data: {
           productoCodigo,
           tipo: 'SALIDA',
           cantidad,
           usuarioCodigo,
+          ubicacion,
         },
       });
 
@@ -204,23 +201,21 @@ export class InventarioService {
     });
   }
 
+  // ==============================
+  // 📊 KARDex POR PRODUCTO
+  // ==============================
   async kardexProducto(productoCodigo: string) {
-    // 🔍 1. Validar producto
     const producto = await this.prisma.productos.findUnique({
       where: { codigo: productoCodigo },
     });
 
-    if (!producto) {
-      throw new Error('El producto no existe');
-    }
+    if (!producto) throw new Error('El producto no existe');
 
-    // 📋 2. Obtener movimientos ordenados
     const movimientos = await this.prisma.movimientosInventario.findMany({
       where: { productoCodigo },
       orderBy: { fecha: 'asc' },
     });
 
-    // 🧠 3. Calcular Kardex
     let stock = 0;
 
     const kardex = movimientos.map((mov) => {
@@ -241,7 +236,7 @@ export class InventarioService {
         fecha: mov.fecha,
         tipo: mov.tipo,
         cantidad: mov.cantidad,
-        codigoUsuario: mov.usuarioCodigo,
+        ubicacion: mov.ubicacion,
         entrada,
         salida,
         stock,
@@ -255,6 +250,9 @@ export class InventarioService {
     };
   }
 
+  // ==============================
+  // 📍 UBICACIONES DISPONIBLES
+  // ==============================
   async getUbicacionesDisponibles(almacenId: number, productoCodigo: string) {
     const ubicaciones = await this.prisma.ubicaciones.findMany({
       where: { almacenId },
@@ -262,23 +260,13 @@ export class InventarioService {
     });
 
     return ubicaciones.filter((u) => {
-      if (!u.inventario) return true;
+      // 1. Si el arreglo de inventario está vacío, la ubicación está libre (disponible)
+      if (u.inventario.length === 0) return true;
 
-      return u.inventario.productoCodigo === productoCodigo;
+      // 2. Si tiene inventario, filtramos si contiene el código del producto que buscas
+      return u.inventario.some(
+        (item) => item.productoCodigo === productoCodigo,
+      );
     });
   }
-
-  // async obtenerUbicaciones(productoCodigo: string, almacenId: number) {
-  //   return this.prisma.inventario.findMany({
-  //     where: {
-  //       productoCodigo: String(productoCodigo),
-  //       ubicacionRel: {
-  //         almacenId: Number(almacenId),
-  //       },
-  //     },
-  //     include: {
-  //       ubicacionRel: true,
-  //     },
-  //   });
-  // }
 }

@@ -43,8 +43,8 @@ model subCategoria {
   subCategoriaID String      @unique
   nombre         String
   categoriaId    Int
-  categoria      Categoria   @relation(fields: [categoriaId], references: [id])
   productos      Productos[]
+  categoria      Categoria   @relation(fields: [categoriaId], references: [id])
 }
 
 model Cierres {
@@ -72,10 +72,10 @@ model Clientes {
   nombre       String
   correo       String?
   telefono     String?
+  direccion    String?
+  barrio       String?
   departamento String?
   municipio    String?
-  barrio       String?
-  direccion    String?
   pedidos      Pedidos[]
   ventas       Ventas[]
 }
@@ -95,10 +95,14 @@ model Devoluciones {
 model Inventario {
   id             Int         @id @default(autoincrement())
   productoCodigo String
-  ubicacion      String      @unique
+  ubicacion      String
   cantidad       Int
   producto       Productos   @relation(fields: [productoCodigo], references: [codigo])
   ubicacionRel   Ubicaciones @relation(fields: [ubicacion], references: [ubicacion])
+
+  @@unique([productoCodigo, ubicacion])
+  @@index([productoCodigo])
+  @@index([ubicacion])
 }
 
 model Marca {
@@ -118,6 +122,7 @@ model MovimientosInventario {
   fecha          DateTime  @default(now())
   referencia     String?
   usuarioCodigo  Int
+  ubicacion      String?
   producto       Productos @relation(fields: [productoCodigo], references: [codigo])
   usuario        Usuarios  @relation(fields: [usuarioCodigo], references: [codigo])
 }
@@ -157,26 +162,24 @@ model PedidoDetalle {
 
 model Perfil {
   id                 Int       @id @default(autoincrement())
-  dni                String
+  dni                String    @unique
   nombre             String
   telefono           String
   cargo              String
   departamento       String
-  dir_departamento   String?   @default("")
-  dir_municipio      String?
-  dir_barrio         String?
   direccion          String
   fechaIngreso       DateTime
   fechaUltimoAscenso DateTime
+  dir_barrio         String?
+  dir_departamento   String?   @default("")
+  dir_municipio      String?
   usuario            Usuarios?
 }
 
 model Productos {
   id                 Int                     @id @default(autoincrement())
   productoID         String                  @unique
-  codigo             String?                 @unique
-  codigoProveedor    String?
-  codigoProducto     String?
+  codigo             String                  @unique
   producto           String
   costoCompra        Decimal
   costoVenta         Decimal
@@ -184,18 +187,20 @@ model Productos {
   descuento          Decimal
   descripcion        String
   categoriaId        Int
-  subCategoriaId     Int?
   proveedorId        Int
   marcaId            Int
   imagenUrl          String?
+  codigoProducto     String?
+  codigoProveedor    String?
+  subCategoriaId     Int?
   devoluciones       Devoluciones[]
   inventario         Inventario[]
   movimientos        MovimientosInventario[]
   pedidoDetalles     PedidoDetalle[]
   categoriaRel       Categoria               @relation(fields: [categoriaId], references: [id])
-  subCategoria       subCategoria?           @relation(fields: [subCategoriaId], references: [id])
   marcaRel           Marca                   @relation(fields: [marcaId], references: [id])
   proveedorRel       Proveedores             @relation(fields: [proveedorId], references: [id])
+  subCategoria       subCategoria?           @relation(fields: [subCategoriaId], references: [id])
   solicitudDescuento SolicitudDescuento[]
   ventaDetalles      VentaDetalle[]
 }
@@ -240,7 +245,7 @@ model Ubicaciones {
   estante        Int
   nivel          Int
   almacenId      Int
-  inventario     Inventario?
+  inventario     Inventario[]
   pedidoDetalles PedidoDetalle[]
   almacen        Almacenes       @relation(fields: [almacenId], references: [id])
 }

@@ -4,10 +4,11 @@ import { CommonModule } from '@angular/common';
 import { ProveedoresService } from '../../services/proveedores.service';
 import { RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-consulta-categoria',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './consulta-categoria.html',
   styleUrl: './consulta-categoria.scss',
 })
@@ -16,7 +17,7 @@ export class ConsultaCategoria implements OnInit {
   proveedores: any[] = []; // lista global
   categoriaSeleccionada: string = '';
   proveedorSeleccionado: string = '';
-  categoriasFiltradas: any[] = [];
+  busqueda: string = '';
 
   constructor(
     private service: CategoriasService,
@@ -29,29 +30,26 @@ export class ConsultaCategoria implements OnInit {
     this.cargarProveedores();
   }
 
+  get categoriasFiltradas(): any[] {
+  if (!this.busqueda.trim()) return this.categorias;
+  const q = this.busqueda.toLowerCase();
+  return this.categorias.filter(c =>
+    c.nombre.toLowerCase().includes(q) ||
+    c.categoriaID.toLowerCase().includes(q) ||
+    c.subCategorias?.some((s: any) => s.nombre.toLowerCase().includes(q))
+  );
+}
+
   cargar() {
     this.service.getCategorias().subscribe((data: any) => {
       this.categorias = data;
       this.cdr.detectChanges();
-      this.categoriasFiltradas = data;
-    });
-  }
-
-  filtrar() {
-    this.categoriasFiltradas = this.categorias.filter((c) => {
-      const cumpleCategoria = !this.categoriaSeleccionada || c.id === this.categoriaSeleccionada;
-
-      const cumpleProveedor =
-        !this.proveedorSeleccionado || c.proveedorId === this.proveedorSeleccionado;
-
-      return cumpleCategoria && cumpleProveedor;
     });
   }
 
   limpiarFiltros() {
     this.categoriaSeleccionada = '';
     this.proveedorSeleccionado = '';
-    this.categoriasFiltradas = this.categorias;
   }
 
   cargarProveedores() {
