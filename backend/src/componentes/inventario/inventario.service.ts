@@ -253,12 +253,40 @@ export class InventarioService {
   // ==============================
   // 📍 UBICACIONES DISPONIBLES
   // ==============================
+
+  // ==============================
+  // 📍 UBICACIONES DISPONIBLES
+  // ==============================
   async getUbicacionesDisponibles(almacenId: number, productoCodigo: string) {
-    const ubicaciones = await this.prisma.ubicaciones.findMany({
-      where: { almacenId },
-      include: { inventario: true },
-      orderBy: { estante: 'asc' , nivel: 'asc', deposito: 'asc' },
+    // Nos aseguramos de que sea un número entero limpio antes de ir a la BD 
+    const idFiltro = Math.floor(Number(almacenId));
+
+    if (isNaN(idFiltro)) {
+      throw new Error('El id del almacén debe ser un número válido');
+    }
+
+    // Traemos TODAS las ubicaciones que pertenezcan a ese almacén
+    return await this.prisma.ubicaciones.findMany({
+      where: { 
+        almacenId: idFiltro // <- Aquí filtra directo por el almacén enviado 
+      },
+      include: { 
+        inventario: true 
+      },
+      orderBy: { 
+        estante: 'asc', 
+        nivel: 'asc', 
+        deposito: 'asc' 
+      },
     });
+  }
+
+  // async getUbicacionesDisponibles(almacenId: number, productoCodigo: string) {
+  //   const ubicaciones = await this.prisma.ubicaciones.findMany({
+  //     where: { almacenId },
+  //     include: { inventario: true },
+  //     orderBy: { estante: 'asc' , nivel: 'asc', deposito: 'asc' },
+  //   });
 
     // return ubicaciones.filter((u) => {
     //   // 1. Si el arreglo de inventario está vacío, la ubicación está libre (disponible)
@@ -270,4 +298,3 @@ export class InventarioService {
     //   );
     // });
   }
-}
