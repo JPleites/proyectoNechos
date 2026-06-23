@@ -254,24 +254,14 @@ export class InventarioService {
   // 📍 UBICACIONES DISPONIBLES
   // ==============================
   async getUbicacionesDisponibles(almacenId: number, productoCodigo: string) {
-     const idFiltro = Number(almacenId);
-
-    if (isNaN(idFiltro)) {
-      throw new Error('El id del almacén debe ser un número válido');
-    }
-
     return await this.prisma.ubicaciones.findMany({
-      where: { 
-        almacenId: idFiltro 
+      where: {
+        almacenId: almacenId,
       },
-      include: { 
-        inventario: true 
+      include: {
+        inventario: true,
       },
-      orderBy: { 
-        estante: 'asc', 
-        nivel: 'asc', 
-        deposito: 'asc' 
-      },
+      orderBy: [{ estante: 'asc' }, { nivel: 'asc' }, { deposito: 'asc' }],
     });
   }
 }

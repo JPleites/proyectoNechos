@@ -80,7 +80,7 @@
                 <select formControlName="ubicacion" class="form-select">
                   <option value="">Seleccione ubicación</option>
                   <option *ngFor="let u of ubicaciones" [value]="u.ubicacion">
-                    {{ u.ubicacion }} &nbsp;({{ u.estante }}-{{ u.nivel }}-{{ u.deposito }})
+                    (E{{ u.estante }}-N{{ u.nivel }}-D{{ u.deposito }})
                   </option>
                 </select>
               </div>

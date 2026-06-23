@@ -15,6 +15,7 @@ interface Producto {
   imagenUrl?: string;
   marcaRel?: any;
   categoriaRel?: any;
+  subCategoria?: any;
   proveedorRel?: any;
   descripcion?: string;
 }

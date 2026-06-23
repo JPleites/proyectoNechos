@@ -198,6 +198,13 @@
               </div>
 
               <div class="info-card">
+                <span class="info-label">Subcategoría</span>
+                <div class="info-value">
+                  {{ selectedProduct.subCategoria?.nombre || '—' }}
+                </div>
+              </div>
+
+              <div class="info-card">
                 <span class="info-label">Marca</span>
                 <div class="info-value">
                   {{ selectedProduct.marcaRel?.nombre }}

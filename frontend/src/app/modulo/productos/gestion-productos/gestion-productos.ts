@@ -16,6 +16,7 @@ interface Producto {
   marcaRel?: any;
   categoriaRel?: any;
   proveedorRel?: any;
+  subCategoria?: any;
   descripcion?: string;
   costoCompra?: number;
   costoVenta?: number;

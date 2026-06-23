@@ -21,6 +21,7 @@ export class ProductosService {
         proveedorRel: true,
         categoriaRel: true,
         marcaRel: true,
+        subCategoria: true,
       },
     });
   }
@@ -32,6 +33,7 @@ export class ProductosService {
       include: {
         proveedorRel: true,
         categoriaRel: true,
+        subCategoria: true,
         marcaRel: true,
       },
     });
@@ -189,6 +191,7 @@ export class ProductosService {
         proveedorRel: true,
         categoriaRel: true,
         marcaRel: true,
+        subCategoria: true,
       },
     });
   }
@@ -271,6 +274,7 @@ export class ProductosService {
         proveedorRel: true,
         categoriaRel: true,
         marcaRel: true,
+        subCategoria: true,
       },
       orderBy: {
         id: 'desc',

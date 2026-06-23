@@ -29,8 +29,8 @@ export class UbicacionesService {
       },
       orderBy: [
         { almacenId: 'asc' },
-        { nivel: 'asc' },
         { estante: 'asc' },
+        { nivel: 'asc' },
         { deposito: 'asc' },
       ],
     });
@@ -50,8 +50,8 @@ export class UbicacionesService {
 
     const ubicacion = [
       almacen.almacenID,
-      `N${Number(data.nivel)}`,
       `E${Number(data.estante)}`,
+      `N${Number(data.nivel)}`,
       `D${Number(data.deposito)}`,
     ].join('');
 

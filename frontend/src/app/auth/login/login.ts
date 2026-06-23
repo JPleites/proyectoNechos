@@ -28,9 +28,9 @@ export class LoginComponent {
     const token = localStorage.getItem('token');
     const rol = localStorage.getItem('rol');
 
-    if (token && rol) {
-      this.redirigirPorRol(rol);
-    }
+    // if (token && rol) {
+    //   this.redirigirPorRol(rol);
+    // }
   }
 
   login() {

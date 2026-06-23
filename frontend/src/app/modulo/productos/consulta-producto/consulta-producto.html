@@ -149,6 +149,7 @@
             <p><strong>Precio:</strong> L {{ selectedProduct.precio }}</p>
             <p><strong>Proveedor:</strong> {{ selectedProduct.proveedorRel?.proveedor }}</p>
             <p><strong>Categoría:</strong> {{ selectedProduct.categoriaRel?.nombre }}</p>
+            <p><strong>Subcategoría:</strong> {{ selectedProduct.subCategoria?.nombre || '—' }}</p>
             <p><strong>Marca:</strong> {{ selectedProduct.marcaRel?.nombre }}</p>
             <p><strong>Descripción:</strong> {{ selectedProduct.descripcion }}</p>
           </div>
