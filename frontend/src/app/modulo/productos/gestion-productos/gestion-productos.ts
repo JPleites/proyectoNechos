@@ -175,4 +175,13 @@ export class GestionProductos implements OnInit {
       error: (err) => console.error(err),
     });
   }
+
+  limpiarFiltros() {
+    this.filtros = {
+      q: '',
+      categoriaId: '',
+      proveedorId: '',
+      marcaId: '',
+    };
+  }
 }

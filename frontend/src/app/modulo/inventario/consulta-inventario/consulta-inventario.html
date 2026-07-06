@@ -1,0 +1,125 @@
+<div class="container-fluid vh-100 d-flex flex-column p-3 bg-light">
+  <form [formGroup]="form" class="d-flex flex-column flex-grow-1">
+    <!-- HEADER -->
+    <header class="mb-3 flex-shrink-0">
+      <h4 class="fw-semibold">Consulta de Inventario</h4>
+      <small class="text-muted"> Búsqueda por producto, ubicación o almacén </small>
+    </header>
+
+    <!-- FILTROS -->
+    <div class="card shadow-sm mb-3 flex-shrink-0">
+      <div class="card-body">
+        <div class="row g-3">
+          <!-- PRODUCTO -->
+          <div class="col-md-4">
+            <label class="form-label">Código Producto</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="productoCodigo"
+              placeholder="Ej: PROD001"
+            />
+          </div>
+
+          <!-- ALMACÉN -->
+          <div class="col-md-4">
+            <label class="form-label">Almacén</label>
+            <select class="form-select" formControlName="almacenId" (change)="cargarUbicaciones()">
+              <option value="">Seleccione almacén</option>
+              <option *ngFor="let a of almacenes" [value]="a.id">
+                {{ a.almacen }}
+              </option>
+            </select>
+          </div>
+
+          <!-- UBICACIÓN -->
+          <div class="col-md-4">
+            <label class="form-label">Ubicación</label>
+            <select class="form-select" formControlName="ubicacion">
+              <option value="">Seleccione ubicación</option>
+              <option *ngFor="let u of ubicaciones" [value]="u.ubicacion">
+                {{ u.ubicacion }}
+                (E{{ u.estante }}-N{{ u.nivel }}-D{{ u.deposito }})
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- BOTONES -->
+        <div class="mt-3 d-flex gap-2">
+          <button type="button" class="btn btn-primary" (click)="buscar()">Buscar</button>
+
+          <button type="button" class="btn btn-secondary" (click)="limpiar()">Limpiar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESUMEN -->
+    <div class="row mb-3 flex-shrink-0">
+      <div class="col">
+        <div class="card p-3 shadow-sm text-center">
+          <small>Registros</small>
+          <h5>{{ resumen.registros }}</h5>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card p-3 shadow-sm text-center">
+          <small>Stock Total</small>
+          <h5>{{ resumen.stockTotal }}</h5>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card p-3 shadow-sm text-center">
+          <small>Productos</small>
+          <h5>{{ resumen.productos }}</h5>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card p-3 shadow-sm text-center">
+          <small>Ubicaciones</small>
+          <h5>{{ resumen.ubicaciones }}</h5>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLA -->
+    <div class="card shadow-sm flex-grow-1 overflow-auto">
+      <div class="card-body p-0">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Código</th>
+              <th>Producto</th>
+              <th>Almacén</th>
+              <th>Ubicación</th>
+              <th class="text-end">Cantidad</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let item of data">
+              <td>{{ item.productoCodigo }}</td>
+
+              <td>{{ item.producto?.producto }}</td>
+
+              <td>{{ item.ubicacionRel?.almacen?.almacen }}</td>
+
+              <td>{{ item.ubicacion }}</td>
+
+              <td class="text-end fw-bold">
+                {{ item.cantidad }}
+              </td>
+            </tr>
+
+            <tr *ngIf="data.length === 0">
+              <td colspan="5" class="text-center text-muted py-4">No hay registros</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </form>
+</div>

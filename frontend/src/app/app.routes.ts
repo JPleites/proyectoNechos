@@ -183,6 +183,13 @@ export const routes: Routes = [
             path: 'kardex',
             loadComponent: () => import('./modulo/inventario/kardex/kardex').then((m) => m.Kardex),
           },
+          {
+            path: 'consulta-inventario',
+            loadComponent: () =>
+              import('./modulo/inventario/consulta-inventario/consulta-inventario').then(
+                (m) => m.ConsultaInventario,
+              ),
+          }
         ],
       },
       {

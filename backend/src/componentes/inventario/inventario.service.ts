@@ -201,6 +201,43 @@ export class InventarioService {
     });
   }
 
+  async consultarInventario(filtros: {
+    productoCodigo?: string;
+    ubicacion?: string;
+    almacenId?: number;
+  }) {
+    const where: Prisma.InventarioWhereInput = {};
+
+    if (filtros.productoCodigo) {
+      where.productoCodigo = filtros.productoCodigo;
+    }
+
+    if (filtros.ubicacion) {
+      where.ubicacion = filtros.ubicacion;
+    }
+
+    if (filtros.almacenId) {
+      where.ubicacionRel = {
+        almacenId: Number(filtros.almacenId),
+      };
+    }
+
+    const inventario = await this.prisma.inventario.findMany({
+      where,
+      include: {
+        producto: true,
+        ubicacionRel: {
+          include: {
+            almacen: true,
+          },
+        },
+      },
+      orderBy: [{ productoCodigo: 'asc' }, { ubicacion: 'asc' }],
+    });
+
+    return inventario;
+  }
+
   // ==============================
   // 📊 KARDEX POR PRODUCTO
   // ==============================

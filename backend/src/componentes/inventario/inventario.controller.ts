@@ -26,6 +26,19 @@ export class InventarioController {
     return this.inventarioService.inventarios({});
   }
 
+  @Get('consulta')
+  consultaInventario(
+    @Query('productoCodigo') productoCodigo?: string,
+    @Query('ubicacion') ubicacion?: string,
+    @Query('almacenId') almacenId?: number,
+  ) {
+    return this.inventarioService.consultarInventario({
+      productoCodigo,
+      ubicacion,
+      almacenId: almacenId ? Number(almacenId) : undefined,
+    });
+  }
+
   @Get('kardex/:codigo')
   kardex(@Param('codigo') codigo: string) {
     return this.inventarioService.kardexProducto(codigo);
@@ -42,12 +55,12 @@ export class InventarioController {
     );
   }
 
-    //ingreso al inventario
+  //ingreso al inventario
   @Post('ingreso')
   ingreso(@Body() data: any, @Req() req: any) {
     return this.inventarioService.ingresoProducto(data, req.user.sub);
   }
-  
+
   // salida del inventario
   @Post('salida')
   salida(@Body() data: any, @Req() req: any) {

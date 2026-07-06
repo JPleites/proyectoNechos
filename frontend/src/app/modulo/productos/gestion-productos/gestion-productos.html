@@ -13,31 +13,27 @@
       class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100 d-flex flex-column"
     >
       <!-- ================= FILTROS ================= -->
-      <section class="card-body border-bottom py-3 flex-shrink-0 bg-white z-index-2">
-        <form class="row g-2">
+      <section class="card-body border-bottom py-3 flex-shrink-0 bg-white">
+        <form class="row g-2 align-items-center">
+          <!-- BUSCADOR -->
           <div class="col-md-4">
             <div class="input-group">
               <span class="input-group-text bg-white border-end-0">
-                <i class="fas fa-search"></i>
+                <i class="fas fa-search text-muted"></i>
               </span>
               <input
                 type="text"
                 class="form-control border-start-0"
                 placeholder="Buscar producto..."
                 [(ngModel)]="filtros.q"
-                (input)="aplicarFiltros()"
                 name="q"
               />
             </div>
           </div>
 
+          <!-- CATEGORÍA -->
           <div class="col-md-2">
-            <select
-              class="form-select"
-              [(ngModel)]="filtros.categoriaId"
-              (change)="aplicarFiltros()"
-              name="categoria"
-            >
+            <select class="form-select" [(ngModel)]="filtros.categoriaId" name="categoria">
               <option value="">Categoría</option>
               <option *ngFor="let c of categorias" [value]="c.id">
                 {{ c.nombre }}
@@ -45,13 +41,9 @@
             </select>
           </div>
 
+          <!-- PROVEEDOR -->
           <div class="col-md-3">
-            <select
-              class="form-select"
-              [(ngModel)]="filtros.proveedorId"
-              (change)="aplicarFiltros()"
-              name="proveedor"
-            >
+            <select class="form-select" [(ngModel)]="filtros.proveedorId" name="proveedor">
               <option value="">Proveedor</option>
               <option *ngFor="let p of proveedores" [value]="p.id">
                 {{ p.proveedor }}
@@ -59,18 +51,31 @@
             </select>
           </div>
 
+          <!-- MARCA -->
           <div class="col-md-3">
-            <select
-              class="form-select"
-              [(ngModel)]="filtros.marcaId"
-              (change)="aplicarFiltros()"
-              name="marca"
-            >
+            <select class="form-select" [(ngModel)]="filtros.marcaId" name="marca">
               <option value="">Marca</option>
               <option *ngFor="let m of marcas" [value]="m.id">
                 {{ m.nombre }}
               </option>
             </select>
+          </div>
+
+          <!-- BOTONES -->
+          <div class="col-12 d-flex justify-content-end gap-2 mt-2">
+            <button
+              type="button"
+              class="btn btn-light border rounded-3 px-3"
+              (click)="limpiarFiltros()"
+            >
+              <i class="fas fa-eraser me-1 text-muted"></i>
+              Limpiar
+            </button>
+
+            <button type="button" class="btn btn-primary rounded-3 px-3" (click)="aplicarFiltros()">
+              <i class="fas fa-search me-1"></i>
+              Buscar
+            </button>
           </div>
         </form>
       </section>
