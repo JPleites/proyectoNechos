@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api';
-import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +8,6 @@ import { HttpClient } from '@angular/common/http';
 export class InventarioService {
   constructor(
     private apiService: ApiService,
-    private http: HttpClient,
   ) {}
 
   ingresar(data: any) {
@@ -25,7 +23,7 @@ export class InventarioService {
   }
 
   consultaInventario(params: any) {
-    return this.http.get('/inventario/consulta', { params });
+    return this.apiService.get('/inventario/consulta', { params });
   }
 
   getInventarioPorProducto(codigo: string) {

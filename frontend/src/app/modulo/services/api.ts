@@ -11,8 +11,8 @@ export class ApiService {
 
   constructor(private http: HttpClient) {}
 
-  get<T>(url: string): Observable<T> {
-    return this.http.get<T>(`${this.baseUrl}${url}`);
+  get<T>(url: string, options?: { params?: any; headers?: any }): Observable<T> {
+    return this.http.get<T>(`${this.baseUrl}${url}`, options);
   }
 
   post<T>(url: string, data: any): Observable<T> {

@@ -63,23 +63,29 @@ export class ConsultaInventario implements OnInit {
   }
 
   buscar() {
-    this.cargando = true;
+    const raw = this.form.value;
 
-    this.inventarioService.consultaInventario(this.form.value).subscribe({
+    const params: any = {};
+
+    if (raw.productoCodigo?.trim()) {
+      params.productoCodigo = raw.productoCodigo.trim();
+    }
+
+    if (raw.ubicacion?.trim()) {
+      params.ubicacion = raw.ubicacion.trim();
+    }
+
+    if (raw.almacenId) {
+      params.almacenId = Number(raw.almacenId);
+    }
+
+    console.log('PARAMS LIMPIOS:', params);
+
+    this.inventarioService.consultaInventario(params).subscribe({
       next: (res: any) => {
-        this.data = res.inventario ?? res;
-
-        // si backend manda resumen
-        if (res.resumen) {
-          this.resumen = res.resumen;
-        } else {
-          this.calcularResumen();
-        }
-
-        this.cargando = false;
-      },
-      error: () => {
-        this.cargando = false;
+        this.data = res;
+        this.calcularResumen();
+        this.cdr.detectChanges();
       },
     });
   }
