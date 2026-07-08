@@ -11,6 +11,8 @@ interface Producto {
   codigo: string;
   producto: string;
   precio: number;
+  costoCompra?: number;
+  costoVenta?: number;
   imagenUrl?: string;
   marcaRel?: any;
   categoriaRel?: any;
@@ -35,10 +37,8 @@ interface Inventario {
 })
 export class ConsultaProducto implements OnInit {
   productos: Producto[] = [];
-
   inventarios: Record<string, Inventario[]> = {};
   stockMap: Record<string, number> = {};
-
   inventarioVisible: string | null = null;
 
   filtros = {
