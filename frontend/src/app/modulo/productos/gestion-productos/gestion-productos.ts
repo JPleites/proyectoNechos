@@ -50,11 +50,13 @@ export class GestionProductos implements OnInit {
     categoriaId: '',
     proveedorId: '',
     marcaId: '',
+    subCategoriaId: '',
   };
 
   categorias: any[] = [];
   proveedores: any[] = [];
   marcas: any[] = [];
+  subCategorias: any[] = [];
 
   selectedProduct: Producto | null = null;
   inventarioModal: Inventario[] = [];
@@ -162,6 +164,21 @@ export class GestionProductos implements OnInit {
     });
   }
 
+  onCategoriaChange(categoriaId: string) {
+    if (!categoriaId) {
+      this.subCategorias = [];
+      return;
+    }
+
+    this.categoriasService.getSubCategorias(Number(categoriaId)).subscribe({
+      next: (data: any) => {
+        this.subCategorias = data ?? [];
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error(err),
+    });
+  }
+
   aplicarFiltros() {
     this.productos = [];
     this.inventarioVisible = null;
@@ -182,6 +199,8 @@ export class GestionProductos implements OnInit {
       categoriaId: '',
       proveedorId: '',
       marcaId: '',
+      subCategoriaId: '',
     };
+    this.subCategorias = [];
   }
 }

@@ -26,6 +26,7 @@
                 class="form-control border-start-0"
                 placeholder="Buscar producto..."
                 [(ngModel)]="filtros.q"
+                (input)="aplicarFiltros()"
                 name="q"
               />
             </div>
@@ -33,10 +34,20 @@
 
           <!-- CATEGORÍA -->
           <div class="col-md-2">
-            <select class="form-select" [(ngModel)]="filtros.categoriaId" name="categoria">
+            <select class="form-select" [(ngModel)]="filtros.categoriaId" name="categoria" (change)="onCategoriaChange(filtros.categoriaId)">
               <option value="">Categoría</option>
               <option *ngFor="let c of categorias" [value]="c.id">
                 {{ c.nombre }}
+              </option>
+            </select>
+          </div>
+
+          <!-- SUBCATEGORÍA -->
+          <div class="col-md-2">
+            <select class="form-select" [(ngModel)]="filtros.subCategoriaId" name="subCategoria">
+              <option value="">Subcategoría</option>
+              <option *ngFor="let sc of subCategorias" [value]="sc.id">
+                {{ sc.nombre }}
               </option>
             </select>
           </div>

@@ -61,23 +61,22 @@ export class ConsultaProveedores implements OnInit {
   abrirCategorias(proveedor: Proveedor) {
     this.proveedorSeleccionado = proveedor;
     this.mostrarModal = true;
-    this.categoriasSeleccionadas = [];
 
-    // 🔥 cargar categorías
+    this.categoriaProveedoresService.getCategoriasProveedor(proveedor.id).subscribe({
+      next: (rel: any[]) => {
+        this.categoriasSeleccionadas = rel.map((r) => r.categoriaId);
+
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.categoriasSeleccionadas = [];
+      },
+    });
+
     this.categoriaService.getCategorias().subscribe({
       next: (cats: Categoria[]) => {
         this.categorias = cats;
         this.cdr.detectChanges();
-
-        // 🔥 categorías del proveedor (YA CON ID)
-        this.categoriaProveedoresService.getCategoriasProveedor(proveedor.id).subscribe({
-          next: (rel: any[]) => {
-            this.categoriasSeleccionadas = rel.map((r) => r.categoriaId);
-          },
-          error: () => {
-            this.categoriasSeleccionadas = [];
-          },
-        });
       },
     });
   }

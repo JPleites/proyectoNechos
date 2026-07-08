@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { ProductosService } from '../../services/productos.service';
 import { InventarioService } from '../../services/inventario.service';
 import { CategoriasService } from '../../services/categorias.service';
-import { ProveedoresService } from '../../services/proveedores.service';
 import { MarcaService } from '../../services/marca.service';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -15,9 +14,11 @@ interface Producto {
   imagenUrl?: string;
   marcaRel?: any;
   categoriaRel?: any;
-  subCategoria?: any;
   proveedorRel?: any;
+  subCategoria?: any;
   descripcion?: string;
+  productoID?: number;
+  codigoProducto?: string;
 }
 
 interface Inventario {
@@ -33,7 +34,6 @@ interface Inventario {
   styleUrl: './consulta-producto.scss',
 })
 export class ConsultaProducto implements OnInit {
-
   productos: Producto[] = [];
 
   inventarios: Record<string, Inventario[]> = {};
@@ -44,13 +44,13 @@ export class ConsultaProducto implements OnInit {
   filtros = {
     q: '',
     categoriaId: '',
-    proveedorId: '',
     marcaId: '',
+    subCategoriaId: '',
   };
 
   categorias: any[] = [];
-  proveedores: any[] = [];
   marcas: any[] = [];
+  subCategorias: any[] = [];
 
   selectedProduct: Producto | null = null;
   inventarioModal: Inventario[] = [];
@@ -59,13 +59,11 @@ export class ConsultaProducto implements OnInit {
     private productosService: ProductosService,
     private inventarioService: InventarioService,
     private categoriasService: CategoriasService,
-    private proveedoresService: ProveedoresService,
     private marcaService: MarcaService,
     private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
-    this.cargarProductos();
     this.cargarFiltros();
   }
 
@@ -122,8 +120,7 @@ export class ConsultaProducto implements OnInit {
 
     this.inventarioService.getInventarioPorProducto(codigo).subscribe({
       next: (res: any) => {
-        const inventario: Inventario[] =
-          Array.isArray(res) ? res : (res?.inventario ?? []);
+        const inventario: Inventario[] = Array.isArray(res) ? res : (res?.inventario ?? []);
 
         this.inventarios[codigo] = inventario;
         this.inventarioVisible = codigo;
@@ -148,14 +145,24 @@ export class ConsultaProducto implements OnInit {
       this.cdr.detectChanges();
     });
 
-    this.proveedoresService.getProveedores().subscribe((data: any) => {
-      this.proveedores = data;
-      this.cdr.detectChanges();
-    });
-
     this.marcaService.getMarcas().subscribe((data: any) => {
       this.marcas = data;
       this.cdr.detectChanges();
+    });
+  }
+
+  onCategoriaChange(categoriaId: string) {
+    if (!categoriaId) {
+      this.subCategorias = [];
+      return;
+    }
+
+    this.categoriasService.getSubCategorias(Number(categoriaId)).subscribe({
+      next: (data: any) => {
+        this.subCategorias = data ?? [];
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error(err),
     });
   }
 
@@ -171,5 +178,15 @@ export class ConsultaProducto implements OnInit {
       },
       error: (err) => console.error(err),
     });
+  }
+
+  limpiarFiltros() {
+    this.filtros = {
+      q: '',
+      categoriaId: '',
+      marcaId: '',
+      subCategoriaId: '',
+    };
+    this.subCategorias = [];
   }
 }

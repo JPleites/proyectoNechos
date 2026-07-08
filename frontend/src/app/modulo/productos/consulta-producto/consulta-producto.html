@@ -13,12 +13,13 @@
       class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100 d-flex flex-column"
     >
       <!-- ================= FILTROS ================= -->
-      <section class="card-body border-bottom py-3 flex-shrink-0 bg-white z-index-2">
-        <form class="row g-2">
+      <section class="card-body border-bottom py-3 flex-shrink-0 bg-white">
+        <form class="row g-2 align-items-center">
+          <!-- BUSCADOR -->
           <div class="col-md-4">
             <div class="input-group">
               <span class="input-group-text bg-white border-end-0">
-                <i class="fas fa-search"></i>
+                <i class="fas fa-search text-muted"></i>
               </span>
               <input
                 type="text"
@@ -31,13 +32,9 @@
             </div>
           </div>
 
+          <!-- CATEGORÍA -->
           <div class="col-md-2">
-            <select
-              class="form-select"
-              [(ngModel)]="filtros.categoriaId"
-              (change)="aplicarFiltros()"
-              name="categoria"
-            >
+            <select class="form-select" [(ngModel)]="filtros.categoriaId" name="categoria" (change)="onCategoriaChange(filtros.categoriaId)">
               <option value="">Categoría</option>
               <option *ngFor="let c of categorias" [value]="c.id">
                 {{ c.nombre }}
@@ -45,32 +42,41 @@
             </select>
           </div>
 
-          <div class="col-md-3">
-            <select
-              class="form-select"
-              [(ngModel)]="filtros.proveedorId"
-              (change)="aplicarFiltros()"
-              name="proveedor"
-            >
-              <option value="">Proveedor</option>
-              <option *ngFor="let p of proveedores" [value]="p.id">
-                {{ p.proveedor }}
+          <!-- SUBCATEGORÍA -->
+          <div class="col-md-2">
+            <select class="form-select" [(ngModel)]="filtros.subCategoriaId" name="subCategoria" >
+              <option value="">Subcategoría</option>
+              <option *ngFor="let sc of subCategorias" [value]="sc.id">
+                {{ sc.nombre }}
               </option>
             </select>
           </div>
 
+          <!-- MARCA -->
           <div class="col-md-3">
-            <select
-              class="form-select"
-              [(ngModel)]="filtros.marcaId"
-              (change)="aplicarFiltros()"
-              name="marca"
-            >
+            <select class="form-select" [(ngModel)]="filtros.marcaId" name="marca">
               <option value="">Marca</option>
               <option *ngFor="let m of marcas" [value]="m.id">
                 {{ m.nombre }}
               </option>
             </select>
+          </div>
+
+          <!-- BOTONES -->
+          <div class="col-12 d-flex justify-content-end gap-2 mt-2">
+            <button
+              type="button"
+              class="btn btn-light border rounded-3 px-3"
+              (click)="limpiarFiltros()"
+            >
+              <i class="fas fa-eraser me-1 text-muted"></i>
+              Limpiar
+            </button>
+
+            <button type="button" class="btn btn-primary rounded-3 px-3" (click)="aplicarFiltros()">
+              <i class="fas fa-search me-1"></i>
+              Buscar
+            </button>
           </div>
         </form>
       </section>
@@ -83,7 +89,6 @@
               <th>Código</th>
               <th>Producto</th>
               <th>Precio</th>
-              <th>Proveedor</th>
               <th>Categoría</th>
               <th>Marca</th>
               <th class="text-center">Acciones</th>
@@ -99,8 +104,6 @@
               <td>{{ p.producto }}</td>
 
               <td>L {{ p.precio | number: '1.2-2' }}</td>
-
-              <td>{{ p.proveedorRel?.proveedor || '—' }}</td>
 
               <td>{{ p.categoriaRel?.nombre || '—' }}</td>
 
@@ -136,31 +139,71 @@
       <div class="modal-body">
         <div class="row">
           <!-- IMAGEN -->
-          <div class="col-md-4 text-center">
-            <img
-              [src]="selectedProduct.imagenUrl || 'https://via.placeholder.com/300'"
-              class="img-fluid rounded shadow-sm"
-            />
+          <div class="col-md-4">
+            <div class="product-image-wrapper">
+              <img
+                [src]="selectedProduct.imagenUrl || 'https://via.placeholder.com/300'"
+                class="product-image"
+              />
+            </div>
           </div>
 
           <!-- INFO -->
           <div class="col-md-8">
-            <p><strong>Código:</strong> {{ selectedProduct.codigo }}</p>
-            <p><strong>Precio:</strong> L {{ selectedProduct.precio }}</p>
-            <p><strong>Proveedor:</strong> {{ selectedProduct.proveedorRel?.proveedor }}</p>
-            <p><strong>Categoría:</strong> {{ selectedProduct.categoriaRel?.nombre }}</p>
-            <p><strong>Subcategoría:</strong> {{ selectedProduct.subCategoria?.nombre || '—' }}</p>
-            <p><strong>Marca:</strong> {{ selectedProduct.marcaRel?.nombre }}</p>
-            <p><strong>Descripción:</strong> {{ selectedProduct.descripcion }}</p>
+            <div class="product-info">
+
+              <div class="info-card">
+                <span class="info-label">Código</span>
+                <div class="info-value">{{ selectedProduct.codigo }}</div>
+              </div>
+
+              <div class="info-card">
+                <span class="info-label">Código producto</span>
+                <div class="info-value">{{ selectedProduct.codigoProducto }}</div>
+              </div>
+
+              <div class="info-card">
+                <span class="info-label">Precio</span>
+                <div class="info-value">L {{ selectedProduct.precio | number: '1.2-2' }}</div>
+              </div>
+
+              <div class="info-card">
+                <span class="info-label">Categoría</span>
+                <div class="info-value">
+                  {{ selectedProduct.categoriaRel?.nombre }}
+                </div>
+              </div>
+
+              <div class="info-card">
+                <span class="info-label">Subcategoría</span>
+                <div class="info-value">
+                  {{ selectedProduct.subCategoria?.nombre || '—' }}
+                </div>
+              </div>
+
+              <div class="info-card">
+                <span class="info-label">Marca</span>
+                <div class="info-value">
+                  {{ selectedProduct.marcaRel?.nombre }}
+                </div>
+              </div>
+
+              <div class="info-card descripcion-card">
+                <span class="info-label">Descripción</span>
+                <div class="info-value">
+                  {{ selectedProduct.descripcion || 'Sin descripción' }}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
         <hr />
 
         <!-- INVENTARIO -->
-        <h6>Inventario</h6>
+        <h6 class="inventory-title">Inventario por ubicación</h6>
 
-        <table class="table table-sm">
+        <table class="table inventory-table">
           <thead>
             <tr>
               <th>Ubicación</th>
@@ -171,10 +214,14 @@
           <tbody>
             <tr *ngFor="let inv of inventarioModal">
               <td>{{ inv.ubicacion }}</td>
-              <td class="text-end">{{ inv.cantidad }}</td>
+              <td class="text-end">
+                <span class="inventory-badge">
+                  {{ inv.cantidad }}
+                </span>
+              </td>
             </tr>
 
-            <tr *ngIf="!inventarioModal?.length">
+            <tr *ngIf="!inventarioModal">
               <td colspan="2" class="text-center text-muted">Sin inventario</td>
             </tr>
           </tbody>

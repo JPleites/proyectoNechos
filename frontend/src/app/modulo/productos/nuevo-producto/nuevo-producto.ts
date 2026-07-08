@@ -46,7 +46,7 @@ export class NuevoProducto implements OnInit {
       proveedor: ['', Validators.required],
       marca: ['', Validators.required],
       categoria: ['', Validators.required],
-      subCategorias: [''],
+      subCategoria: [''],
       descripcion: [''],
     });
   }

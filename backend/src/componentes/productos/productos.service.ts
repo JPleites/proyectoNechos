@@ -62,6 +62,7 @@ export class ProductosService {
     const categoriaId = Number(data.categoria);
     const proveedorId = Number(data.proveedor);
     const marcaId = Number(data.marca);
+    const subCategoriaId = data.subCategoria ? Number(data.subCategoria) : null;
 
     const categoria = await this.prisma.categoria.findUnique({
       where: { id: categoriaId },
@@ -106,6 +107,27 @@ export class ProductosService {
       );
     }
 
+    let subCategoria: {
+      id: number;
+      categoriaId: number;
+    } | null = null;
+
+    if (subCategoriaId) {
+      subCategoria = await this.prisma.subCategoria.findUnique({
+        where: { id: subCategoriaId },
+      });
+
+      if (!subCategoria) {
+        throw new BadRequestException('La subcategoría no existe');
+      }
+
+      if (subCategoria.categoriaId !== categoria.id) {
+        throw new BadRequestException(
+          'La subcategoría no pertenece a la categoría seleccionada',
+        );
+      }
+    }
+
     const productoID = await this.generarProductoID();
 
     return this.prisma.productos.create({
@@ -124,9 +146,11 @@ export class ProductosService {
         categoriaRel: { connect: { id: categoria.id } },
         proveedorRel: { connect: { id: proveedor.id } },
         marcaRel: { connect: { id: marca.id } },
-        ...(data.subCategoria
-          ? { subCategoria: { connect: { id: Number(data.subCategoria) } } }
-          : {}),
+        ...(subCategoria && {
+          subCategoria: {
+            connect: { id: subCategoria.id },
+          },
+        }),
       },
     });
   }
@@ -182,6 +206,11 @@ export class ProductosService {
           },
           {
             marcaRel: {
+              nombre: { contains: q, mode: 'insensitive' },
+            },
+          },
+          {
+            subCategoria: {
               nombre: { contains: q, mode: 'insensitive' },
             },
           },
@@ -258,6 +287,11 @@ export class ProductosService {
                   },
                   {
                     marcaRel: {
+                      nombre: { contains: q, mode: 'insensitive' },
+                    },
+                  },
+                  {
+                    subCategoria: {
                       nombre: { contains: q, mode: 'insensitive' },
                     },
                   },

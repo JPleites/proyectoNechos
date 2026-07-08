@@ -10,7 +10,9 @@ export class CategoriaProveedoresService {
   // =========================
   async getByProveedor(proveedorId: number) {
     return this.prisma.categoriaProveedores.findMany({
-      where: { proveedorId },
+      where: {
+        proveedorId: Number(proveedorId),
+      },
       include: {
         categoria: true,
         proveedor: true,
@@ -21,31 +23,53 @@ export class CategoriaProveedoresService {
   // =========================
   // ASIGNAR CATEGORÍAS
   // =========================
-  async asignarCategorias(
-    proveedorId: number,
-    categorias: number[],
-  ) {
-    if (!categorias.length) {
-      throw new BadRequestException(
-        'Debe enviar al menos una categoría',
-      );
-    }
-
+  async asignarCategorias(proveedorId: number, categorias: number[]) {
     return this.prisma.$transaction(async (tx) => {
-      // 1. eliminar relaciones actuales
-      await tx.categoriaProveedores.deleteMany({
+      // Categorías actuales del proveedor
+      const actuales = await tx.categoriaProveedores.findMany({
         where: { proveedorId },
+        select: {
+          categoriaId: true,
+        },
       });
 
-      // 2. crear nuevas relaciones
-      const data = categorias.map((categoriaId) => ({
-        proveedorId,
-        categoriaId,
-      }));
+      const categoriasActuales = actuales.map((c) => c.categoriaId);
 
-      return tx.categoriaProveedores.createMany({
-        data,
-      });
+      // Categorías nuevas que hay que agregar
+      const agregar = categorias.filter(
+        (id) => !categoriasActuales.includes(id),
+      );
+
+      // Categorías que el usuario quitó
+      const eliminar = categoriasActuales.filter(
+        (id) => !categorias.includes(id),
+      );
+
+      // Crear nuevas relaciones
+      if (agregar.length > 0) {
+        await tx.categoriaProveedores.createMany({
+          data: agregar.map((categoriaId) => ({
+            proveedorId,
+            categoriaId,
+          })),
+        });
+      }
+
+      // Eliminar únicamente las removidas
+      if (eliminar.length > 0) {
+        await tx.categoriaProveedores.deleteMany({
+          where: {
+            proveedorId,
+            categoriaId: {
+              in: eliminar,
+            },
+          },
+        });
+      }
+
+      return {
+        mensaje: 'Categorías actualizadas correctamente',
+      };
     });
   }
 
@@ -63,9 +87,7 @@ export class CategoriaProveedoresService {
     });
 
     if (existe) {
-      throw new BadRequestException(
-        'Esta relación ya existe',
-      );
+      throw new BadRequestException('Esta relación ya existe');
     }
 
     return this.prisma.categoriaProveedores.create({
