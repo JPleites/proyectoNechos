@@ -261,7 +261,7 @@ export class ProductosService {
   }
 
   async filtrarProductos(query: any) {
-    const { q, categoriaId, proveedorId, marcaId } = query;
+    const { q, categoriaId, proveedorId, marcaId, subCategoriaId } = query;
 
     return this.prisma.productos.findMany({
       where: {
@@ -302,6 +302,7 @@ export class ProductosService {
           categoriaId ? { categoriaId: Number(categoriaId) } : {},
           proveedorId ? { proveedorId: Number(proveedorId) } : {},
           marcaId ? { marcaId: Number(marcaId) } : {},
+          subCategoriaId ? { subCategoriaId: Number(subCategoriaId) } : {},
         ],
       },
       include: {

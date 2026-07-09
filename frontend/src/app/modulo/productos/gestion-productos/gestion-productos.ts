@@ -184,6 +184,7 @@ export class GestionProductos implements OnInit {
     this.inventarioVisible = null;
     this.stockMap = {};
 
+    console.log('Aplicando filtros:', this.filtros); 
     this.productosService.filtrosProductos(this.filtros).subscribe({
       next: (data: any) => {
         this.productos = data ?? [];
