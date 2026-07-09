@@ -263,48 +263,69 @@ export class ProductosService {
   async filtrarProductos(query: any) {
     const { q, categoriaId, proveedorId, marcaId, subCategoriaId } = query;
 
+    const where: any = {};
+
+    if (q) {
+      where.OR = [
+        { codigo: { contains: q, mode: 'insensitive' } },
+        { codigoProveedor: { contains: q, mode: 'insensitive' } },
+        { codigoProducto: { contains: q, mode: 'insensitive' } },
+        { producto: { contains: q, mode: 'insensitive' } },
+        { descripcion: { contains: q, mode: 'insensitive' } },
+        // {
+        //   proveedorRel: {
+        //     proveedor: {
+        //       contains: q,
+        //       mode: 'insensitive',
+        //     },
+        //   },
+        // },
+        // {
+        //   categoriaRel: {
+        //     nombre: {
+        //       contains: q,
+        //       mode: 'insensitive',
+        //     },
+        //   },
+        // },
+        // {
+        //   marcaRel: {
+        //     nombre: {
+        //       contains: q,
+        //       mode: 'insensitive',
+        //     },
+        //   },
+        // },
+        // {
+        //   subCategoria: {
+        //     nombre: {
+        //       contains: q,
+        //       mode: 'insensitive',
+        //     },
+        //   },
+        // },
+      ];
+    }
+
+    // 📦 Filtros
+    if (categoriaId) {
+      where.categoriaId = Number(categoriaId);
+    }
+
+    if (proveedorId) {
+      where.proveedorId = Number(proveedorId);
+    }
+
+    if (marcaId) {
+      where.marcaId = Number(marcaId);
+    }
+
+    if (subCategoriaId) {
+      where.subCategoriaId = Number(subCategoriaId);
+    }
+
     return this.prisma.productos.findMany({
-      where: {
-        AND: [
-          q
-            ? {
-                OR: [
-                  { codigo: { contains: q, mode: 'insensitive' } },
-                  { codigoProveedor: { contains: q, mode: 'insensitive' } },
-                  { codigoProducto: { contains: q, mode: 'insensitive' } },
-                  { producto: { contains: q, mode: 'insensitive' } },
-                  { descripcion: { contains: q, mode: 'insensitive' } },
-
-                  {
-                    proveedorRel: {
-                      proveedor: { contains: q, mode: 'insensitive' },
-                    },
-                  },
-                  {
-                    categoriaRel: {
-                      nombre: { contains: q, mode: 'insensitive' },
-                    },
-                  },
-                  {
-                    marcaRel: {
-                      nombre: { contains: q, mode: 'insensitive' },
-                    },
-                  },
-                  {
-                    subCategoria: {
-                      nombre: { contains: q, mode: 'insensitive' },
-                    },
-                  },
-                ],
-              }
-            : {},
-
-          categoriaId ? { categoriaId: Number(categoriaId) } : {},
-          proveedorId ? { proveedorId: Number(proveedorId) } : {},
-          marcaId ? { marcaId: Number(marcaId) } : {},
-          subCategoriaId ? { subCategoriaId: Number(subCategoriaId) } : {},
-        ],
-      },
+      where,
       include: {
         proveedorRel: true,
         categoriaRel: true,

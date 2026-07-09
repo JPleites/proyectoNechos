@@ -60,6 +60,7 @@ export class ProductosService {
     if (filtros.categoriaId) params.append('categoriaId', filtros.categoriaId);
     if (filtros.proveedorId) params.append('proveedorId', filtros.proveedorId);
     if (filtros.marcaId) params.append('marcaId', filtros.marcaId);
+    if (filtros.subCategoriaId) params.append('subCategoriaId', filtros.subCategoriaId);
 
     return this.apiService.get(`/productos/filtros?${params.toString()}`);
   }

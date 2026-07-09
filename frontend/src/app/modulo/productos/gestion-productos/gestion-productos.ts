@@ -165,6 +165,7 @@ export class GestionProductos implements OnInit {
   }
 
   onCategoriaChange(categoriaId: string) {
+    this.filtros.subCategoriaId = '';
     if (!categoriaId) {
       this.subCategorias = [];
       return;
@@ -183,8 +184,7 @@ export class GestionProductos implements OnInit {
     this.productos = [];
     this.inventarioVisible = null;
     this.stockMap = {};
-
-    console.log('Aplicando filtros:', this.filtros); 
+    
     this.productosService.filtrosProductos(this.filtros).subscribe({
       next: (data: any) => {
         this.productos = data ?? [];
