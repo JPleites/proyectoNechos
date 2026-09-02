@@ -93,12 +93,13 @@ model Devoluciones {
 }
 
 model Inventario {
-  id             Int         @id @default(autoincrement())
-  productoCodigo String
-  ubicacion      String
-  cantidad       Int
-  producto       Productos   @relation(fields: [productoCodigo], references: [codigo])
-  ubicacionRel   Ubicaciones @relation(fields: [ubicacion], references: [ubicacion])
+  id                Int         @id @default(autoincrement())
+  productoCodigo    String
+  ubicacion         String
+  cantidad          Int
+  cantidadReservada Int?        @default(0)
+  producto          Productos   @relation(fields: [productoCodigo], references: [codigo])
+  ubicacionRel      Ubicaciones @relation(fields: [ubicacion], references: [ubicacion])
 
   @@unique([productoCodigo, ubicacion])
   @@index([productoCodigo])
@@ -115,16 +116,20 @@ model Marca {
 }
 
 model MovimientosInventario {
-  id             Int       @id @default(autoincrement())
-  productoCodigo String
-  tipo           String
-  cantidad       Int
-  fecha          DateTime  @default(now())
-  referencia     String?
-  usuarioCodigo  Int
-  ubicacion      String?
-  producto       Productos @relation(fields: [productoCodigo], references: [codigo])
-  usuario        Usuarios  @relation(fields: [usuarioCodigo], references: [codigo])
+  id                  Int          @id @default(autoincrement())
+  productoCodigo      String
+  tipo                String
+  cantidad            Int
+  fecha               DateTime     @default(now())
+  referencia          String?
+  usuarioCodigo       Int
+  ubicacion           String?
+  ubicacionOrigen     String?
+  ubicacionDestino    String?
+  producto            Productos    @relation(fields: [productoCodigo], references: [codigo])
+  usuario             Usuarios     @relation(fields: [usuarioCodigo], references: [codigo])
+  ubicacionDestinoRel Ubicaciones? @relation("MovimientosInventario_ubicacionDestinoToUbicaciones", fields: [ubicacionDestino], references: [ubicacion], onDelete: Restrict, map: "ubicacionDestinoRel")
+  ubicacionOrigenRel  Ubicaciones? @relation("MovimientosInventario_ubicacionOrigenToUbicaciones", fields: [ubicacionOrigen], references: [ubicacion], onDelete: Restrict, map: "ubicacionOrigenRel")
 }
 
 model Pedidos {
@@ -240,14 +245,16 @@ model SolicitudDescuento {
 }
 
 model Ubicaciones {
-  ubicacion      String          @id
-  deposito       Int
-  estante        Int
-  nivel          Int
-  almacenId      Int
-  inventario     Inventario[]
-  pedidoDetalles PedidoDetalle[]
-  almacen        Almacenes       @relation(fields: [almacenId], references: [id])
+  ubicacion                    String                  @id
+  deposito                     Int
+  estante                      Int
+  nivel                        Int
+  almacenId                    Int
+  inventario                   Inventario[]
+  movimientosInventarioDestino MovimientosInventario[] @relation("MovimientosInventario_ubicacionDestinoToUbicaciones")
+  movimientosInventarioOrigen  MovimientosInventario[] @relation("MovimientosInventario_ubicacionOrigenToUbicaciones")
+  pedidoDetalles               PedidoDetalle[]
+  almacen                      Almacenes               @relation(fields: [almacenId], references: [id])
 }
 
 model Usuarios {

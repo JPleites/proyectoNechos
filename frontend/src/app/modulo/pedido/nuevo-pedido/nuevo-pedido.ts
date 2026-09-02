@@ -151,11 +151,8 @@ export class NuevoPedidoComponent implements OnInit {
 
     this.carrito.push({
       productoCodigo,
-      nombreProducto: producto.producto,
       ubicacion,
       cantidad,
-      precioUnitario: producto.precio,
-      subtotal,
     });
 
     this.form.patchValue({
@@ -182,10 +179,6 @@ export class NuevoPedidoComponent implements OnInit {
 
     const pedido = {
       clienteId: this.form.value.clienteId || '9999999999999',
-      impuesto: this.total * 0.15,
-      subtotal: this.total - this.total * 0.15,
-      descuento: 0,
-      total: this.total,
       detalles: this.carrito,
     };
 

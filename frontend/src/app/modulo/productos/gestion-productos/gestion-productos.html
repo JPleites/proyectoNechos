@@ -34,7 +34,12 @@
 
           <!-- CATEGORÍA -->
           <div class="col-md-2">
-            <select class="form-select" [(ngModel)]="filtros.categoriaId" name="categoria" (change)="onCategoriaChange(filtros.categoriaId)">
+            <select
+              class="form-select"
+              [(ngModel)]="filtros.categoriaId"
+              name="categoria"
+              (change)="onCategoriaChange(filtros.categoriaId)"
+            >
               <option value="">Categoría</option>
               <option *ngFor="let c of categorias" [value]="c.id">
                 {{ c.nombre }}
@@ -125,6 +130,14 @@
               <td class="text-center">
                 <button class="btn btn-sm btn-outline-primary" (click)="verDetalle(p)">
                   <i class="fas fa-eye"></i>
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-warning"
+                  title="Editar producto"
+                  [routerLink]="['/productos/editar', p.codigo]"
+                >
+                  <i class="fas fa-edit"></i>
                 </button>
               </td>
             </tr>

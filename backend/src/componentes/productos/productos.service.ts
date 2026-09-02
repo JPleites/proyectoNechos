@@ -156,23 +156,200 @@ export class ProductosService {
   }
 
   // ✏️ Actualizar producto con validación inteligente 🔥
-  async updateProductos(params: {
-    where: Prisma.ProductosWhereUniqueInput;
-    data: Prisma.ProductosUpdateInput;
-  }): Promise<Productos> {
-    const { where, data } = params;
-
+  async updateProductos(
+    codigo: string,
+    data: {
+      codigoProveedor?: string;
+      codigoProducto?: string;
+      producto?: string;
+      costoCompra?: number;
+      costoVenta?: number;
+      precio?: number;
+      descuento?: number;
+      descripcion?: string;
+      imagenUrl?: string;
+      proveedor?: number | string;
+      marca?: number | string;
+      categoria?: number | string;
+      subCategoria?: number | string | null;
+    },
+  ): Promise<Productos> {
     const producto = await this.prisma.productos.findUnique({
-      where,
+      where: { codigo },
     });
 
     if (!producto) {
       throw new BadRequestException('Producto no encontrado');
     }
 
+    const categoriaId =
+      data.categoria !== undefined
+        ? Number(data.categoria)
+        : producto.categoriaId;
+
+    const proveedorId =
+      data.proveedor !== undefined
+        ? Number(data.proveedor)
+        : producto.proveedorId;
+
+    const marcaId =
+      data.marca !== undefined ? Number(data.marca) : producto.marcaId;
+
+    const subCategoriaId =
+      data.subCategoria !== undefined
+        ? data.subCategoria
+          ? Number(data.subCategoria)
+          : null
+        : producto.subCategoriaId;
+
+    // =========================
+    // VALIDAR CATEGORÍA
+    // =========================
+
+    const categoria = await this.prisma.categoria.findUnique({
+      where: { id: categoriaId },
+    });
+
+    if (!categoria) {
+      throw new BadRequestException('La categoría no existe');
+    }
+
+    // =========================
+    // VALIDAR PROVEEDOR
+    // =========================
+
+    const proveedor = await this.prisma.proveedores.findUnique({
+      where: { id: proveedorId },
+    });
+
+    if (!proveedor) {
+      throw new BadRequestException('El proveedor no existe');
+    }
+
+    // =========================
+    // VALIDAR MARCA
+    // =========================
+
+    const marca = await this.prisma.marca.findUnique({
+      where: { id: marcaId },
+    });
+
+    if (!marca) {
+      throw new BadRequestException('La marca no existe');
+    }
+
+    if (marca.proveedorId !== proveedor.id) {
+      throw new BadRequestException('La marca no pertenece a ese proveedor');
+    }
+
+    // =========================
+    // VALIDAR CATEGORÍA + PROVEEDOR
+    // =========================
+
+    const relacion = await this.prisma.categoriaProveedores.findUnique({
+      where: {
+        categoriaId_proveedorId: {
+          categoriaId: categoria.id,
+          proveedorId: proveedor.id,
+        },
+      },
+    });
+
+    if (!relacion) {
+      throw new BadRequestException(
+        'El proveedor no pertenece a la categoría seleccionada',
+      );
+    }
+
+    // =========================
+    // VALIDAR SUBCATEGORÍA
+    // =========================
+
+    if (subCategoriaId !== null) {
+      const subCategoria = await this.prisma.subCategoria.findUnique({
+        where: { id: subCategoriaId },
+      });
+
+      if (!subCategoria) {
+        throw new BadRequestException('La subcategoría no existe');
+      }
+
+      if (subCategoria.categoriaId !== categoria.id) {
+        throw new BadRequestException(
+          'La subcategoría no pertenece a la categoría seleccionada',
+        );
+      }
+    }
+
+    // =========================
+    // CONSTRUIR DATOS A ACTUALIZAR
+    // =========================
+
+    const datosActualizacion: Prisma.ProductosUpdateInput = {
+      ...(data.codigoProveedor !== undefined && {
+        codigoProveedor: data.codigoProveedor,
+      }),
+
+      ...(data.codigoProducto !== undefined && {
+        codigoProducto: data.codigoProducto,
+      }),
+
+      ...(data.producto !== undefined && {
+        producto: data.producto,
+      }),
+
+      ...(data.costoCompra !== undefined && {
+        costoCompra: Number(data.costoCompra),
+      }),
+
+      ...(data.costoVenta !== undefined && {
+        costoVenta: Number(data.costoVenta),
+      }),
+
+      ...(data.precio !== undefined && {
+        precio: Number(data.precio),
+      }),
+
+      ...(data.descuento !== undefined && {
+        descuento: Number(data.descuento),
+      }),
+
+      ...(data.descripcion !== undefined && {
+        descripcion: data.descripcion,
+      }),
+
+      ...(data.imagenUrl !== undefined && {
+        imagenUrl: data.imagenUrl,
+      }),
+
+      categoriaRel: {
+        connect: { id: categoria.id },
+      },
+
+      proveedorRel: {
+        connect: { id: proveedor.id },
+      },
+
+      marcaRel: {
+        connect: { id: marca.id },
+      },
+
+      ...(subCategoriaId !== null
+        ? {
+            subCategoria: {
+              connect: { id: subCategoriaId },
+            },
+          }
+        : {
+            subCategoria: {
+              disconnect: true,
+            },
+          }),
+    };
+
     return this.prisma.productos.update({
-      where,
-      data,
+      where: { codigo },
+      data: datosActualizacion,
     });
   }
 

@@ -1,0 +1,337 @@
+<div class="container-fluid vh-100 d-flex flex-column p-3 bg-light page-wrapper">
+  <header
+    class="d-flex justify-content-between align-items-center mb-3 flex-shrink-0 modulo-header"
+  >
+    <div>
+      <h4 class="mb-1 fw-semibold text-dark">Editar Producto</h4>
+      <small class="text-muted"> Actualización de información general y costos del producto </small>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-light border rounded-3 px-3 fw-medium"
+      (click)="cancelar()"
+      [disabled]="guardando"
+    >
+      <i class="fas fa-arrow-left me-2"></i>
+      Volver
+    </button>
+  </header>
+
+  <div class="modulo-contenido panel-scroll flex-grow-1 w-100">
+    <article class="card border-0 shadow-sm rounded-4 bg-white h-100">
+      <form
+        class="card-body p-4 h-100 overflow-auto"
+        [formGroup]="form"
+        (ngSubmit)="$event.preventDefault(); guardar()"
+      >
+        <div class="row g-4">
+          <!-- ================================================= -->
+          <!-- IMAGEN -->
+          <!-- ================================================= -->
+
+          <aside class="col-lg-4 col-xl-3.5">
+            <section
+              class="erp-product-card text-center p-4 border rounded-4 bg-light-subtle shadow-inner"
+            >
+              <small class="text-uppercase fw-bold text-muted d-block mb-3 letter-spacing">
+                Imagen referencial
+              </small>
+
+              <div class="d-flex justify-content-center mb-3">
+                <div
+                  class="img-preview-container rounded-4 shadow-sm border bg-white overflow-hidden d-flex align-items-center justify-content-center"
+                >
+                  <img
+                    [src]="imagePreview || 'https://via.placeholder.com/220x220?text=Producto'"
+                    class="erp-product-image img-fluid"
+                    alt="Producto"
+                  />
+                </div>
+              </div>
+
+              <label
+                class="btn btn-outline-primary btn-sm rounded-3 w-100 mb-2.5 py-2 fw-medium cursor-pointer"
+              >
+                <i class="fas fa-upload me-2 small"></i>
+                Cambiar imagen
+
+                <input type="file" accept="image/*" hidden (change)="onImageSelected($event)" />
+              </label>
+
+              <small class="text-muted d-block x-small">
+                Selecciona una nueva imagen solo si deseas reemplazar la actual.
+              </small>
+            </section>
+          </aside>
+
+          <!-- ================================================= -->
+          <!-- CONTENIDO PRINCIPAL -->
+          <!-- ================================================= -->
+
+          <main class="col-lg-8 col-xl-8.5 d-grid gap-3.5">
+            <!-- ================================================= -->
+            <!-- INFORMACIÓN BÁSICA -->
+            <!-- ================================================= -->
+
+            <section class="erp-panel shadow-sm border">
+              <h6 class="erp-section-title">
+                <i class="fas fa-info-circle me-1.5 text-primary"></i>
+                Información básica
+              </h6>
+
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label class="form-label"> Código SKU </label>
+
+                  <input formControlName="codigo" class="form-control bg-light" readonly />
+
+                  <small class="text-muted"> El código SKU no puede modificarse. </small>
+                </div>
+
+                <div class="col-md-8">
+                  <label class="form-label"> Nombre del Producto </label>
+
+                  <input
+                    formControlName="producto"
+                    class="form-control"
+                    placeholder="Ej. Aceite Havoline ProDS 10W-30, Banda de distribución, etc."
+                  />
+                </div>
+              </div>
+
+              <div class="row g-3 mt-2">
+                <div class="col-md-6">
+                  <label class="form-label"> Código del proveedor </label>
+
+                  <input
+                    formControlName="codigoProveedor"
+                    class="form-control"
+                    placeholder="Código del proveedor"
+                  />
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label"> Código del producto </label>
+
+                  <input
+                    formControlName="codigoProducto"
+                    class="form-control"
+                    placeholder="Código del producto"
+                  />
+                </div>
+              </div>
+            </section>
+
+            <!-- ================================================= -->
+            <!-- PRECIOS -->
+            <!-- ================================================= -->
+
+            <section class="erp-panel shadow-sm border">
+              <h6 class="erp-section-title text-success">
+                <i class="fas fa-dollar-sign me-1.5"></i>
+                Precios y Rentabilidad
+              </h6>
+
+              <div class="row g-3">
+                <div class="col-md-6 col-xl-3">
+                  <label class="form-label"> Costo de compra </label>
+
+                  <div class="input-group erp-input-group">
+                    <span class="input-group-text bg-white text-muted"> L </span>
+
+                    <input
+                      type="number"
+                      formControlName="costoCompra"
+                      class="form-control"
+                      placeholder="0.00"
+                      min="0"
+                    />
+                  </div>
+                </div>
+
+                <div class="col-md-6 col-xl-3">
+                  <label class="form-label"> Costo de venta </label>
+
+                  <div class="input-group erp-input-group">
+                    <span class="input-group-text bg-white text-muted"> L </span>
+
+                    <input
+                      type="number"
+                      formControlName="costoVenta"
+                      class="form-control"
+                      placeholder="0.00"
+                      min="0"
+                    />
+                  </div>
+                </div>
+
+                <div class="col-md-6 col-xl-3">
+                  <label class="form-label"> Precio final de venta </label>
+
+                  <div class="input-group erp-input-group">
+                    <span class="input-group-text bg-white text-muted"> L </span>
+
+                    <input
+                      type="number"
+                      formControlName="precio"
+                      class="form-control"
+                      placeholder="0.00"
+                      min="0"
+                    />
+                  </div>
+                </div>
+
+                <div class="col-md-6 col-xl-3">
+                  <label class="form-label"> Descuento </label>
+
+                  <div class="input-group erp-input-group">
+                    <input
+                      type="number"
+                      formControlName="descuento"
+                      class="form-control"
+                      placeholder="0.00"
+                      min="0"
+                    />
+
+                    <span class="input-group-text bg-white text-muted"> % </span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- ================================================= -->
+            <!-- LOGÍSTICA -->
+            <!-- ================================================= -->
+
+            <section class="erp-panel shadow-sm border">
+              <h6 class="erp-section-title text-warning">
+                <i class="fas fa-boxes me-1.5"></i>
+                Logística y Clasificación
+              </h6>
+
+              <div class="row g-3">
+                <!-- CATEGORÍA -->
+
+                <div class="col-md-4">
+                  <label class="form-label"> Categoría </label>
+
+                  <select
+                    formControlName="categoria"
+                    class="form-select"
+                    (change)="onCategoriaChange()"
+                  >
+                    <option value="">Seleccione categoría</option>
+
+                    <option *ngFor="let c of categorias" [value]="c.id">
+                      {{ c.nombre }}
+                    </option>
+                  </select>
+                </div>
+
+                <!-- SUBCATEGORÍA -->
+
+                <div class="col-md-4" *ngIf="subCategorias.length > 0">
+                  <label class="form-label">
+                    Subcategoría
+                    <small class="text-muted"> (opcional) </small>
+                  </label>
+
+                  <select formControlName="subCategoria" class="form-select">
+                    <option value="">Sin subcategoría</option>
+
+                    <option *ngFor="let s of subCategorias" [value]="s.id">
+                      {{ s.nombre }}
+                    </option>
+                  </select>
+                </div>
+
+                <!-- PROVEEDOR -->
+
+                <div class="col-md-4">
+                  <label class="form-label"> Proveedor autorizado </label>
+
+                  <select
+                    formControlName="proveedor"
+                    class="form-select"
+                    (change)="onProveedorChange()"
+                  >
+                    <option value="">Seleccione proveedor</option>
+
+                    <option *ngFor="let p of proveedoresFiltrados" [value]="p.id">
+                      {{ p.proveedor }}
+                    </option>
+                  </select>
+                </div>
+
+                <!-- MARCA -->
+
+                <div class="col-md-4">
+                  <label class="form-label"> Marca </label>
+
+                  <select formControlName="marca" class="form-select">
+                    <option value="">Seleccione marca</option>
+
+                    <option *ngFor="let m of marcasFiltradas" [value]="m.id">
+                      {{ m.nombre }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </section>
+
+            <!-- ================================================= -->
+            <!-- DESCRIPCIÓN -->
+            <!-- ================================================= -->
+
+            <section class="erp-panel shadow-sm border">
+              <h6 class="erp-section-title text-secondary">
+                <i class="fas fa-align-left me-1.5"></i>
+                Descripción técnica corta
+              </h6>
+
+              <textarea
+                rows="3"
+                formControlName="descripcion"
+                class="form-control"
+                placeholder="Escriba especificaciones del producto, dimensiones, etc..."
+              ></textarea>
+            </section>
+
+            <!-- ================================================= -->
+            <!-- BOTONES -->
+            <!-- ================================================= -->
+
+            <footer class="d-flex justify-content-end gap-2 pt-2 pb-4">
+              <button
+                type="button"
+                class="btn btn-light border rounded-3 px-4 fw-medium btn-cancelar-erp"
+                (click)="cancelar()"
+                [disabled]="guardando"
+              >
+                <i class="fas fa-times me-2 small"></i>
+                Cancelar
+              </button>
+
+              <button
+                type="submit"
+                class="btn btn-primary rounded-3 px-4 fw-medium btn-guardar-erp"
+                [disabled]="guardando || cargando"
+              >
+                <span *ngIf="!guardando">
+                  <i class="fas fa-save me-2 small"></i>
+                  Guardar cambios
+                </span>
+
+                <span *ngIf="guardando">
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                  Guardando...
+                </span>
+              </button>
+            </footer>
+          </main>
+        </div>
+      </form>
+    </article>
+  </div>
+</div>

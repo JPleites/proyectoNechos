@@ -14,6 +14,8 @@ import { AuthGuard } from '../auth/auth.guard';
 import { UseGuards } from '@nestjs/common';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
+import { TransferenciaInventarioDto } from './dto/transferencia-inventario.dto';
+import { AjusteInventarioDto } from './dto/ajuste-inventario.dto';
 
 @UseGuards(AuthGuard, RolesGuard)
 @Controller('inventario')
@@ -24,6 +26,26 @@ export class InventarioController {
   @Get()
   findAll() {
     return this.inventarioService.inventarios({});
+  }
+
+  @Post('transferencia')
+  async transferirProducto(
+    @Body() dto: TransferenciaInventarioDto,
+    @Req() req: any,
+  ) {
+    return this.inventarioService.transferirProducto(
+      dto.productoCodigo,
+      dto.ubicacionOrigen,
+      dto.ubicacionDestino,
+      dto.cantidad,
+      dto.referencia,
+      req.user.sub,
+    );
+  }
+
+  @Post('ajuste')
+  async ajusteInventario(@Body() dto: AjusteInventarioDto, @Req() req: any) {
+    return this.inventarioService.ajusteInventario(dto, req.user.sub);
   }
 
   @Get('consulta')
@@ -40,8 +62,11 @@ export class InventarioController {
   }
 
   @Get('kardex/:codigo')
-  kardex(@Param('codigo') codigo: string) {
-    return this.inventarioService.kardexProducto(codigo);
+  async kardex(
+    @Param('codigo') codigo: string,
+    @Query('ubicacion') ubicacion?: string,
+  ) {
+    return this.inventarioService.kardexProducto(codigo, ubicacion);
   }
 
   @Get('ubicaciones-disponibles')

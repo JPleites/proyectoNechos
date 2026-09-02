@@ -73,10 +73,7 @@ export class ProductosController {
   @Roles('admin', 'supervisor')
   @Put(':id')
   update(@Param('id') id: string, @Body() data: any) {
-    return this.productosService.updateProductos({
-      where: { codigo: id },
-      data,
-    });
+    return this.productosService.updateProductos(id, data);
   }
 
   @Get(':id/inventario')

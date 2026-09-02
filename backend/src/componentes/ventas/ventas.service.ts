@@ -32,19 +32,51 @@ export class VentasService {
           },
         },
         usuario: {
-          include: { perfil: true },
+          include: {
+            perfil: true,
+          },
         },
       },
     });
 
-    if (!pedido) throw new BadRequestException('Pedido no encontrado');
-    if (pedido.estado !== 'EN_CAJA')
+    if (!pedido) {
+      throw new BadRequestException('Pedido no encontrado');
+    }
+
+    if (pedido.estado !== 'EN_CAJA') {
       throw new BadRequestException('El pedido no está en caja');
-    if (!pedido.detalles.length)
+    }
+
+    if (!pedido.detalles.length) {
       throw new BadRequestException('El pedido no tiene productos');
+    }
+
+    // =====================================================
+    // VALIDAR DATOS DE PAGO
+    // =====================================================
+
+    if (!data.metodoPago) {
+      throw new BadRequestException('El método de pago es obligatorio');
+    }
+
+    if (
+      data.totalRecibido === undefined ||
+      data.totalRecibido === null ||
+      Number(data.totalRecibido) < Number(pedido.total)
+    ) {
+      throw new BadRequestException(
+        'El monto recibido no puede ser menor que el total',
+      );
+    }
+
+    // =====================================================
+    // GENERAR ID DE VENTA
+    // =====================================================
 
     const lastVenta = await this.prisma.ventas.findFirst({
-      orderBy: { id: 'desc' },
+      orderBy: {
+        id: 'desc',
+      },
     });
 
     const ventaID = this.codeGen.generate(
@@ -55,32 +87,61 @@ export class VentasService {
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
 
+    // =====================================================
+    // TRANSACCIÓN COMPLETA
+    // =====================================================
+
     return this.prisma.$transaction(async (tx) => {
-      // =====================================================
-      // VALIDAR STOCK
-      // =====================================================
+      // ===================================================
+      // 1. VALIDAR INVENTARIO Y RESERVAS
+      // ===================================================
+
       for (const detalle of pedido.detalles) {
-        const inventario = await tx.inventario.findFirst({
+        const inventario = await tx.inventario.findUnique({
           where: {
-            productoCodigo: detalle.productoCodigo,
-            ubicacion: detalle.ubicacion,
+            productoCodigo_ubicacion: {
+              productoCodigo: detalle.productoCodigo,
+              ubicacion: detalle.ubicacion,
+            },
           },
         });
 
-        if (!inventario)
+        if (!inventario) {
           throw new BadRequestException(
-            `Sin inventario: ${detalle.productoCodigo}`,
+            `No existe inventario para ${detalle.productoCodigo} en ${detalle.ubicacion}`,
           );
+        }
 
-        if (inventario.cantidad < detalle.cantidad)
+        const cantidadReservada = inventario.cantidadReservada ?? 0;
+
+        /*
+         * El pedido ya debería tener reservado este producto.
+         *
+         * Validamos que exista suficiente reserva para cubrir
+         * la cantidad que estamos intentando facturar.
+         */
+        if (cantidadReservada < detalle.cantidad) {
           throw new BadRequestException(
-            `Stock insuficiente: ${detalle.productoCodigo}`,
+            `La reserva de ${detalle.productoCodigo} en ${detalle.ubicacion} no es suficiente. ` +
+              `Reservado: ${cantidadReservada}, requerido: ${detalle.cantidad}`,
           );
+        }
+
+        /*
+         * También validamos que físicamente exista suficiente
+         * inventario.
+         */
+        if (inventario.cantidad < detalle.cantidad) {
+          throw new BadRequestException(
+            `Stock insuficiente para ${detalle.productoCodigo} en ${detalle.ubicacion}`,
+          );
+        }
       }
 
-      // =====================================================
-      // CREAR VENTA
-      // =====================================================
+      // ===================================================
+      // 2. CREAR VENTA
+      // ===================================================
+
       const venta = await tx.ventas.create({
         data: {
           ventaID,
@@ -96,6 +157,7 @@ export class VentasService {
           totalRecibido: data.totalRecibido,
           cambio: Number(data.totalRecibido) - Number(pedido.total),
           usuarioCodigo: cajeroCodigo,
+
           detalles: {
             create: pedido.detalles.map((d) => ({
               productoCodigo: d.productoCodigo,
@@ -103,34 +165,83 @@ export class VentasService {
               cantidad: d.cantidad,
               precioUnitario: d.precioUnitario,
               subtotal: d.subtotal,
-              descuento: 0,
+              descuento: d.descuento ?? 0,
             })),
           },
         },
+
         include: {
           cliente: true,
-          usuario: { include: { perfil: true } },
+          usuario: {
+            include: {
+              perfil: true,
+            },
+          },
           detalles: true,
         },
       });
 
-      // =====================================================
-      // DESCONTAR INVENTARIO
-      // =====================================================
+      // ===================================================
+      // 3. CONVERTIR RESERVA EN SALIDA REAL
+      // ===================================================
+
       for (const detalle of pedido.detalles) {
-        const inventario = await tx.inventario.findFirst({
+        const inventario = await tx.inventario.findUnique({
           where: {
-            productoCodigo: detalle.productoCodigo,
-            ubicacion: detalle.ubicacion,
+            productoCodigo_ubicacion: {
+              productoCodigo: detalle.productoCodigo,
+              ubicacion: detalle.ubicacion,
+            },
           },
         });
 
-        await tx.inventario.update({
-          where: { id: inventario!.id },
-          data: {
-            cantidad: { decrement: detalle.cantidad },
-          },
-        });
+        if (!inventario) {
+          throw new BadRequestException(
+            `El inventario desapareció durante la facturación: ${detalle.productoCodigo}`,
+          );
+        }
+
+        const cantidadReservada = inventario.cantidadReservada ?? 0;
+
+        const nuevaCantidad = inventario.cantidad - detalle.cantidad;
+
+        const nuevaCantidadReservada = cantidadReservada - detalle.cantidad;
+
+        // ================================================
+        // Si el stock queda en 0
+        // ================================================
+
+        if (nuevaCantidad === 0) {
+          /*
+           * Si eliminamos el registro debemos asegurarnos
+           * de que tampoco queden reservas.
+           */
+          if (nuevaCantidadReservada !== 0) {
+            throw new BadRequestException(
+              `No se puede eliminar el inventario de ${detalle.productoCodigo} porque aún existen unidades reservadas`,
+            );
+          }
+
+          await tx.inventario.delete({
+            where: {
+              id: inventario.id,
+            },
+          });
+        } else {
+          await tx.inventario.update({
+            where: {
+              id: inventario.id,
+            },
+            data: {
+              cantidad: nuevaCantidad,
+              cantidadReservada: nuevaCantidadReservada,
+            },
+          });
+        }
+
+        // ================================================
+        // Registrar salida
+        // ================================================
 
         await tx.movimientosInventario.create({
           data: {
@@ -139,14 +250,16 @@ export class VentasService {
             cantidad: detalle.cantidad,
             fecha: new Date(),
             referencia: venta.ventaID,
-            usuarioCodigo: pedido.usuarioCodigo,
+            usuarioCodigo: cajeroCodigo,
+            ubicacion: detalle.ubicacion,
           },
         });
       }
 
-      // =====================================================
-      // ARQUEO (SOLO 1 POR CAJERO POR DÍA)
-      // =====================================================
+      // ===================================================
+      // 4. OBTENER / CREAR ARQUEO DEL DÍA
+      // ===================================================
+
       let arqueo = await tx.arqueo.findFirst({
         where: {
           usuarioCodigo: cajeroCodigo,
@@ -158,7 +271,9 @@ export class VentasService {
 
       if (!arqueo) {
         const lastArqueo = await tx.arqueo.findFirst({
-          orderBy: { id: 'desc' },
+          orderBy: {
+            id: 'desc',
+          },
         });
 
         arqueo = await tx.arqueo.create({
@@ -180,9 +295,10 @@ export class VentasService {
         });
       }
 
-      // =====================================================
-      // SUMAR AL ARQUEO
-      // =====================================================
+      // ===================================================
+      // 5. ACTUALIZAR ARQUEO
+      // ===================================================
+
       const total = Number(pedido.total);
 
       const campoMetodo: Record<string, string> = {
@@ -197,21 +313,36 @@ export class VentasService {
 
       if (campo) {
         await tx.arqueo.update({
-          where: { id: arqueo.id },
+          where: {
+            id: arqueo.id,
+          },
           data: {
-            [campo]: { increment: total },
-            totalFacturado: { increment: total },
+            [campo]: {
+              increment: total,
+            },
+            totalFacturado: {
+              increment: total,
+            },
           },
         });
       }
 
-      // =====================================================
-      // ACTUALIZAR PEDIDO
-      // =====================================================
+      // ===================================================
+      // 6. MARCAR PEDIDO COMO FACTURADO
+      // ===================================================
+
       await tx.pedidos.update({
-        where: { id },
-        data: { estado: 'FACTURADO' },
+        where: {
+          id,
+        },
+        data: {
+          estado: 'FACTURADO',
+        },
       });
+
+      // ===================================================
+      // 7. RESPUESTA
+      // ===================================================
 
       return {
         ...venta,

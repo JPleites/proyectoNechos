@@ -189,7 +189,7 @@ export const routes: Routes = [
               import('./modulo/inventario/consulta-inventario/consulta-inventario').then(
                 (m) => m.ConsultaInventario,
               ),
-          }
+          },
         ],
       },
       {
@@ -253,6 +253,13 @@ export const routes: Routes = [
             loadComponent: () =>
               import('./modulo/productos/salida-producto/salida-producto').then(
                 (m) => m.SalidaProducto,
+              ),
+          },
+          {
+            path: 'editar/:id',
+            loadComponent: () =>
+              import('./modulo/productos/editar-producto/editar-producto').then(
+                (m) => m.EditarProducto,
               ),
           },
         ],

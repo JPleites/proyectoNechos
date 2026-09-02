@@ -18,10 +18,19 @@ export class MovimientosinventarioService {
       skip,
       take,
       where,
+
       include: {
         producto: true,
-        usuario: true,
+        usuario: {
+          include: {
+            perfil: true,
+          },
+        },
+
+        ubicacionOrigenRel: true,
+        ubicacionDestinoRel: true,
       },
+
       orderBy: {
         fecha: 'desc',
       },
@@ -30,23 +39,22 @@ export class MovimientosinventarioService {
 
   async findOne(id: number) {
     return this.prisma.movimientosInventario.findUnique({
-      where: { id },
+      where: {
+        id,
+      },
+
       include: {
         producto: true,
-        usuario: true,
+
+        usuario: {
+          include: {
+            perfil: true,
+          },
+        },
+
+        ubicacionOrigenRel: true,
+        ubicacionDestinoRel: true,
       },
     });
   }
-
-  // async create(data: Prisma.MovimientosInventarioCreateInput) {
-  //   return this.prisma.movimientosInventario.create({
-  //     data,
-  //   });
-  // }
-
-  // async remove(id: number) {
-  //   return this.prisma.movimientosInventario.delete({
-  //     where: { id },
-  //   });
-  // }
 }
