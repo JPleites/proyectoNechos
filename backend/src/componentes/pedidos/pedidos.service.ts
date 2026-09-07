@@ -294,7 +294,9 @@ export class PedidosService {
         // =====================================================
 
         // 15% de impuesto
-        const impuesto = subtotal * 0.15;
+        const impuesto = subtotal / 1.15;
+
+        subtotal = subtotal - impuesto;
 
         const total = subtotal + impuesto - descuento;
 
@@ -1113,9 +1115,9 @@ export class PedidosService {
     }
 
     // Solo se pueden cancelar pedidos EN_PROCESO
-    if (pedido.estado !== 'EN_PROCESO') {
+    if (pedido.estado !== 'EN_PROCESO' && pedido.estado !== 'EN_CAJA') {
       throw new BadRequestException(
-        'Solo se pueden cancelar pedidos que estén EN_PROCESO',
+        'Solo se pueden cancelar pedidos que estén EN_PROCESO o EN_CAJA',
       );
     }
 

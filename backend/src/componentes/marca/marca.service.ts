@@ -51,9 +51,7 @@ export class MarcaService {
       data: {
         marcaID,
         nombre: data.nombre,
-        proveedorRel: {
-          connect: { id: Number(data.proveedorId) },
-        },
+        proveedorId: Number(data.proveedorId),
       },
     });
   }

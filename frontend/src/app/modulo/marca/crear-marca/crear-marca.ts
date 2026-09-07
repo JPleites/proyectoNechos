@@ -14,7 +14,6 @@ import { ProveedoresService } from '../../services/proveedores.service';
   styleUrl: './crear-marca.scss',
 })
 export class CrearMarca implements OnInit {
-
   form: FormGroup;
   proveedores: any[] = [];
   marcas: any[] = [];
@@ -69,7 +68,11 @@ export class CrearMarca implements OnInit {
         this.cargarMarcas();
       },
       error: (err) => {
-        Swal.fire('Error', err.error?.message || 'Error al crear marca', 'error');
+        Swal.fire(
+          'Error',
+          err.error?.message === 'string' ? err.error.message : 'Error al crear marca',
+          'error',
+        );
       },
     });
   }

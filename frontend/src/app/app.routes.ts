@@ -256,6 +256,13 @@ export const routes: Routes = [
               ),
           },
           {
+            path: 'transferir',
+            loadComponent: () =>
+              import('./modulo/productos/transferir-productos/transferir-productos').then(
+                (m) => m.TransferirProductos,
+              ),
+          },
+          {
             path: 'editar/:id',
             loadComponent: () =>
               import('./modulo/productos/editar-producto/editar-producto').then(

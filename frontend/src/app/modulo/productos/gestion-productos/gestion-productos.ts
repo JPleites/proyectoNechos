@@ -28,6 +28,7 @@ interface Producto {
 interface Inventario {
   ubicacion: string;
   cantidad: number;
+  cantidadReservada: number;
 }
 
 @Component({

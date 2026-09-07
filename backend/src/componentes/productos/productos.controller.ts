@@ -31,7 +31,7 @@ export class ProductosController {
   }
 
   @Get('ubicaciones/:productoCodigo/:almacenId/:cantidad')
-  getUbicaciones(
+  obtenerUbicaciones(
     @Param('productoCodigo') productoCodigo: string,
     @Param('almacenId') almacenId: string,
     @Param('cantidad') cantidad: string,

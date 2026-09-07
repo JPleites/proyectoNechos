@@ -1,5 +1,4 @@
 <div class="container-fluid vh-100 d-flex flex-column p-3 bg-light page-wrapper">
-  
   <header class="modulo-header mb-3 flex-shrink-0">
     <h4 class="mb-1 fw-semibold text-dark">Pedidos</h4>
     <small class="text-muted">Gestión de pedidos del sistema</small>
@@ -9,7 +8,6 @@
     <article class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100">
       <div class="table-responsive h-100">
         <table class="table table-hover align-middle mb-0 erp-table-pedidos">
-          
           <thead class="table-light">
             <tr>
               <th class="ps-4" style="width: 120px">ID</th>
@@ -37,7 +35,7 @@
                     'status-proceso': p.estado === 'EN_PROCESO',
                     'status-caja': p.estado === 'EN_CAJA',
                     'status-facturado': p.estado === 'FACTURADO',
-                    'status-cancelado': p.estado === 'CANCELADO'
+                    'status-cancelado': p.estado === 'CANCELADO',
                   }"
                 >
                   {{ p.estado }}
@@ -54,11 +52,11 @@
 
               <td class="text-end pe-4">
                 <div class="d-flex justify-content-end gap-2 flex-wrap">
-                  
                   <button
                     class="btn btn-light border btn-sm rounded-3 btn-icono-tabla"
                     (click)="eliminar(p.id)"
-                    title="Eliminar"
+                    title="Cancelar pedido"
+                    *ngIf="p.estado === 'EN_PROCESO' || p.estado === 'EN_CAJA'"
                   >
                     <i class="fas fa-trash text-danger small"></i>
                   </button>
@@ -70,15 +68,6 @@
                   >
                     Enviar a caja
                   </button>
-
-                  <button
-                    class="btn btn-light border btn-sm rounded-3 px-3 text-danger btn-cancelar-proceso fw-medium"
-                    (click)="cancelarPedido(p.id)"
-                    *ngIf="p.estado === 'EN_PROCESO'"
-                  >
-                    Cancelar
-                  </button>
-                  
                 </div>
               </td>
             </tr>
@@ -90,10 +79,8 @@
               </td>
             </tr>
           </tbody>
-
         </table>
       </div>
     </article>
   </div>
-
 </div>

@@ -47,7 +47,7 @@ export class ProductosService {
     return this.apiService.get<Producto[]>(`/productos/buscar?q=${query}`);
   }
 
-  getUbicaciones(productoCodigo: string, almacenId: string, cantidad: number): Observable<any[]> {
+  obtenerUbicaciones(productoCodigo: string, almacenId: string, cantidad: number): Observable<any[]> {
     return this.apiService.get<any[]>(
       `/productos/ubicaciones/${productoCodigo}/${almacenId}/${cantidad}`,
     );

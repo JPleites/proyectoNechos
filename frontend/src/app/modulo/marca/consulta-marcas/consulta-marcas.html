@@ -1,9 +1,48 @@
 <div class="container-fluid vh-100 d-flex flex-column p-3 bg-light page-wrapper">
-  
   <header class="modulo-header mb-3 flex-shrink-0">
     <h4 class="mb-1 fw-semibold text-dark">Marcas</h4>
     <small class="text-muted">Listado de marcas registradas</small>
   </header>
+
+  <div class="card-body border-bottom py-3">
+    <div class="row g-2">
+      <!-- Buscar -->
+      <div class="col-md-5">
+        <div class="input-group">
+          <span class="input-group-text bg-white">
+            <i class="fas fa-search"></i>
+          </span>
+
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Buscar marca o código..."
+            [(ngModel)]="busqueda"
+            (input)="aplicarFiltros()"
+          />
+        </div>
+      </div>
+
+      <!-- Proveedor -->
+      <div class="col-md-4">
+        <select class="form-select" [(ngModel)]="proveedorSeleccionado" (change)="aplicarFiltros()">
+          <option value="">Todos los proveedores</option>
+
+          <option *ngFor="let proveedor of proveedores" [value]="proveedor.id">
+            {{ proveedor.proveedor }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Limpiar -->
+      <div class="col-md-3">
+        <button type="button" class="btn btn-outline-secondary w-100" (click)="limpiarFiltros()">
+          <i class="fas fa-eraser me-2"></i>
+          Limpiar filtros
+        </button>
+      </div>
+    </div>
+  </div>
 
   <div class="modulo-contenido panel-scroll flex-grow-1 w-100">
     <article class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100">
@@ -37,8 +76,6 @@
           </tbody>
         </table>
       </div>
-
     </article>
   </div>
-
 </div>

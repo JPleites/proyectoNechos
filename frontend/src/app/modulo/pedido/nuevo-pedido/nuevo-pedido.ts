@@ -118,7 +118,7 @@ export class NuevoPedidoComponent implements OnInit {
     console.log('Producto:', productoCodigo, 'Almacén:', almacenId, 'Cantidad:', cantidad);
 
     this.productosService
-      .getUbicaciones(productoCodigo, almacenId, cantidad)
+      .obtenerUbicaciones(productoCodigo, almacenId, cantidad)
       .subscribe((data: any) => {
         if (data && data.length > 0) {
           this.ubicaciones = data;
@@ -140,30 +140,45 @@ export class NuevoPedidoComponent implements OnInit {
   agregarProducto() {
     const { productoCodigo, ubicacion, cantidad } = this.form.value;
 
-    const producto = this.productos.find((p) => p.codigo === productoCodigo);
+    const producto = this.productos.find(
+      (p) => String(p.codigo).trim() === String(productoCodigo).trim(),
+    );
 
-    if (!producto || !this.productoEncontrado || !this.form.value.ubicacion) {
+    if (!producto || !this.productoEncontrado || !ubicacion || !cantidad || cantidad <= 0) {
       Swal.fire('Error', 'Selecciona un producto, ubicación y cantidad válidos', 'warning');
       return;
     }
 
-    const subtotal = cantidad * producto.precio;
+    const precioUnitario = Number(producto.precio);
+    const subtotal = Number(cantidad) * precioUnitario;
 
     this.carrito.push({
-      productoCodigo,
+      productoCodigo: producto.codigo,
+      nombreProducto: producto.producto,
       ubicacion,
-      cantidad,
+      cantidad: Number(cantidad),
+      precioUnitario,
+      subtotal,
     });
 
+    // Limpiar campos del producto
     this.form.patchValue({
       codigoBarra: '',
+      productoCodigo: '',
+      ubicacion: '',
       cantidad: 1,
       almacenId: '',
     });
+
+    this.ubicaciones = [];
+    this.productoEncontrado = false;
+
+    this.cdr.detectChanges();
   }
 
   eliminarItem(index: number) {
-    this.carrito.splice(index, 1);
+    this.carrito = this.carrito.filter((_, i) => i !== index);
+    this.cdr.detectChanges();
   }
 
   get total() {
@@ -178,8 +193,12 @@ export class NuevoPedidoComponent implements OnInit {
     }
 
     const pedido = {
-      clienteId: this.form.value.clienteId || '9999999999999',
-      detalles: this.carrito,
+      clienteId: this.form.value.clienteId || '999999999999',
+      detalles: this.carrito.map((item) => ({
+        productoCodigo: item.productoCodigo,
+        ubicacion: item.ubicacion,
+        cantidad: item.cantidad,
+      })),
     };
 
     this.pedidosService.crearPedido(pedido).subscribe({
@@ -193,6 +212,8 @@ export class NuevoPedidoComponent implements OnInit {
           productoCodigo: '',
           ubicacion: '',
           cantidad: 1,
+          codigoBarra: '',
+          almacenId: '',
         });
 
         this.productoEncontrado = false;

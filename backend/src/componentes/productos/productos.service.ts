@@ -421,20 +421,60 @@ export class ProductosService {
     almacenId: number,
     cantidad: number,
   ) {
-    return this.prisma.inventario.findMany({
+    const ubicaciones = await this.prisma.ubicaciones.findMany({
       where: {
-        productoCodigo: String(productoCodigo),
-        cantidad: {
-          gte: cantidad,
-        },
-        ubicacionRel: {
-          almacenId: Number(almacenId),
+        almacenId,
+        inventario: {
+          some: {
+            productoCodigo,
+            cantidad: {
+              gt: 0,
+            },
+          },
         },
       },
       include: {
-        ubicacionRel: true,
+        inventario: {
+          where: {
+            productoCodigo,
+          },
+        },
       },
+      orderBy: [{ estante: 'asc' }, { nivel: 'asc' }, { deposito: 'asc' }],
     });
+
+    return ubicaciones
+      .map((ubicacion) => {
+        const inventario = ubicacion.inventario[0];
+
+        if (!inventario) {
+          return null;
+        }
+
+        const cantidadReservada = inventario.cantidadReservada ?? 0;
+
+        const cantidadDisponible = inventario.cantidad - cantidadReservada;
+
+        if (cantidadDisponible < cantidad) {
+          return null;
+        }
+
+        return {
+          ubicacion: ubicacion.ubicacion,
+          deposito: ubicacion.deposito,
+          estante: ubicacion.estante,
+          nivel: ubicacion.nivel,
+          almacenId: ubicacion.almacenId,
+
+          cantidad: inventario.cantidad,
+          cantidadReservada,
+          cantidadDisponible,
+        };
+      })
+      .filter(
+        (ubicacion): ubicacion is NonNullable<typeof ubicacion> =>
+          ubicacion !== null && ubicacion.cantidadDisponible > 0,
+      );
   }
 
   async filtrarProductos(query: any) {

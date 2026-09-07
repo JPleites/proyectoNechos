@@ -1,4 +1,11 @@
+import { IsInt, IsNotEmpty } from 'class-validator';
+import { Type } from 'class-transformer';
+
 export class CreateMarcaDto {
+  @IsNotEmpty()
   nombre: string = '';
-  proveedorId: number = 0;
+
+  @Type(() => Number)
+  @IsInt()
+  proveedorId?: number;
 }

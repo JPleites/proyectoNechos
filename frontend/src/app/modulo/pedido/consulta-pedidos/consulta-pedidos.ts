@@ -42,19 +42,19 @@ export class ConsultaPedidos implements OnInit {
 
   eliminar(id: number) {
     Swal.fire({
-      title: '¿Eliminar pedido?',
+      title: 'Cancelar pedido?',
       text: 'Esta acción no se puede deshacer',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#dc3545',
       cancelButtonColor: '#6c757d',
-      confirmButtonText: 'Sí, eliminar',
+      confirmButtonText: 'Sí, cancelar',
       cancelButtonText: 'Cancelar',
       reverseButtons: true,
     }).then((result) => {
       if (result.isConfirmed) {
         Swal.fire({
-          title: 'Eliminando...',
+          title: 'Cancelando...',
           allowOutsideClick: false,
           didOpen: () => Swal.showLoading(),
         });
@@ -63,7 +63,7 @@ export class ConsultaPedidos implements OnInit {
           next: () => {
             Swal.fire({
               icon: 'success',
-              title: 'Pedido eliminado',
+              title: 'Pedido cancelado',
               timer: 1500,
               showConfirmButton: false,
             });
@@ -71,7 +71,7 @@ export class ConsultaPedidos implements OnInit {
             this.cargarPedidos();
           },
           error: () => {
-            Swal.fire('Error', 'No se pudo eliminar el pedido', 'error');
+            Swal.fire('Error', 'No se pudo cancelar el pedido', 'error');
           },
         });
       }

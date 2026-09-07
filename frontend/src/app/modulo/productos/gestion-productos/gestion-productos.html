@@ -260,6 +260,7 @@
             <tr>
               <th>Ubicación</th>
               <th class="text-end">Cantidad</th>
+              <th class="text-end">Reservado</th>
             </tr>
           </thead>
 
@@ -271,10 +272,15 @@
                   {{ inv.cantidad }}
                 </span>
               </td>
+              <td class="text-end">
+                <span class="inventory-badge reserved">
+                {{ inv.cantidadReservada > 0 ? 'Reservado: ' + inv.cantidadReservada : 0 }}
+                </span>
+              </td>
             </tr>
 
             <tr *ngIf="!inventarioModal">
-              <td colspan="2" class="text-center text-muted">Sin inventario</td>
+              <td colspan="3" class="text-center text-muted">Sin inventario</td>
             </tr>
           </tbody>
         </table>

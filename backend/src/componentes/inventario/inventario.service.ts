@@ -387,56 +387,12 @@ export class InventarioService {
   // 📍 UBICACIONES DISPONIBLES
   // ==============================
   async getUbicacionesDisponibles(almacenId: number, productoCodigo: string) {
-    const ubicaciones = await this.prisma.ubicaciones.findMany({
+    return this.prisma.ubicaciones.findMany({
       where: {
         almacenId,
-        inventario: {
-          some: {
-            productoCodigo,
-            cantidad: {
-              gt: 0,
-            },
-          },
-        },
-      },
-      include: {
-        inventario: {
-          where: {
-            productoCodigo,
-          },
-        },
       },
       orderBy: [{ estante: 'asc' }, { nivel: 'asc' }, { deposito: 'asc' }],
     });
-
-    return ubicaciones
-      .map((ubicacion) => {
-        const inventario = ubicacion.inventario[0];
-
-        if (!inventario) {
-          return null;
-        }
-
-        const cantidadReservada = inventario.cantidadReservada ?? 0;
-
-        const cantidadDisponible = inventario.cantidad - cantidadReservada;
-
-        return {
-          ubicacion: ubicacion.ubicacion,
-          deposito: ubicacion.deposito,
-          estante: ubicacion.estante,
-          nivel: ubicacion.nivel,
-          almacenId: ubicacion.almacenId,
-
-          cantidad: inventario.cantidad,
-          cantidadReservada,
-          cantidadDisponible,
-        };
-      })
-      .filter(
-        (ubicacion): ubicacion is NonNullable<typeof ubicacion> =>
-          ubicacion !== null && ubicacion.cantidadDisponible > 0,
-      );
   }
 
   async transferirProducto(
