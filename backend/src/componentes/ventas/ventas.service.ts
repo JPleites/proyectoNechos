@@ -212,21 +212,12 @@ export class VentasService {
         // ================================================
 
         if (nuevaCantidad === 0) {
-          /*
-           * Si eliminamos el registro debemos asegurarnos
-           * de que tampoco queden reservas.
-           */
           if (nuevaCantidadReservada !== 0) {
             throw new BadRequestException(
               `No se puede eliminar el inventario de ${detalle.productoCodigo} porque aún existen unidades reservadas`,
             );
           }
 
-          await tx.inventario.delete({
-            where: {
-              id: inventario.id,
-            },
-          });
         } else {
           await tx.inventario.update({
             where: {

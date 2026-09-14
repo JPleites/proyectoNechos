@@ -92,6 +92,17 @@
               <i class="fas fa-search me-1"></i>
               Buscar
             </button>
+            <button
+              type="button"
+              class="btn rounded-3 px-3"
+              [class.btn-danger]="mostrarSinExistencia"
+              [class.btn-outline-danger]="!mostrarSinExistencia"
+              (click)="filtrarSinExistencia()"
+            >
+              <i class="fas fa-box-open me-1"></i>
+
+              {{ mostrarSinExistencia ? 'Mostrar todos' : 'Sin existencia' }}
+            </button>
           </div>
         </form>
       </section>
@@ -107,6 +118,7 @@
               <th>Proveedor</th>
               <th>Categoría</th>
               <th>Marca</th>
+              <th>Stock</th>
               <th class="text-center">Acciones</th>
             </tr>
           </thead>
@@ -126,6 +138,18 @@
               <td>{{ p.categoriaRel?.nombre || '—' }}</td>
 
               <td>{{ p.marcaRel?.nombre || '—' }}</td>
+
+              <td>
+                <span
+                  class="badge"
+                  [ngClass]="{
+                    'bg-success': (p.existencia ?? 0) > 0,
+                    'bg-danger': (p.existencia ?? 0) === 0,
+                  }"
+                >
+                  {{ p.existencia }}
+                </span>
+              </td>
 
               <td class="text-center">
                 <button class="btn btn-sm btn-outline-primary" (click)="verDetalle(p)">
@@ -274,7 +298,7 @@
               </td>
               <td class="text-end">
                 <span class="inventory-badge reserved">
-                {{ inv.cantidadReservada > 0 ? 'Reservado: ' + inv.cantidadReservada : 0 }}
+                  {{ inv.cantidadReservada > 0 ? 'Reservado: ' + inv.cantidadReservada : 0 }}
                 </span>
               </td>
             </tr>

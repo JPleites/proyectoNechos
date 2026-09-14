@@ -23,6 +23,7 @@ interface Producto {
   productoID?: number;
   codigoProveedor?: string;
   codigoProducto?: string;
+  existencia?: number;
 }
 
 interface Inventario {
@@ -38,8 +39,8 @@ interface Inventario {
   styleUrl: './gestion-productos.scss',
 })
 export class GestionProductos implements OnInit {
-
   productos: Producto[] = [];
+  todosLosProductos: Producto[] = [];
 
   inventarios: Record<string, Inventario[]> = {};
   stockMap: Record<string, number> = {};
@@ -60,6 +61,7 @@ export class GestionProductos implements OnInit {
   subCategorias: any[] = [];
 
   selectedProduct: Producto | null = null;
+  mostrarSinExistencia = false;
   inventarioModal: Inventario[] = [];
 
   constructor(
@@ -81,7 +83,9 @@ export class GestionProductos implements OnInit {
   cargarProductos() {
     this.productosService.getProductos().subscribe({
       next: (data: Producto[]) => {
-        this.productos = data ?? [];
+        this.todosLosProductos = data ?? [];
+        this.productos = [...this.todosLosProductos];
+
         this.stockMap = {};
         this.cdr.detectChanges();
       },
@@ -108,41 +112,6 @@ export class GestionProductos implements OnInit {
   cerrarModal() {
     this.selectedProduct = null;
     this.inventarioModal = [];
-  }
-
-  // =========================
-  // STOCK (opcional si lo sigues usando en otro lado)
-  // =========================
-  verInventario(codigo: string) {
-    if (this.inventarioVisible === codigo) {
-      this.inventarioVisible = null;
-      return;
-    }
-
-    if (this.inventarios[codigo]) {
-      this.inventarioVisible = codigo;
-      this.stockMap[codigo] = this.calcularStock(this.inventarios[codigo]);
-      this.cdr.detectChanges();
-      return;
-    }
-
-    this.inventarioService.getInventarioPorProducto(codigo).subscribe({
-      next: (res: any) => {
-        const inventario: Inventario[] =
-          Array.isArray(res) ? res : (res?.inventario ?? []);
-
-        this.inventarios[codigo] = inventario;
-        this.inventarioVisible = codigo;
-
-        this.stockMap[codigo] = this.calcularStock(inventario);
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error(err),
-    });
-  }
-
-  private calcularStock(inventario: Inventario[]): number {
-    return inventario.reduce((total, item) => total + (item.cantidad || 0), 0);
   }
 
   // =========================
@@ -185,7 +154,7 @@ export class GestionProductos implements OnInit {
     this.productos = [];
     this.inventarioVisible = null;
     this.stockMap = {};
-    
+
     this.productosService.filtrosProductos(this.filtros).subscribe({
       next: (data: any) => {
         this.productos = data ?? [];
@@ -204,5 +173,20 @@ export class GestionProductos implements OnInit {
       subCategoriaId: '',
     };
     this.subCategorias = [];
+  }
+
+  filtrarSinExistencia() {
+  this.mostrarSinExistencia = !this.mostrarSinExistencia;
+
+  if (this.mostrarSinExistencia) {
+    this.todosLosProductos = [...this.productos];
+    this.productos = this.todosLosProductos.filter(
+      (p) => (p.existencia ?? 0) === 0
+    );
+  } else {
+    this.productos = [...this.todosLosProductos];
+  }
+
+  this.cdr.detectChanges();
   }
 }

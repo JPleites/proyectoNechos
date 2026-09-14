@@ -1,5 +1,4 @@
 <div class="container-fluid vh-100 d-flex flex-column p-3 bg-light page-wrapper">
-  
   <header class="modulo-header mb-3 flex-shrink-0">
     <h4 class="mb-1 fw-semibold text-dark">Kardex de inventario</h4>
     <small class="text-muted">Historial de movimientos de productos</small>
@@ -8,70 +7,196 @@
   <div class="modulo-contenido panel-scroll flex-grow-1 w-100">
     <article class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100">
       <div class="card-body d-flex flex-column h-100 p-4">
-        
         <form (ngSubmit)="buscar()" class="mb-4 flex-shrink-0">
-          <div class="input-group container-busqueda" style="max-width: 450px;">
-            <input
-              name="codigo"
-              [(ngModel)]="codigo"
-              class="form-control erp-input"
-              placeholder="Código de producto"
-            />
-            <button type="submit" class="btn btn-primary px-4 btn-buscar">
-              <i class="fas fa-search"></i>
-            </button>
+          <div class="row g-3 align-items-end">
+            <!-- PRODUCTO -->
+            <div class="col-md-4">
+              <label class="form-label small fw-semibold text-muted"> Producto </label>
+
+              <input
+                type="text"
+                class="form-control erp-input"
+                name="codigo"
+                [(ngModel)]="codigo"
+                placeholder="Ingrese el código del producto"
+              />
+            </div>
+
+            <!-- UBICACIÓN -->
+            <div class="col-md-4">
+              <label class="form-label small fw-semibold text-muted"> Ubicación </label>
+
+              <select class="form-select erp-input" name="ubicacion" [(ngModel)]="ubicacion">
+                <option value="">Todas las ubicaciones</option>
+
+                <option *ngFor="let ubicacionItem of ubicaciones" [value]="ubicacionItem.ubicacion">
+                  {{ ubicacionItem.ubicacion }}
+                </option>
+              </select>
+            </div>
+
+            <!-- BUSCAR -->
+            <div class="col-md-auto">
+              <button
+                type="submit"
+                class="btn btn-primary rounded-3 px-4"
+                [disabled]="cargando || (!codigo && !ubicacion)"
+              >
+                <i class="fas" [ngClass]="cargando ? 'fa-spinner fa-spin' : 'fa-search'"></i>
+
+                {{ cargando ? 'Consultando...' : 'Buscar' }}
+              </button>
+            </div>
+
+            <!-- LIMPIAR -->
+            <div class="col-md-auto">
+              <button type="button" class="btn btn-light border rounded-3 px-3" (click)="limpiar()">
+                <i class="fas fa-eraser me-1 text-muted"></i>
+                Limpiar
+              </button>
+            </div>
           </div>
         </form>
+        <div *ngIf="movimientos.length" class="d-flex flex-wrap align-items-center gap-2 mb-3">
+          <span class="small text-muted"> Mostrando: </span>
+
+          <span *ngIf="productoSeleccionado" class="badge bg-primary">
+            <i class="fas fa-box me-1"></i>
+            {{ productoSeleccionado.codigo }}
+            — {{ productoSeleccionado.producto }}
+          </span>
+
+          <span *ngIf="!productoSeleccionado" class="badge bg-secondary">
+            <i class="fas fa-boxes me-1"></i>
+            Todos los productos
+          </span>
+
+          <span class="text-muted">•</span>
+
+          <span *ngIf="ubicacionSeleccionada" class="badge bg-info text-dark">
+            <i class="fas fa-location-dot me-1"></i>
+            {{ ubicacionSeleccionada }}
+          </span>
+
+          <span *ngIf="!ubicacionSeleccionada" class="badge bg-secondary">
+            <i class="fas fa-map-marker-alt me-1"></i>
+            Todas las ubicaciones
+          </span>
+        </div>
 
         <div class="table-responsive flex-grow-1 overflow-auto">
           <table class="table table-hover align-middle mb-0 erp-table-kardex">
-            <thead class="table-light">
+            <thead class="table-light sticky-top">
               <tr>
                 <th class="erp-th">Fecha</th>
+                <th class="erp-th">Producto</th>
                 <th class="erp-th">Tipo</th>
-                <th class="erp-th">Cantidad</th>
+                <th class="erp-th">Ubicación</th>
+                <th class="erp-th text-end">Entrada</th>
+                <th class="erp-th text-end">Salida</th>
+                <th class="erp-th text-end">Stock</th>
+                <th class="erp-th">Referencia</th>
                 <th class="erp-th">Usuario</th>
-                <th class="erp-th">Stock</th>
               </tr>
             </thead>
 
             <tbody>
               <tr *ngFor="let m of movimientos">
+                <!-- FECHA -->
                 <td class="text-muted text-nowrap">
                   {{ m.fecha | date: 'short' }}
                 </td>
 
+                <!-- PRODUCTO -->
+                <td class="fw-medium text-nowrap">
+                  <span class="badge bg-primary me-1">
+                    {{ m.productoCodigo }}
+                  </span>
+                </td>
+
+                <!-- TIPO -->
                 <td>
                   <span
-                    class="erp-badge px-2.5 py-1 rounded-2 fw-semibold small"
+                    class="erp-badge px-2 py-1 rounded-2 fw-semibold small"
                     [ngClass]="{
                       'erp-badge-success': m.tipo === 'ENTRADA',
-                      'erp-badge-danger': m.tipo === 'SALIDA'
+                      'erp-badge-danger': m.tipo === 'SALIDA',
+                      'erp-badge-warning': m.tipo === 'AJUSTE',
+                      'erp-badge-info': m.tipo === 'TRANSFERENCIA',
                     }"
                   >
                     {{ m.tipo }}
                   </span>
                 </td>
 
-                <td class="fw-semibold">
-                  {{ m.cantidad }}
+                <!-- UBICACIÓN -->
+                <td class="text-nowrap">
+                  <!-- TRANSFERENCIA -->
+                  <ng-container *ngIf="m.tipo === 'TRANSFERENCIA'; else ubicacionNormal">
+                    <span class="text-muted">
+                      {{ m.ubicacionOrigen || '—' }}
+                    </span>
+
+                    <i class="fas fa-arrow-right mx-2 text-muted"></i>
+
+                    <span class="text-muted">
+                      {{ m.ubicacionDestino || '—' }}
+                    </span>
+                  </ng-container>
+
+                  <!-- RESTO -->
+                  <ng-template #ubicacionNormal>
+                    {{ m.ubicacion || '—' }}
+                  </ng-template>
                 </td>
 
+                <!-- ENTRADA -->
+                <td class="text-end fw-semibold text-success">
+                  {{ m.entrada > 0 ? '+' + m.entrada : '—' }}
+                </td>
+
+                <!-- SALIDA -->
+                <td class="text-end fw-semibold text-danger">
+                  {{ m.salida > 0 ? '-' + m.salida : '—' }}
+                </td>
+
+                <!-- STOCK -->
+                <td class="text-end fw-bold text-dark">
+                  {{ m.stock }}
+                </td>
+
+                <!-- REFERENCIA -->
+                <td class="text-muted text-nowrap">
+                  {{ m.referencia || '—' }}
+                </td>
+
+                <!-- USUARIO -->
                 <td class="text-muted text-nowrap">
                   <i class="fas fa-user me-1 small opacity-75"></i>
                   {{ m.usuarioCodigo }}
                 </td>
+              </tr>
 
-                <td class="fw-semibold text-dark">
-                  {{ m.saldo }}
+              <!-- SIN RESULTADOS -->
+              <tr *ngIf="!movimientos.length && !cargando">
+                <td colspan="9" class="text-center text-muted py-5">
+                  <i class="fas fa-box-open fa-2x mb-2 opacity-50 d-block"></i>
+
+                  No hay movimientos para mostrar
+                </td>
+              </tr>
+
+              <!-- CARGANDO -->
+              <tr *ngIf="cargando">
+                <td colspan="9" class="text-center text-muted py-5">
+                  <i class="fas fa-spinner fa-spin me-2"></i>
+                  Consultando movimientos...
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-
       </div>
     </article>
   </div>
-
 </div>

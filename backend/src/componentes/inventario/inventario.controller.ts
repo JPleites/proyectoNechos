@@ -53,17 +53,23 @@ export class InventarioController {
     @Query('productoCodigo') productoCodigo?: string,
     @Query('ubicacion') ubicacion?: string,
     @Query('almacenId') almacenId?: number,
+    @Query('producto') producto?: string,
+    @Query('categoria') categoria?: string,
+    @Query('subCategoria') subCategoria?: string,
   ) {
     return this.inventarioService.consultarInventario({
       productoCodigo,
       ubicacion,
       almacenId: almacenId ? Number(almacenId) : undefined,
+      producto,
+      categoriaId: categoria ? Number(categoria) : undefined,
+      subCategoriaId: subCategoria ? Number(subCategoria) : undefined,
     });
   }
 
-  @Get('kardex/:codigo')
+  @Get('kardex')
   async kardex(
-    @Param('codigo') codigo: string,
+    @Query('codigo') codigo?: string,
     @Query('ubicacion') ubicacion?: string,
   ) {
     return this.inventarioService.kardexProducto(codigo, ubicacion);

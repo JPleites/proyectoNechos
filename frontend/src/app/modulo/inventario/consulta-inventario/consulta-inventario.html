@@ -21,6 +21,40 @@
             />
           </div>
 
+          <div class="col-md-4">
+            <label class="form-label">Producto</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="producto"
+              placeholder="Ej: Producto 1"
+            />
+          </div>
+          <!-- CATEGORÍA -->
+          <div class="col-md-4">
+            <label class="form-label">Categoría</label>
+            <select
+              class="form-select"
+              formControlName="categoriaId"
+              (change)="cargarSubCategorias()"
+            >
+              <option value="">Seleccione categoría</option>
+              <option *ngFor="let c of categorias" [value]="c.id">
+                {{ c.nombre }}
+              </option>
+            </select>
+          </div>
+          <!-- SUBCATEGORÍA -->
+          <div class="col-md-4">
+            <label class="form-label">Subcategoría</label>
+            <select class="form-select" formControlName="subCategoriaId">
+              <option value="">Seleccione subcategoría</option>
+              <option *ngFor="let sc of subCategorias" [value]="sc.id">
+                {{ sc.nombre }}
+              </option>
+            </select>
+          </div>
+
           <!-- ALMACÉN -->
           <div class="col-md-4">
             <label class="form-label">Almacén</label>

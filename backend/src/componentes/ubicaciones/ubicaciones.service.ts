@@ -23,16 +23,7 @@ export class UbicacionesService {
   // 📋 Listar ubicaciones ordenadas por nombre
   async findAll() {
     return this.prisma.ubicaciones.findMany({
-      include: {
-        almacen: true,
-        inventario: true,
-      },
-      orderBy: [
-        { almacenId: 'asc' },
-        { estante: 'asc' },
-        { nivel: 'asc' },
-        { deposito: 'asc' },
-      ],
+      orderBy: [{ estante: 'asc' }, { nivel: 'asc' }, { deposito: 'asc' }],
     });
   }
 

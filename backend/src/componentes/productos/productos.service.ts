@@ -489,42 +489,9 @@ export class ProductosService {
         { codigoProducto: { contains: q, mode: 'insensitive' } },
         { producto: { contains: q, mode: 'insensitive' } },
         { descripcion: { contains: q, mode: 'insensitive' } },
-        // {
-        //   proveedorRel: {
-        //     proveedor: {
-        //       contains: q,
-        //       mode: 'insensitive',
-        //     },
-        //   },
-        // },
-        // {
-        //   categoriaRel: {
-        //     nombre: {
-        //       contains: q,
-        //       mode: 'insensitive',
-        //     },
-        //   },
-        // },
-        // {
-        //   marcaRel: {
-        //     nombre: {
-        //       contains: q,
-        //       mode: 'insensitive',
-        //     },
-        //   },
-        // },
-        // {
-        //   subCategoria: {
-        //     nombre: {
-        //       contains: q,
-        //       mode: 'insensitive',
-        //     },
-        //   },
-        // },
       ];
     }
 
-    // 📦 Filtros
     if (categoriaId) {
       where.categoriaId = Number(categoriaId);
     }
@@ -541,17 +508,30 @@ export class ProductosService {
       where.subCategoriaId = Number(subCategoriaId);
     }
 
-    return this.prisma.productos.findMany({
+    const productos = await this.prisma.productos.findMany({
       where,
       include: {
         proveedorRel: true,
         categoriaRel: true,
         marcaRel: true,
         subCategoria: true,
+        inventario: true,
       },
       orderBy: {
         id: 'desc',
       },
+    });
+
+    return productos.map((producto) => {
+      const existencia = producto.inventario.reduce(
+        (total, inventario) => total + (inventario.cantidad || 0),
+        0,
+      );
+
+      return {
+        ...producto,
+        existencia,
+      };
     });
   }
 }

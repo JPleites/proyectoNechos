@@ -6,9 +6,7 @@ import { ApiService } from './api';
   providedIn: 'root',
 })
 export class InventarioService {
-  constructor(
-    private apiService: ApiService,
-  ) {}
+  constructor(private apiService: ApiService) {}
 
   ingresar(data: any) {
     return this.apiService.post(`/inventario/ingreso`, data);
@@ -30,9 +28,23 @@ export class InventarioService {
     return this.apiService.get(`/productos/${codigo}/inventario`);
   }
 
-  getKardex(codigo: string) {
-    return this.apiService.get(`/inventario/kardex/${codigo}`);
+  getKardex(codigo?: string, ubicacion?: string) {
+  let params = new URLSearchParams();
+
+  if (codigo) {
+    params.set('codigo', codigo);
   }
+
+  if (ubicacion) {
+    params.set('ubicacion', ubicacion);
+  }
+
+  const query = params.toString();
+
+  return this.apiService.get(
+    `/inventario/kardex${query ? '?' + query : ''}`
+  );
+}
 
   getUbicacionesDisponibles(almacenId: number, codigo: string) {
     return this.apiService.get(

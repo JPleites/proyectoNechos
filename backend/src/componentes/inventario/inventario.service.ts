@@ -207,13 +207,25 @@ export class InventarioService {
 
   async consultarInventario(filtros: {
     productoCodigo?: string;
+    producto?: string;
     ubicacion?: string;
     almacenId?: number;
+    categoriaId?: number;
+    subCategoriaId?: number;
   }) {
     const where: Prisma.InventarioWhereInput = {};
 
     if (filtros.productoCodigo) {
       where.productoCodigo = filtros.productoCodigo;
+    }
+
+    if (filtros.producto) {
+      where.producto = {
+        producto: {
+          contains: filtros.producto,
+          mode: 'insensitive',
+        },
+      };
     }
 
     if (filtros.ubicacion) {
@@ -223,6 +235,18 @@ export class InventarioService {
     if (filtros.almacenId) {
       where.ubicacionRel = {
         almacenId: Number(filtros.almacenId),
+      };
+    }
+
+    if (filtros.categoriaId) {
+      where.producto = {
+        categoriaId: Number(filtros.categoriaId),
+      };
+    }
+
+    if (filtros.subCategoriaId) {
+      where.producto = {
+        subCategoriaId: Number(filtros.subCategoriaId),
       };
     }
 
@@ -255,23 +279,30 @@ export class InventarioService {
   // ==============================
   // 📊 KARDEX POR PRODUCTO
   // ==============================
-  async kardexProducto(productoCodigo: string, ubicacion?: string) {
-    const producto = await this.prisma.productos.findUnique({
-      where: {
-        codigo: productoCodigo,
-      },
-    });
+  async kardexProducto(productoCodigo?: string, ubicacion?: string) {
+    // Validar producto solamente si se recibió un código
+    let producto: any = null;
 
-    if (!producto) {
-      throw new Error('El producto no existe');
+    if (productoCodigo) {
+      producto = await this.prisma.productos.findUnique({
+        where: {
+          codigo: productoCodigo,
+        },
+      });
+
+      if (!producto) {
+        throw new Error('El producto no existe');
+      }
     }
 
-    const where: Prisma.MovimientosInventarioWhereInput = {
-      productoCodigo,
-    };
+    const where: Prisma.MovimientosInventarioWhereInput = {};
 
-    // Si se solicita una ubicación específica,
-    // solamente obtenemos movimientos que afectan esa ubicación.
+    // Filtro por producto
+    if (productoCodigo) {
+      where.productoCodigo = productoCodigo;
+    }
+
+    // Filtro por ubicación
     if (ubicacion) {
       where.OR = [
         {
@@ -292,6 +323,9 @@ export class InventarioService {
         {
           fecha: 'asc',
         },
+        {
+          id: 'asc',
+        },
       ],
     });
 
@@ -302,27 +336,32 @@ export class InventarioService {
       let salida = 0;
       let movimientoStock = 0;
 
+      // ==========================================
+      // ENTRADA
+      // ==========================================
       if (mov.tipo === 'ENTRADA') {
-        // En Kardex general o si la entrada pertenece
-        // a la ubicación consultada.
         if (!ubicacion || mov.ubicacion === ubicacion) {
           entrada = mov.cantidad;
           movimientoStock = mov.cantidad;
         }
       }
 
+      // ==========================================
+      // SALIDA
+      // ==========================================
       if (mov.tipo === 'SALIDA') {
-        // En Kardex general o si la salida pertenece
-        // a la ubicación consultada.
         if (!ubicacion || mov.ubicacion === ubicacion) {
           salida = mov.cantidad;
           movimientoStock = -mov.cantidad;
         }
       }
 
+      // ==========================================
+      // TRANSFERENCIA
+      // ==========================================
       if (mov.tipo === 'TRANSFERENCIA') {
-        // Kardex general:
-        // una transferencia no modifica el stock global.
+        // Kardex general por producto:
+        // una transferencia no cambia el stock global.
         if (!ubicacion) {
           movimientoStock = 0;
         }
@@ -341,6 +380,9 @@ export class InventarioService {
         }
       }
 
+      // ==========================================
+      // AJUSTE
+      // ==========================================
       if (mov.tipo === 'AJUSTE') {
         if (!ubicacion || mov.ubicacion === ubicacion) {
           if (mov.referencia?.startsWith('AJUSTE_ENTRADA:')) {
@@ -360,6 +402,7 @@ export class InventarioService {
       return {
         fecha: mov.fecha,
         tipo: mov.tipo,
+        productoCodigo: mov.productoCodigo,
         cantidad: mov.cantidad,
 
         entrada,
@@ -376,8 +419,8 @@ export class InventarioService {
     });
 
     return {
-      producto: producto.producto,
-      codigo: producto.codigo,
+      producto: producto?.producto ?? null,
+      codigo: producto?.codigo ?? null,
       ubicacion: ubicacion ?? null,
       kardex,
     };
