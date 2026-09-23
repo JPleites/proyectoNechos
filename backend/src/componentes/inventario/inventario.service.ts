@@ -150,7 +150,15 @@ export class InventarioService {
       where: { codigo: productoCodigo },
     });
 
-    if (!producto) throw new Error('El producto no existe');
+    if (!producto) {
+      throw new BadRequestException('El producto no existe');
+    }
+
+    if (!Number.isInteger(cantidad) || cantidad <= 0) {
+      throw new BadRequestException(
+        'La cantidad debe ser un número entero mayor que 0',
+      );
+    }
 
     const key = {
       productoCodigo_ubicacion: {
@@ -164,33 +172,52 @@ export class InventarioService {
     });
 
     if (!inventario) {
-      throw new Error('No existe inventario en esa ubicación');
+      throw new BadRequestException('No existe inventario en esa ubicación');
     }
 
-    if (inventario.cantidad < cantidad) {
-      throw new Error('Stock insuficiente');
+    const cantidadReservada = inventario.cantidadReservada ?? 0;
+
+    const cantidadDisponible = inventario.cantidad - cantidadReservada;
+
+    if (cantidadDisponible < cantidad) {
+      throw new BadRequestException(
+        `Stock disponible insuficiente. Disponible: ${cantidadDisponible}`,
+      );
     }
 
     return await this.prisma.$transaction(async (tx) => {
+      const nuevaCantidad = inventario.cantidad - cantidad;
+
       let resultado;
 
-      // 🟡 si queda en 0 → eliminar
-      if (inventario.cantidad === cantidad) {
+      // Si se agotó el stock físico, solo podemos eliminar
+      // el registro porque ya validamos que no hay reservas
+      // sobre esas unidades.
+      if (nuevaCantidad === 0) {
+        if (cantidadReservada !== 0) {
+          throw new BadRequestException(
+            'No se puede eliminar el inventario porque aún existen unidades reservadas',
+          );
+        }
+
         await tx.inventario.delete({
           where: key,
         });
 
-        resultado = { message: 'Producto agotado en esa ubicación' };
+        resultado = {
+          message: 'Producto agotado en esa ubicación',
+        };
       } else {
         resultado = await tx.inventario.update({
           where: key,
           data: {
-            cantidad: inventario.cantidad - cantidad,
+            cantidad: nuevaCantidad,
+            cantidadReservada,
           },
         });
       }
 
-      // 📦 movimiento
+      // Registrar movimiento
       await tx.movimientosInventario.create({
         data: {
           productoCodigo,
@@ -438,6 +465,42 @@ export class InventarioService {
     });
   }
 
+  async getUbicacionesTransferencia(productoCodigo: string, almacenId: number) {
+    const ubicaciones = await this.prisma.ubicaciones.findMany({
+      where: {
+        almacenId,
+      },
+      include: {
+        inventario: {
+          where: {
+            productoCodigo,
+          },
+        },
+      },
+      orderBy: [{ estante: 'asc' }, { nivel: 'asc' }, { deposito: 'asc' }],
+    });
+
+    return ubicaciones.map((ubicacion) => {
+      const inventario = ubicacion.inventario[0];
+
+      const cantidad = inventario?.cantidad ?? 0;
+      const cantidadReservada = inventario?.cantidadReservada ?? 0;
+      const cantidadDisponible = cantidad - cantidadReservada;
+
+      return {
+        ubicacion: ubicacion.ubicacion,
+        deposito: ubicacion.deposito,
+        estante: ubicacion.estante,
+        nivel: ubicacion.nivel,
+        almacenId: ubicacion.almacenId,
+
+        cantidad,
+        cantidadReservada,
+        cantidadDisponible,
+      };
+    });
+  }
+
   async transferirProducto(
     productoCodigo: string,
     ubicacionOrigen: string,
@@ -516,9 +579,13 @@ export class InventarioService {
       }
 
       // Validar stock suficiente
-      if (inventarioOrigen.cantidad < cantidad) {
+      const cantidadReservada = inventarioOrigen.cantidadReservada ?? 0;
+      const stockDisponible = inventarioOrigen.cantidad - cantidadReservada;
+
+      if (stockDisponible < cantidad) {
         throw new BadRequestException(
-          `Stock insuficiente en ${ubicacionOrigen}. Disponible: ${inventarioOrigen.cantidad}`,
+          `Stock disponible insuficiente en ${ubicacionOrigen}. ` +
+            `Disponible: ${stockDisponible}`,
         );
       }
 

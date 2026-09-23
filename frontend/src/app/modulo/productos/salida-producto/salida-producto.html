@@ -1,91 +1,229 @@
 <div class="container-fluid vh-100 d-flex flex-column p-3 bg-light page-wrapper">
-  
-  <header class="d-flex justify-content-between align-items-center mb-3 flex-shrink-0 modulo-header">
+  <header
+    class="d-flex justify-content-between align-items-center mb-3 flex-shrink-0 modulo-header"
+  >
     <div>
       <h4 class="mb-1 fw-semibold text-dark">Salida de Inventario</h4>
-      <small class="text-muted">Registrar egresos, mermas o despachos de stock</small>
+      <small class="text-muted">
+        Registrar egresos, mermas o ajustes de stock
+      </small>
     </div>
   </header>
 
   <div class="modulo-contenido panel-scroll flex-grow-1 w-100">
-    <article class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100 d-flex flex-column">
-      
-      <form class="card-body p-4 d-flex flex-column h-100 overflow-auto" [formGroup]="form" (ngSubmit)="$event.preventDefault(); salir()">
+    <article
+      class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100 d-flex flex-column"
+    >
+      <form
+        class="card-body p-4 d-flex flex-column h-100 overflow-auto"
+        [formGroup]="form"
+        (ngSubmit)="$event.preventDefault(); salir()"
+      >
         <div class="d-grid gap-3 flex-grow-1">
-          
+
+          <!-- PRODUCTO -->
           <section class="erp-panel shadow-sm border">
             <h6 class="erp-section-title text-danger">
-              <i class="fas fa-box-open me-1.5"></i>Datos del Movimiento de Egreso
+              <i class="fas fa-barcode me-2"></i>
+              Producto a Retirar
+            </h6>
+
+            <div class="row g-3 align-items-end">
+              <div class="col-md-5 col-lg-4">
+                <label class="form-label">
+                  Código del producto
+                </label>
+
+                <div class="input-group erp-input-group">
+                  <span
+                    class="input-group-text bg-light border-end-0 text-muted"
+                  >
+                    <i class="fas fa-tag"></i>
+                  </span>
+
+                  <input
+                    formControlName="productoCodigo"
+                    class="form-control border-start-0"
+                    placeholder="Ej. PROD-001"
+                    autocomplete="off"
+                    (keyup.enter)="
+                      $event.stopPropagation();
+                      buscarProducto()
+                    "
+                  />
+                </div>
+              </div>
+
+              <div class="col-md-auto">
+                <button
+                  type="button"
+                  class="btn btn-primary px-4 btn-buscar-erp"
+                  (click)="$event.stopPropagation(); buscarProducto()"
+                >
+                  <i class="fas fa-search me-2 small"></i>
+                  Buscar producto
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- DATOS DE SALIDA -->
+          <section
+            *ngIf="productoValido"
+            class="erp-panel border border-danger-subtle bg-white animated slideInUp"
+          >
+            <h6 class="erp-section-title text-danger">
+              <i class="fas fa-box-open me-2"></i>
+              Información de salida
             </h6>
 
             <div class="row g-3">
-              
-              <div class="col-md-4">
-                <label class="form-label">Código del producto <span class="text-danger">*</span></label>
-                <div class="input-group erp-input-group">
-                  <span class="input-group-text bg-light text-muted">
-                    <i class="fas fa-barcode"></i>
-                  </span>
-                  <input
-                    formControlName="productoCodigo"
-                    class="form-control"
-                    placeholder="Ej. SKU-1020"
-                  />
-                </div>
+
+              <!-- ALMACÉN -->
+              <div class="col-md-6 col-lg-4">
+                <label class="form-label">
+                  Almacén
+                </label>
+
+                <select
+                  formControlName="almacen"
+                  class="form-select"
+                  (change)="cargarUbicaciones()"
+                >
+                  <option value="">
+                    Seleccione almacén
+                  </option>
+
+                  <option
+                    *ngFor="let a of almacenes"
+                    [value]="a.id"
+                  >
+                    {{ a.almacen }}
+                  </option>
+                </select>
               </div>
 
-              <div class="col-md-4">
-                <label class="form-label">Ubicación / Pasillo <span class="text-danger">*</span></label>
-                <div class="input-group erp-input-group">
-                  <span class="input-group-text bg-light text-muted">
-                    <i class="fas fa-map-marker-alt"></i>
-                  </span>
-                  <input
-                    formControlName="ubicacion"
-                    class="form-control"
-                    placeholder="Ej. Bodega A - Estante 2"
-                  />
-                </div>
+              <!-- UBICACIÓN -->
+              <div class="col-md-6 col-lg-4">
+                <label class="form-label">
+                  Ubicación / Pasillo
+                </label>
+
+                <select
+                  formControlName="ubicacion"
+                  class="form-select"
+                  (change)="seleccionarUbicacion()"
+                >
+                  <option value="">
+                    Seleccione ubicación
+                  </option>
+
+                  <option
+                    *ngFor="let u of ubicaciones"
+                    [value]="u.ubicacion"
+                  >
+                    (E{{ u.estante }}-N{{ u.nivel }}-D{{ u.deposito }})
+                    · Disponible: {{ u.cantidadDisponible }}
+                  </option>
+                </select>
               </div>
 
-              <div class="col-md-4">
-                <label class="form-label">Cantidad a retirar <span class="text-danger">*</span></label>
-                <div class="input-group erp-input-group">
-                  <span class="input-group-text bg-light text-muted">
-                    <i class="fas fa-minus-circle"></i>
-                  </span>
-                  <input
-                    type="number"
-                    formControlName="cantidad"
-                    class="form-control"
-                    placeholder="0"
-                    min="1"
-                  />
+              <!-- CANTIDAD -->
+              <div class="col-md-6 col-lg-4">
+                <label class="form-label">
+                  Cantidad a Retirar
+                </label>
+
+                <input
+                  type="number"
+                  formControlName="cantidad"
+                  class="form-control"
+                  placeholder="0"
+                  min="1"
+                  [max]="cantidadDisponible"
+                />
+
+                <small
+                  *ngIf="cantidadDisponible > 0"
+                  class="text-muted"
+                >
+                  Máximo disponible:
+                  <strong>{{ cantidadDisponible }}</strong>
+                </small>
+              </div>
+
+              <!-- INFORMACIÓN DE STOCK -->
+              <div
+                *ngIf="form.get('ubicacion')?.value"
+                class="col-12"
+              >
+                <div
+                  class="alert alert-light border d-flex flex-wrap align-items-center gap-4 mb-0 py-2"
+                >
+                  <div>
+                    <small class="text-muted d-block">
+                      Stock físico
+                    </small>
+
+                    <strong>
+                      {{ ubicacionSeleccionada?.cantidad ?? 0 }}
+                    </strong>
+                  </div>
+
+                  <div>
+                    <small class="text-muted d-block">
+                      Reservado
+                    </small>
+
+                    <strong class="text-warning">
+                      {{ ubicacionSeleccionada?.cantidadReservada ?? 0 }}
+                    </strong>
+                  </div>
+
+                  <div>
+                    <small class="text-muted d-block">
+                      Disponible para retirar
+                    </small>
+
+                    <strong class="text-danger">
+                      {{ cantidadDisponible }}
+                    </strong>
+                  </div>
                 </div>
               </div>
 
             </div>
           </section>
 
-          <div class="alert erp-alert-warning border-0 shadow-inner rounded-3 d-flex align-items-center p-3 mb-0 animated fadeIn">
-            <i class="fas fa-exclamation-triangle text-warning fa-lg me-3"></i>
-            <div>
-              <strong class="text-warning-emphasis d-block mb-0.5">Control de Existencias Crítico</strong>
-              <span class="text-muted small">Por favor, verifica en el sistema que exista suficiente stock físico distribuido en la ubicación seleccionada antes de procesar este retiro.</span>
-            </div>
+          <!-- MENSAJE INICIAL -->
+          <div
+            *ngIf="!productoValido"
+            class="text-center py-5 my-auto text-muted opacity-50 animated fadeIn"
+          >
+            <i class="fas fa-box-open fa-3x mb-3 text-secondary"></i>
+
+            <p class="mb-0 small fw-medium">
+              Ingrese un código válido arriba para activar los campos
+              de salida.
+            </p>
           </div>
 
         </div>
 
-        <footer class="d-flex justify-content-end mt-4 pt-3 border-top flex-shrink-0">
-          <button type="submit" class="btn btn-danger rounded-3 px-4 fw-medium btn-registrar-salida">
-            <i class="fas fa-shipping-fast me-2 small"></i>
-            Procesar y Registrar Salida
+        <!-- FOOTER -->
+        <footer
+          *ngIf="productoValido"
+          class="d-flex justify-content-end mt-4 pt-3 border-top flex-shrink-0 animated fadeIn"
+        >
+          <button
+            type="submit"
+            class="btn btn-danger rounded-3 px-4 fw-medium btn-registrar-salida"
+          >
+            <i class="fas fa-box-open me-2 small"></i>
+            Confirmar y Registrar Salida
           </button>
         </footer>
       </form>
-
     </article>
   </div>
-
 </div>

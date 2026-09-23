@@ -218,6 +218,11 @@ export class VentasService {
             );
           }
 
+          await tx.inventario.delete({
+            where: {
+              id: inventario.id,
+            },
+          });
         } else {
           await tx.inventario.update({
             where: {

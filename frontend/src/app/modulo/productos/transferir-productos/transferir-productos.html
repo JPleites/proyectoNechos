@@ -1,1 +1,240 @@
-<p>transferir-productos works!</p>
+<div class="container-fluid vh-100 d-flex flex-column p-3 bg-light page-wrapper">
+  <header
+    class="d-flex justify-content-between align-items-center mb-3 flex-shrink-0 modulo-header"
+  >
+    <div>
+      <h4 class="mb-1 fw-semibold text-dark">Transferir Inventario</h4>
+      <small class="text-muted"> Mover stock disponible entre ubicaciones físicas </small>
+    </div>
+  </header>
+
+  <div class="modulo-contenido panel-scroll flex-grow-1 w-100">
+    <article
+      class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100 d-flex flex-column"
+    >
+      <form
+        class="card-body p-4 d-flex flex-column h-100 overflow-auto"
+        [formGroup]="form"
+        (ngSubmit)="$event.preventDefault(); transferir()"
+      >
+        <div class="d-grid gap-3 flex-grow-1">
+          <!-- PRODUCTO -->
+          <section class="erp-panel shadow-sm border">
+            <h6 class="erp-section-title">
+              <i class="fas fa-barcode me-2 text-primary"></i>
+              Producto a Transferir
+            </h6>
+
+            <div class="row g-3 align-items-end">
+              <div class="col-md-5 col-lg-4">
+                <label class="form-label">Código del producto</label>
+
+                <div class="input-group erp-input-group">
+                  <span class="input-group-text bg-light border-end-0 text-muted">
+                    <i class="fas fa-tag"></i>
+                  </span>
+
+                  <input
+                    formControlName="productoCodigo"
+                    class="form-control border-start-0"
+                    placeholder="Ej. PROD-001"
+                    autocomplete="off"
+                    (keyup.enter)="$event.stopPropagation(); buscarProducto()"
+                  />
+                </div>
+              </div>
+
+              <div class="col-md-auto">
+                <button
+                  type="button"
+                  class="btn btn-primary px-4 btn-buscar-erp"
+                  (click)="$event.stopPropagation(); buscarProducto()"
+                >
+                  <i class="fas fa-search me-2 small"></i>
+                  Buscar producto
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- CONTENIDO DE TRANSFERENCIA -->
+          <section
+            *ngIf="productoValido"
+            class="erp-panel border border-primary-subtle bg-white animated slideInUp"
+          >
+            <h6 class="erp-section-title text-primary">
+              <i class="fas fa-exchange-alt me-2"></i>
+              Información de transferencia
+            </h6>
+
+            <div class="row g-3">
+              <!-- ALMACÉN ORIGEN -->
+              <div class="col-md-6">
+                <label class="form-label"> Almacén de Origen </label>
+
+                <select
+                  formControlName="almacenOrigen"
+                  class="form-select"
+                  (change)="cargarUbicacionesOrigen()"
+                >
+                  <option value="">Seleccione almacén</option>
+
+                  <option *ngFor="let a of almacenes" [value]="a.id">
+                    {{ a.almacen }}
+                  </option>
+                </select>
+              </div>
+
+              <!-- UBICACIÓN ORIGEN -->
+              <div class="col-md-6">
+                <label class="form-label"> Ubicación de Origen </label>
+
+                <select
+                  formControlName="ubicacionOrigen"
+                  class="form-select"
+                  (change)="seleccionarOrigen()"
+                >
+                  <option value="">Seleccione ubicación</option>
+
+                  <option *ngFor="let u of ubicacionesOrigen" [value]="u.ubicacion">
+                    E{{ u.estante }} - N{{ u.nivel }} - D{{ u.deposito }} · Disponible:
+                    {{ u.cantidadDisponible }}
+                  </option>
+                </select>
+              </div>
+
+              <!-- INFORMACIÓN DE STOCK -->
+              <div *ngIf="form.get('ubicacionOrigen')?.value" class="col-12">
+                <div
+                  class="alert alert-light border d-flex flex-wrap align-items-center gap-4 mb-0 py-2"
+                >
+                  <div>
+                    <small class="text-muted d-block"> Stock físico </small>
+                    <strong>
+                      {{ ubicacionOrigenSeleccionada?.cantidad ?? 0 }}
+                    </strong>
+                  </div>
+
+                  <div>
+                    <small class="text-muted d-block"> Reservado </small>
+                    <strong class="text-warning">
+                      {{ ubicacionOrigenSeleccionada?.cantidadReservada ?? 0 }}
+                    </strong>
+                  </div>
+
+                  <div>
+                    <small class="text-muted d-block"> Disponible para transferir </small>
+                    <strong class="text-success">
+                      {{ cantidadDisponibleOrigen }}
+                    </strong>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CANTIDAD -->
+              <div class="col-md-6 col-lg-4">
+                <label class="form-label"> Cantidad a Transferir </label>
+
+                <input
+                  type="number"
+                  formControlName="cantidad"
+                  class="form-control"
+                  placeholder="0"
+                  min="1"
+                  [max]="cantidadDisponibleOrigen"
+                />
+
+                <small *ngIf="cantidadDisponibleOrigen > 0" class="text-muted">
+                  Máximo disponible:
+                  <strong>{{ cantidadDisponibleOrigen }}</strong>
+                </small>
+              </div>
+
+              <!-- SEPARADOR VISUAL -->
+              <div class="col-12">
+                <div class="d-flex align-items-center gap-3 my-2 text-muted">
+                  <div class="flex-grow-1 border-top"></div>
+
+                  <span class="small fw-semibold text-uppercase">
+                    <i class="fas fa-arrow-down me-1"></i>
+                    Destino
+                  </span>
+
+                  <div class="flex-grow-1 border-top"></div>
+                </div>
+              </div>
+
+              <!-- ALMACÉN DESTINO -->
+              <div class="col-md-6">
+                <label class="form-label"> Almacén de Destino </label>
+
+                <select
+                  formControlName="almacenDestino"
+                  class="form-select"
+                  (change)="cargarUbicacionesDestino()"
+                >
+                  <option value="">Seleccione almacén</option>
+
+                  <option *ngFor="let a of almacenes" [value]="a.id">
+                    {{ a.almacen }}
+                  </option>
+                </select>
+              </div>
+
+              <!-- UBICACIÓN DESTINO -->
+              <div class="col-md-6">
+                <label class="form-label"> Ubicación de Destino </label>
+
+                <select formControlName="ubicacionDestino" class="form-select">
+                  <option value="">Seleccione ubicación</option>
+
+                  <option *ngFor="let u of ubicacionesDestino" [value]="u.ubicacion">
+                    E{{ u.estante }} - N{{ u.nivel }} - D{{ u.deposito }}
+                  </option>
+                </select>
+              </div>
+
+              <!-- REFERENCIA -->
+              <div class="col-12">
+                <label class="form-label">
+                  Referencia
+                  <span class="text-muted fw-normal">(opcional)</span>
+                </label>
+
+                <textarea
+                  formControlName="referencia"
+                  class="form-control"
+                  rows="2"
+                  placeholder="Ej. Reubicación de mercancía, reorganización de almacén..."
+                ></textarea>
+              </div>
+            </div>
+          </section>
+
+          <!-- ESTADO INICIAL -->
+          <div
+            *ngIf="!productoValido"
+            class="text-center py-5 my-auto text-muted opacity-50 animated fadeIn"
+          >
+            <i class="fas fa-exchange-alt fa-3x mb-3 text-secondary"></i>
+
+            <p class="mb-0 small fw-medium">
+              Ingrese un código válido arriba para comenzar la transferencia.
+            </p>
+          </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer
+          *ngIf="productoValido"
+          class="d-flex justify-content-end mt-4 pt-3 border-top flex-shrink-0 animated fadeIn"
+        >
+          <button type="submit" class="btn btn-primary rounded-3 px-4 fw-medium">
+            <i class="fas fa-exchange-alt me-2 small"></i>
+            Confirmar Transferencia
+          </button>
+        </footer>
+      </form>
+    </article>
+  </div>
+</div>

@@ -86,6 +86,17 @@ export class InventarioController {
     );
   }
 
+  @Get('ubicaciones-transferencia')
+getUbicacionesTransferencia(
+  @Query('almacenId') almacenId: number,
+  @Query('productoCodigo') productoCodigo: string,
+) {
+  return this.inventarioService.getUbicacionesTransferencia(
+    productoCodigo,
+    Number(almacenId),
+  );
+}
+
   //ingreso al inventario
   @Post('ingreso')
   ingreso(@Body() data: any, @Req() req: any) {
