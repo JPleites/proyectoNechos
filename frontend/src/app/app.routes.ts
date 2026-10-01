@@ -48,20 +48,33 @@ export const routes: Routes = [
         children: [
           {
             path: '',
-            redirectTo: 'consulta',
+            redirectTo: 'consulta-almacenes',
             pathMatch: 'full',
           },
           {
-            path: 'consulta',
+            path: 'consulta-almacenes',
             loadComponent: () =>
               import('./modulo/almacenes/consulta-almacen/consulta-almacen').then(
                 (m) => m.ConsultaAlmacen,
               ),
           },
           {
-            path: 'crear',
+            path: 'crear-almacen',
             loadComponent: () =>
               import('./modulo/almacenes/crear-almacen/crear-almacen').then((m) => m.CrearAlmacen),
+          },{
+            path: 'consulta-ubicaciones',
+            loadComponent: () =>
+              import('./modulo/ubicaciones/consulta-ubicaciones/consulta-ubicaciones').then(
+                (m) => m.ConsultaUbicaciones,
+              ),
+          },
+          {
+            path: 'crear-ubicacion',
+            loadComponent: () =>
+              import('./modulo/ubicaciones/crear-ubicacion/crear-ubicacion').then(
+                (m) => m.CrearUbicacion,
+              ),
           },
         ],
       },
@@ -331,9 +344,9 @@ export const routes: Routes = [
         ],
       },
       {
-        path: 'ubicaciones',
+        path: 'descuentos',
         loadComponent: () =>
-          import('./seccion/ubicaciones/ubicaciones').then((m) => m.UbicacionesComponent),
+          import('./seccion/descuentos/descuentos').then((m) => m.DescuentosComponent),
         children: [
           {
             path: '',
@@ -345,13 +358,6 @@ export const routes: Routes = [
             loadComponent: () =>
               import('./modulo/ubicaciones/consulta-ubicaciones/consulta-ubicaciones').then(
                 (m) => m.ConsultaUbicaciones,
-              ),
-          },
-          {
-            path: 'crear',
-            loadComponent: () =>
-              import('./modulo/ubicaciones/crear-ubicacion/crear-ubicacion').then(
-                (m) => m.CrearUbicacion,
               ),
           },
         ],

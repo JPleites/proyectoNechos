@@ -12,14 +12,23 @@
       </div>
 
       <nav class="sidebar-nav">
-        <button class="nav-item" routerLink="crear" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <button class="nav-item" routerLink="crear-almacen" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
           <i class="fas fa-warehouse nav-icon"></i>
           <span class="nav-label" *ngIf="sidebarOpen">Añadir Almacén</span>
         </button>
 
-        <button class="nav-item" routerLink="consulta" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <button class="nav-item" routerLink="consulta-almacenes" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
           <i class="fas fa-boxes nav-icon"></i>
           <span class="nav-label" *ngIf="sidebarOpen">Consultar Almacenes</span>
+        </button>
+        <button class="nav-item" routerLink="crear-ubicacion" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <i class="fas fa-map-marker-alt nav-icon"></i>
+          <span class="nav-label" *ngIf="sidebarOpen">Crear Ubicación</span>
+        </button>
+
+        <button class="nav-item" routerLink="consulta-ubicaciones" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <i class="fas fa-map-marked-alt nav-icon"></i>
+          <span class="nav-label" *ngIf="sidebarOpen">Consultar Ubicaciones</span>
         </button>
       </nav>
 

@@ -88,7 +88,11 @@ model Devoluciones {
   cantidad       Int
   motivo         String
   fecha          DateTime  @default(now())
+  PrecioUnitario Decimal   @db.Decimal
+  usuarioCodigo  Int
+  fueUsada       Boolean   @default(false)
   producto       Productos @relation(fields: [productoCodigo], references: [codigo])
+  Usuarios       Usuarios  @relation(fields: [usuarioCodigo], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "Devoluciones_usuarioCodigo")
   venta          Ventas    @relation(fields: [ventaId], references: [id])
 }
 
@@ -264,6 +268,7 @@ model Usuarios {
   perfilId                    Int                     @unique
   arqueos                     Arqueo[]
   cierres                     Cierres[]
+  Devoluciones                Devoluciones[]
   movimientos                 MovimientosInventario[]
   pedidos                     Pedidos[]
   solicitudDescuentoAprobador SolicitudDescuento[]    @relation("Aprobaciones")
