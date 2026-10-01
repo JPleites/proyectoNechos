@@ -1,16 +1,16 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterOutlet, RouterLink, RouterModule } from '@angular/router';
+import { Router, RouterOutlet, RouterLinkWithHref, RouterLink, RouterModule } from '@angular/router';
 
 
 @Component({
-  selector: 'app-inventario',
+  selector: 'app-devoluciones',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterModule],
-  templateUrl: './inventario.html',
-  styleUrls: ['./inventario.scss']
+  imports: [CommonModule, RouterOutlet, RouterLinkWithHref, RouterLink, RouterModule],
+  templateUrl: './devoluciones.html',
+  styleUrl: './devoluciones.scss',
 })
-export class InventarioComponent {
+export class Devoluciones {
   sidebarOpen = false;
 
   rol = localStorage.getItem('rol');
