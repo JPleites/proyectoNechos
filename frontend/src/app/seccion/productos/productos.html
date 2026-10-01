@@ -20,12 +20,12 @@
           <span class="nav-label" *ngIf="sidebarOpen">Gestionar Productos</span>
         </button>
 
-        <button class="nav-item" routerLink="nuevo" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <button class="nav-item" routerLink="nuevo" routerLinkActive="active">
           <i class="fas fa-plus-circle nav-icon"></i>
           <span class="nav-label" *ngIf="sidebarOpen">Nuevo Producto</span>
         </button>
 
-        <button class="nav-item" routerLink="ingreso" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <button class="nav-item" routerLink="ingreso" routerLinkActive="active">
           <i class="fas fa-arrow-down nav-icon text-success"></i>
           <span class="nav-label" *ngIf="sidebarOpen">Ingreso de Inventario</span>
         </button>
@@ -38,6 +38,15 @@
         <button class="nav-item" routerLink="transferir" routerLinkActive="active">
           <i class="fas fa-exchange-alt nav-icon"></i>
           <span class="nav-label" *ngIf="sidebarOpen">Transferencia de Inventario</span>
+        </button>
+
+        <button class="nav-item" routerLink="kardex" routerLinkActive="active">
+          <i class="fas fa-book nav-icon"></i>
+          <span class="nav-label" *ngIf="sidebarOpen">Ver Kardex</span>
+        </button>
+        <button class="nav-item" routerLink="consulta-inventario" routerLinkActive="active">
+          <i class="fas fa-search nav-icon"></i>
+          <span class="nav-label" *ngIf="sidebarOpen">Consultar Inventario</span>
         </button>
       </nav>
 

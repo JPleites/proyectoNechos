@@ -62,7 +62,8 @@ export const routes: Routes = [
             path: 'crear-almacen',
             loadComponent: () =>
               import('./modulo/almacenes/crear-almacen/crear-almacen').then((m) => m.CrearAlmacen),
-          },{
+          },
+          {
             path: 'consulta-ubicaciones',
             loadComponent: () =>
               import('./modulo/ubicaciones/consulta-ubicaciones/consulta-ubicaciones').then(
@@ -183,29 +184,6 @@ export const routes: Routes = [
         ],
       },
       {
-        path: 'inventario',
-        loadComponent: () =>
-          import('./seccion/inventario/inventario').then((m) => m.InventarioComponent),
-        children: [
-          {
-            path: '',
-            redirectTo: 'kardex',
-            pathMatch: 'full',
-          },
-          {
-            path: 'kardex',
-            loadComponent: () => import('./modulo/inventario/kardex/kardex').then((m) => m.Kardex),
-          },
-          {
-            path: 'consulta-inventario',
-            loadComponent: () =>
-              import('./modulo/inventario/consulta-inventario/consulta-inventario').then(
-                (m) => m.ConsultaInventario,
-              ),
-          },
-        ],
-      },
-      {
         path: 'pedido',
         loadComponent: () => import('./seccion/pedido/pedido').then((m) => m.PedidoComponent),
         children: [
@@ -280,6 +258,18 @@ export const routes: Routes = [
             loadComponent: () =>
               import('./modulo/productos/editar-producto/editar-producto').then(
                 (m) => m.EditarProducto,
+              ),
+          },
+
+          {
+            path: 'kardex',
+            loadComponent: () => import('./modulo/inventario/kardex/kardex').then((m) => m.Kardex),
+          },
+          {
+            path: 'consulta-inventario',
+            loadComponent: () =>
+              import('./modulo/inventario/consulta-inventario/consulta-inventario').then(
+                (m) => m.ConsultaInventario,
               ),
           },
         ],
