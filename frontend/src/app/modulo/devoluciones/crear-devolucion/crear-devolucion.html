@@ -1,0 +1,342 @@
+<div class="page-wrapper">
+  <div class="modulo-header">
+    <div>
+      <h2>Nueva devolución</h2>
+
+      <p class="text-muted mb-0">Registra la devolución de productos de una venta facturada.</p>
+    </div>
+  </div>
+
+  <div class="modulo-contenido">
+    <form [formGroup]="formulario">
+      <!-- ================================================= -->
+      <!-- BUSCAR VENTA -->
+      <!-- ================================================= -->
+
+      <div class="erp-panel mb-3">
+        <div class="erp-panel-header">
+          <h5 class="mb-0">Buscar venta</h5>
+        </div>
+
+        <div class="erp-panel-body">
+          <div class="row g-3 align-items-end">
+            <div class="col-md-5">
+              <label class="form-label">
+                ID de venta
+                <span class="text-danger">*</span>
+              </label>
+
+              <input
+                type="number"
+                class="form-control"
+                formControlName="ventaId"
+                min="1"
+                placeholder="Ej. 25"
+                (keyup.enter)="buscarVenta()"
+              />
+
+              <div
+                class="text-danger small mt-1"
+                *ngIf="formulario.get('ventaId')?.touched && formulario.get('ventaId')?.invalid"
+              >
+                Ingresa un ID de venta válido.
+              </div>
+            </div>
+
+            <div class="col-md-auto">
+              <button
+                type="button"
+                class="btn btn-primary"
+                [disabled]="cargandoVenta"
+                (click)="buscarVenta()"
+              >
+                <span *ngIf="cargandoVenta" class="spinner-border spinner-border-sm me-1"></span>
+
+                <i *ngIf="!cargandoVenta" class="fas fa-search me-1"></i>
+
+                {{ cargandoVenta ? 'Consultando...' : 'Buscar venta' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================= -->
+      <!-- INFORMACIÓN DE LA VENTA -->
+      <!-- ================================================= -->
+
+      <div class="erp-panel mb-3" *ngIf="venta">
+        <div class="erp-panel-header">
+          <h5 class="mb-0">Información de la venta</h5>
+        </div>
+
+        <div class="erp-panel-body">
+          <div class="row g-3">
+            <div class="col-md-3">
+              <label class="info-label"> Venta </label>
+
+              <div class="info-value">
+                {{ venta.ventaID }}
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <label class="info-label"> Cliente </label>
+
+              <div class="info-value">
+                {{ venta.cliente.nombre }}
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <label class="info-label"> Fecha </label>
+
+              <div class="info-value">
+                {{ venta.fecha | date: 'dd/MM/yyyy HH:mm' }}
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <label class="info-label"> Estado </label>
+
+              <div>
+                <span class="badge bg-success">
+                  {{ venta.estado }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================= -->
+      <!-- PRODUCTOS -->
+      <!-- ================================================= -->
+
+      <div class="erp-panel mb-3" *ngIf="venta">
+        <div class="erp-panel-header">
+          <h5 class="mb-0">Productos de la venta</h5>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Código</th>
+
+                <th>Producto</th>
+
+                <th class="text-center">Vendido</th>
+
+                <th class="text-center">Devuelto</th>
+
+                <th class="text-center">Disponible</th>
+
+                <th class="text-end">Precio unitario</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr
+                *ngFor="let detalle of venta.detalles"
+                [class.table-secondary]="detalle.cantidadDisponible <= 0"
+              >
+                <td>
+                  {{ detalle.productoCodigo }}
+                </td>
+
+                <td>
+                  {{ detalle.nombreProducto }}
+                </td>
+
+                <td class="text-center">
+                  {{ detalle.cantidad }}
+                </td>
+
+                <td class="text-center">
+                  {{ detalle.cantidadDevuelta }}
+                </td>
+
+                <td class="text-center">
+                  <span
+                    class="badge"
+                    [class.bg-success]="detalle.cantidadDisponible > 0"
+                    [class.bg-secondary]="detalle.cantidadDisponible <= 0"
+                  >
+                    {{ detalle.cantidadDisponible }}
+                  </span>
+                </td>
+
+                <td class="text-end">
+                  L.
+                  {{ detalle.precioUnitario | number: '1.2-2' }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ================================================= -->
+      <!-- REGISTRAR DEVOLUCIÓN -->
+      <!-- ================================================= -->
+
+      <div class="erp-panel" *ngIf="venta">
+        <div class="erp-panel-header">
+          <h5 class="mb-0">Registrar devolución</h5>
+        </div>
+
+        <div class="erp-panel-body">
+          <div class="row g-3">
+            <!-- Producto -->
+
+            <div class="col-md-6">
+              <label class="form-label">
+                Producto
+                <span class="text-danger">*</span>
+              </label>
+
+              <select
+                class="form-select"
+                formControlName="productoCodigo"
+                (change)="seleccionarProducto()"
+              >
+                <option value="">Seleccione un producto</option>
+
+                <option
+                  *ngFor="let detalle of venta.detalles"
+                  [value]="detalle.productoCodigo"
+                  [disabled]="detalle.cantidadDisponible <= 0"
+                >
+                  {{ detalle.productoCodigo }}
+                  -
+                  {{ detalle.nombreProducto }}
+                  (Disponible:
+                  {{ detalle.cantidadDisponible }})
+                </option>
+              </select>
+            </div>
+
+            <!-- Cantidad -->
+
+            <div class="col-md-3">
+              <label class="form-label">
+                Cantidad
+                <span class="text-danger">*</span>
+              </label>
+
+              <input
+                type="number"
+                class="form-control"
+                formControlName="cantidad"
+                min="1"
+                [max]="productoSeleccionado?.cantidadDisponible || 1"
+              />
+
+              <small class="text-muted" *ngIf="productoSeleccionado">
+                Disponible:
+                {{ productoSeleccionado.cantidadDisponible }}
+              </small>
+            </div>
+
+            <!-- Valor -->
+
+            <div class="col-md-3">
+              <label class="form-label"> Valor devolución </label>
+
+              <div class="valor-devolucion">
+                L.
+                {{ valorDevolucion | number: '1.2-2' }}
+              </div>
+            </div>
+
+            <!-- Motivo -->
+
+            <div class="col-12">
+              <label class="form-label">
+                Motivo
+                <span class="text-danger">*</span>
+              </label>
+
+              <textarea
+                class="form-control"
+                rows="3"
+                formControlName="motivo"
+                placeholder="Describa el motivo de la devolución"
+              ></textarea>
+
+              <div
+                class="text-danger small mt-1"
+                *ngIf="formulario.get('motivo')?.touched && formulario.get('motivo')?.invalid"
+              >
+                El motivo es obligatorio.
+              </div>
+            </div>
+          </div>
+
+          <!-- Botones -->
+
+          <div class="d-flex justify-content-end gap-2 mt-4">
+            <button type="button" class="btn btn-light" [disabled]="guardando" (click)="limpiar()">
+              <i class="fas fa-eraser me-1"></i>
+              Limpiar
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-primary"
+              [disabled]="guardando || !productoSeleccionado"
+              (click)="guardar()"
+            >
+              <span *ngIf="guardando" class="spinner-border spinner-border-sm me-1"></span>
+
+              <i *ngIf="!guardando" class="fas fa-undo me-1"></i>
+
+              {{ guardando ? 'Registrando...' : 'Registrar devolución' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal fade" id="modalReciboDevolucion" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content border-0 shadow rounded-4 overflow-hidden">
+        <div class="modal-header bg-light py-2 px-3 border-bottom">
+          <h6 class="modal-title fw-semibold text-dark">Comprobante de devolución</h6>
+
+          <button
+            type="button"
+            class="btn-close small"
+            data-bs-dismiss="modal"
+            aria-label="Cerrar"
+          ></button>
+        </div>
+
+        <div class="modal-body p-3 bg-white">
+          <app-recibo-devolucion *ngIf="devolucionActual" [devolucion]="devolucionActual">
+          </app-recibo-devolucion>
+        </div>
+
+        <div class="modal-footer bg-light py-2 px-3 border-top gap-2">
+          <button
+            type="button"
+            class="btn btn-light border btn-sm rounded-3 px-3"
+            data-bs-dismiss="modal"
+          >
+            Cerrar
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-primary btn-sm rounded-3 px-3 shadow-sm"
+            (click)="imprimirDevolucion()"
+          >
+            <i class="fas fa-print me-1"></i>
+            Imprimir
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,476 @@
+<div class="container-fluid vh-100 d-flex flex-column p-3 bg-light page-wrapper">
+  <!-- ===================================================== -->
+  <!-- HEADER -->
+  <!-- ===================================================== -->
+
+  <div class="modulo-header mb-3 flex-shrink-0">
+    <div>
+      <h4 class="fw-bold mb-1">Consulta de Ventas</h4>
+
+      <p class="text-muted mb-0">Consulta y detalle de las ventas registradas</p>
+    </div>
+  </div>
+
+  <!-- ===================================================== -->
+  <!-- CONTENIDO -->
+  <!-- ===================================================== -->
+
+  <div class="modulo-contenido panel-scroll flex-grow-1">
+    <div
+      class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100 d-flex flex-column"
+    >
+      <!-- ================================================= -->
+      <!-- FILTROS -->
+      <!-- ================================================= -->
+
+      <section class="card-body border-bottom py-3 flex-shrink-0 bg-white">
+        <form class="row g-2" (ngSubmit)="buscar()">
+          <!-- Venta -->
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold"> Venta </label>
+
+            <div class="input-group">
+              <span class="input-group-text bg-white">
+                <i class="fas fa-receipt"></i>
+              </span>
+
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Ej. V15"
+                [(ngModel)]="filtros.ventaID"
+                name="ventaID"
+              />
+            </div>
+          </div>
+
+          <!-- Cliente -->
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold"> Cliente </label>
+
+            <div class="input-group">
+              <span class="input-group-text bg-white">
+                <i class="fas fa-user"></i>
+              </span>
+
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Nombre, código o RTN"
+                [(ngModel)]="filtros.cliente"
+                name="cliente"
+              />
+            </div>
+          </div>
+
+          <!-- Estado -->
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold"> Estado </label>
+
+            <select class="form-select" [(ngModel)]="filtros.estado" name="estado">
+              <option value="">Todos</option>
+
+              <option value="FACTURADA">Facturada</option>
+
+              <option value="CANCELADA">Cancelada</option>
+
+              <option value="ANULADA">Anulada</option>
+            </select>
+          </div>
+
+          <!-- Tipo -->
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold"> Tipo de venta </label>
+
+            <select class="form-select" [(ngModel)]="filtros.tipoVenta" name="tipoVenta">
+              <option value="">Todos</option>
+
+              <option value="CONTADO">Contado</option>
+
+              <option value="CREDITO">Crédito</option>
+            </select>
+          </div>
+
+          <!-- Método -->
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold"> Método de pago </label>
+
+            <select class="form-select" [(ngModel)]="filtros.metodoPago" name="metodoPago">
+              <option value="">Todos</option>
+
+              <option value="EFECTIVO">Efectivo</option>
+
+              <option value="BAC">BAC</option>
+
+              <option value="FICOHSA">Ficohsa</option>
+
+              <option value="DAVIVIENDA">Davivienda</option>
+
+              <option value="TRANSFERENCIA">Transferencia</option>
+            </select>
+          </div>
+
+          <!-- Fecha desde -->
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold"> Fecha desde </label>
+
+            <input
+              type="date"
+              class="form-control"
+              [(ngModel)]="filtros.fechaDesde"
+              name="fechaDesde"
+            />
+          </div>
+
+          <!-- Fecha hasta -->
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold"> Fecha hasta </label>
+
+            <input
+              type="date"
+              class="form-control"
+              [(ngModel)]="filtros.fechaHasta"
+              name="fechaHasta"
+            />
+          </div>
+
+          <!-- Botones -->
+          <div class="col-md-6 d-flex align-items-end justify-content-end gap-2">
+            <button type="button" class="btn btn-light border px-4" (click)="limpiarFiltros()">
+              <i class="fas fa-eraser me-2"></i>
+              Limpiar
+            </button>
+
+            <button type="submit" class="btn btn-primary px-4" [disabled]="cargando">
+              <i class="fas fa-search me-2"></i>
+
+              {{ cargando ? 'Buscando...' : 'Buscar' }}
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ================================================= -->
+      <!-- TABLA -->
+      <!-- ================================================= -->
+
+      <section class="table-responsive flex-grow-1 panel-scroll">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light sticky-top">
+            <tr>
+              <th>Venta</th>
+              <th>Fecha</th>
+              <th>Cliente</th>
+              <th>Usuario</th>
+              <th>Tipo</th>
+              <th>Método</th>
+              <th class="text-end">Total</th>
+              <th>Estado</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <!-- Cargando -->
+            <tr *ngIf="cargando">
+              <td colspan="9" class="text-center py-5">
+                <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+
+                Cargando ventas...
+              </td>
+            </tr>
+
+            <!-- Sin resultados -->
+            <tr *ngIf="!cargando && ventas.length === 0">
+              <td colspan="9" class="text-center py-5 text-muted">
+                <i class="fas fa-receipt fa-2x mb-3 d-block opacity-50"></i>
+
+                No se encontraron ventas.
+              </td>
+            </tr>
+
+            <!-- Ventas -->
+            <tr *ngFor="let venta of ventas">
+              <td>
+                <span class="fw-semibold">
+                  {{ venta.ventaID }}
+                </span>
+              </td>
+
+              <td>
+                {{ formatearFecha(venta.fecha) }}
+              </td>
+
+              <td>
+                <div class="fw-semibold">
+                  {{ venta.cliente.nombre }}
+                </div>
+
+                <small class="text-muted">
+                  {{ venta.cliente.rtn }}
+                </small>
+              </td>
+
+              <td>
+                {{ venta.usuario.nombre }}
+              </td>
+
+              <td>
+                {{ venta.tipoVenta }}
+              </td>
+
+              <td>
+                {{ venta.metodoPago }}
+              </td>
+
+              <td class="text-end fw-semibold">
+                {{ formatearMoneda(venta.total) }}
+              </td>
+
+              <td>
+                <span class="badge rounded-pill px-3 py-2" [ngClass]="claseEstado(venta.estado)">
+                  {{ venta.estado }}
+                </span>
+              </td>
+
+              <td class="text-center">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-light border"
+                  title="Ver detalle"
+                  (click)="verDetalle(venta)"
+                >
+                  <i class="fas fa-eye text-primary"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================== -->
+<!-- MODAL DETALLE -->
+<!-- ===================================================== -->
+
+<div
+  *ngIf="mostrarDetalle && ventaSeleccionada"
+  class="modal-backdrop-custom"
+  (click)="cerrarDetalle()"
+>
+  <div
+    class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="modal-content border-0 shadow-lg rounded-4">
+      <!-- Header -->
+      <div class="modal-header border-bottom">
+        <div>
+          <h5 class="modal-title fw-bold mb-1">Detalle de Venta</h5>
+
+          <div class="text-muted small">
+            {{ ventaSeleccionada.ventaID }}
+          </div>
+        </div>
+
+        <button type="button" class="btn-close" (click)="cerrarDetalle()"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body bg-light p-4">
+        <!-- Información general -->
+
+        <div class="row g-3 mb-4">
+          <div class="col-md-4">
+            <div class="detail-card">
+              <small class="text-muted"> Cliente </small>
+
+              <div class="fw-semibold">
+                {{ ventaSeleccionada.cliente.nombre }}
+              </div>
+
+              <small class="text-muted"> RTN: {{ ventaSeleccionada.cliente.rtn }} </small>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="detail-card">
+              <small class="text-muted"> Usuario </small>
+
+              <div class="fw-semibold">
+                {{ ventaSeleccionada.usuario.nombre }}
+              </div>
+
+              <small class="text-muted">
+                {{ ventaSeleccionada.usuario.cargo }}
+              </small>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="detail-card">
+              <small class="text-muted"> Fecha </small>
+
+              <div class="fw-semibold">
+                {{ formatearFecha(ventaSeleccionada.fecha) }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estado / pago -->
+
+        <div class="row g-3 mb-4">
+          <div class="col-md-3">
+            <div class="detail-card">
+              <small class="text-muted"> Estado </small>
+
+              <div class="mt-1">
+                <span
+                  class="badge rounded-pill px-3 py-2"
+                  [ngClass]="claseEstado(ventaSeleccionada.estado)"
+                >
+                  {{ ventaSeleccionada.estado }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="detail-card">
+              <small class="text-muted"> Tipo de venta </small>
+
+              <div class="fw-semibold">
+                {{ ventaSeleccionada.tipoVenta }}
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="detail-card">
+              <small class="text-muted"> Método de pago </small>
+
+              <div class="fw-semibold">
+                {{ ventaSeleccionada.metodoPago }}
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="detail-card">
+              <small class="text-muted"> Venta </small>
+
+              <div class="fw-semibold">
+                {{ ventaSeleccionada.ventaID }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Productos -->
+
+        <div class="table-responsive mb-4">
+          <table class="table align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Código</th>
+                <th>Producto</th>
+                <th class="text-center">Cantidad</th>
+                <th class="text-end">Precio</th>
+                <th class="text-end">Descuento</th>
+                <th class="text-end">Subtotal</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let detalle of ventaSeleccionada.detalles">
+                <td>
+                  {{ detalle.productoCodigo }}
+                </td>
+
+                <td>
+                  {{ detalle.nombreProducto }}
+                </td>
+
+                <td class="text-center">
+                  {{ detalle.cantidad }}
+                </td>
+
+                <td class="text-end">
+                  {{ formatearMoneda(detalle.precioUnitario) }}
+                </td>
+
+                <td class="text-end">
+                  {{ formatearMoneda(detalle.descuento) }}
+                </td>
+
+                <td class="text-end fw-semibold">
+                  {{ formatearMoneda(detalle.subtotal) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Totales -->
+
+        <div class="row justify-content-end">
+          <div class="col-md-5">
+            <div class="totales-card">
+              <div class="total-row">
+                <span>Subtotal</span>
+                <strong>
+                  {{ formatearMoneda(ventaSeleccionada.subtotal) }}
+                </strong>
+              </div>
+
+              <div class="total-row">
+                <span>Descuento</span>
+                <strong>
+                  {{ formatearMoneda(ventaSeleccionada.descuento) }}
+                </strong>
+              </div>
+
+              <div class="total-row">
+                <span>Impuesto</span>
+                <strong>
+                  {{ formatearMoneda(ventaSeleccionada.impuesto) }}
+                </strong>
+              </div>
+
+              <div class="total-row total-final">
+                <span>Total</span>
+                <strong>
+                  {{ formatearMoneda(ventaSeleccionada.total) }}
+                </strong>
+              </div>
+
+              <div class="total-row border-top pt-2 mt-2">
+                <span>Total recibido</span>
+                <strong>
+                  {{ formatearMoneda(ventaSeleccionada.totalRecibido) }}
+                </strong>
+              </div>
+
+              <div class="total-row">
+                <span>Cambio</span>
+                <strong>
+                  {{ formatearMoneda(ventaSeleccionada.cambio) }}
+                </strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer border-top">
+        <button type="button" class="btn btn-light border px-4" (click)="cerrarDetalle()">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

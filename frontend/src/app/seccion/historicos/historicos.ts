@@ -9,7 +9,7 @@ import { Router, RouterOutlet, RouterLinkWithHref, RouterLink, RouterModule } fr
   templateUrl: './historicos.html',
   styleUrl: './historicos.scss',
 })
-export class Historicos {
+export class HistoricosComponent {
   sidebarOpen = false;
 
   rol = localStorage.getItem('rol');

@@ -14,22 +14,28 @@ export class PedidosService {
   ) {}
 
   private calcularTotales(detalles: { subtotal: any }[], descuento = 0) {
-    const total = detalles.reduce(
+    const subtotal = detalles.reduce(
       (sum, detalle) => sum + Number(detalle.subtotal),
       0,
     );
 
-    const totalConDescuento = total - Number(descuento);
+    const descuentoNumerico = Number(descuento);
 
-    const subtotal = totalConDescuento / 1.15;
+    if (!Number.isFinite(descuentoNumerico) || descuentoNumerico < 0) {
+      throw new BadRequestException('El descuento no es válido');
+    }
 
-    const impuesto = totalConDescuento - subtotal;
+    const baseImponible = Math.max(subtotal - descuentoNumerico, 0);
+
+    const impuesto = baseImponible * 0.15;
+
+    const total = baseImponible + impuesto;
 
     return {
       subtotal,
       impuesto,
-      descuento: Number(descuento),
-      total: totalConDescuento,
+      descuento: descuentoNumerico,
+      total,
     };
   }
 
@@ -367,7 +373,13 @@ export class PedidosService {
     return this.prisma.pedidos.findMany({
       include: {
         cliente: true,
-        usuario: true,
+
+        usuario: {
+          include: {
+            perfil: true,
+          },
+        },
+
         detalles: {
           include: {
             producto: true,
@@ -386,12 +398,17 @@ export class PedidosService {
   // =========================================================
   async obtenerPedido(id: number) {
     const pedido = await this.prisma.pedidos.findUnique({
-      where: {
-        id,
-      },
+      where: { id },
+
       include: {
         cliente: true,
-        usuario: true,
+
+        usuario: {
+          include: {
+            perfil: true,
+          },
+        },
+
         detalles: {
           include: {
             producto: true,
@@ -1337,9 +1354,16 @@ export class PedidosService {
       where: {
         estado: 'EN_CAJA',
       },
+
       include: {
         cliente: true,
-        usuario: true,
+
+        usuario: {
+          include: {
+            perfil: true,
+          },
+        },
+
         detalles: {
           include: {
             producto: true,
@@ -1347,9 +1371,194 @@ export class PedidosService {
           },
         },
       },
+
       orderBy: {
         fecha: 'desc',
       },
     });
+  }
+
+  // =========================================================
+  // CONSULTAR PEDIDOS
+  // =========================================================
+  async consultarPedidos(filtros: {
+    pedidoID?: string;
+    cliente?: string;
+    fechaDesde?: string;
+    fechaHasta?: string;
+    estado?: string;
+    usuario?: string;
+  }) {
+    const { pedidoID, cliente, fechaDesde, fechaHasta, estado, usuario } =
+      filtros;
+
+    const where: any = {};
+
+    // =======================================================
+    // PEDIDO
+    // =======================================================
+
+    if (pedidoID?.trim()) {
+      where.pedidoID = {
+        contains: pedidoID.trim(),
+        mode: 'insensitive',
+      };
+    }
+
+    // =======================================================
+    // CLIENTE
+    // =======================================================
+
+    if (cliente?.trim()) {
+      where.cliente = {
+        OR: [
+          {
+            nombre: {
+              contains: cliente.trim(),
+              mode: 'insensitive',
+            },
+          },
+          {
+            clienteID: {
+              contains: cliente.trim(),
+              mode: 'insensitive',
+            },
+          },
+          {
+            rtn: {
+              contains: cliente.trim(),
+              mode: 'insensitive',
+            },
+          },
+        ],
+      };
+    }
+
+    // =======================================================
+    // FECHAS
+    // =======================================================
+
+    if (fechaDesde || fechaHasta) {
+      where.fecha = {};
+
+      if (fechaDesde) {
+        const desde = new Date(`${fechaDesde}T00:00:00`);
+
+        if (isNaN(desde.getTime())) {
+          throw new BadRequestException('Fecha desde no válida');
+        }
+
+        where.fecha.gte = desde;
+      }
+
+      if (fechaHasta) {
+        const hasta = new Date(`${fechaHasta}T23:59:59.999`);
+
+        if (isNaN(hasta.getTime())) {
+          throw new BadRequestException('Fecha hasta no válida');
+        }
+
+        where.fecha.lte = hasta;
+      }
+    }
+
+    // =======================================================
+    // ESTADO
+    // =======================================================
+
+    if (estado?.trim()) {
+      where.estado = estado.trim();
+    }
+
+    // =======================================================
+    // USUARIO / VENDEDOR
+    // =======================================================
+
+    if (usuario?.trim()) {
+      const usuarioCodigo = Number(usuario);
+
+      if (Number.isInteger(usuarioCodigo) && usuarioCodigo > 0) {
+        where.usuarioCodigo = usuarioCodigo;
+      } else {
+        where.usuario = {
+          perfil: {
+            nombre: {
+              contains: usuario.trim(),
+              mode: 'insensitive',
+            },
+          },
+        };
+      }
+    }
+
+    // =======================================================
+    // CONSULTA
+    // =======================================================
+
+    const pedidos = await this.prisma.pedidos.findMany({
+      where,
+
+      include: {
+        cliente: true,
+
+        usuario: {
+          include: {
+            perfil: true,
+          },
+        },
+
+        detalles: {
+          include: {
+            producto: true,
+            ubicacionRel: true,
+          },
+        },
+      },
+
+      orderBy: {
+        fecha: 'desc',
+      },
+    });
+
+    // =======================================================
+    // RESPUESTA
+    // =======================================================
+
+    return pedidos.map((pedido) => ({
+      id: pedido.id,
+      pedidoID: pedido.pedidoID,
+
+      clienteID: pedido.clienteID,
+      cliente: pedido.cliente.nombre,
+
+      usuarioCodigo: pedido.usuarioCodigo,
+      usuario: pedido.usuario?.perfil?.nombre ?? 'N/A',
+
+      fecha: pedido.fecha,
+      estado: pedido.estado,
+
+      subtotal: pedido.subtotal,
+      impuesto: pedido.impuesto,
+      descuento: pedido.descuento,
+      total: pedido.total,
+
+      aprobado: pedido.aprobado,
+
+      detalles: pedido.detalles.map((detalle) => ({
+        id: detalle.id,
+        productoCodigo: detalle.productoCodigo,
+        producto: detalle.producto.producto,
+
+        ubicacion: detalle.ubicacion,
+
+        cantidad: detalle.cantidad,
+
+        precioUnitario: detalle.precioUnitario,
+
+        subtotal: detalle.subtotal,
+
+        descuento: detalle.descuento,
+      })),
+    }));
   }
 }

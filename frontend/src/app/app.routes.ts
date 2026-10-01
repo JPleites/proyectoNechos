@@ -184,6 +184,82 @@ export const routes: Routes = [
         ],
       },
       {
+        path: 'descuentos',
+        loadComponent: () =>
+          import('./seccion/descuentos/descuentos').then((m) => m.DescuentosComponent),
+        children: [
+          {
+            path: '',
+            redirectTo: 'consulta',
+            pathMatch: 'full',
+          },
+          {
+            path: 'consulta',
+            loadComponent: () =>
+              import('./modulo/descuentos/consulta-descuentos/consulta-descuentos').then(
+                (m) => m.ConsultaDescuentos,
+              ),
+          },
+          {
+            path: 'crear',
+            loadComponent: () =>
+              import('./modulo/descuentos/crear-descuento/crear-descuento').then(
+                (m) => m.CrearDescuento,
+              ),
+          },
+        ],
+      },
+      {
+        path: 'devoluciones',
+        loadComponent: () =>
+          import('./seccion/devoluciones/devoluciones').then((m) => m.DevolucionesComponent),
+        children: [
+          {
+            path: '',
+            redirectTo: 'crear',
+            pathMatch: 'full',
+          },
+          {
+            path: 'crear',
+            loadComponent: () =>
+              import('./modulo/devoluciones/crear-devolucion/crear-devolucion').then(
+                (m) => m.CrearDevolucion,
+              ),
+          },
+        ],
+      },
+      {
+        path: 'historicos',
+        loadComponent: () => import('./seccion/historicos/historicos').then((m) => m.HistoricosComponent),
+        children: [
+          {
+            path: '',
+            redirectTo: 'ventas',
+            pathMatch: 'full',
+          },
+          {
+            path: 'cierres',
+            loadComponent: () =>
+              import('./modulo/historicos/cierres/cierres').then((m) => m.Cierres),
+          },
+          {
+          path: 'devoluciones',
+          loadComponent: () =>
+            import('./modulo/historicos/devoluciones/devoluciones').then((m) => m.Devoluciones),
+          },
+          {
+            path: 'pedidos',
+            loadComponent: () =>
+              import('./modulo/historicos/pedidos/pedidos').then((m) => m.Pedidos),
+          },
+          {
+            path: 'ventas',
+            loadComponent: () =>
+              import('./modulo/historicos/ventas/ventas').then((m) => m.Ventas),
+          }
+        ]
+      },
+      {
         path: 'pedido',
         loadComponent: () => import('./seccion/pedido/pedido').then((m) => m.PedidoComponent),
         children: [

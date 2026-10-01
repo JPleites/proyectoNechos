@@ -1,0 +1,83 @@
+.page-wrapper {
+  width: 100%;
+  min-height: 100%;
+}
+
+.modulo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.modulo-header h2 {
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.modulo-contenido {
+  width: 100%;
+}
+
+.erp-panel {
+  width: 100%;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.erp-panel-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #e5e7eb;
+  background: #fff;
+}
+
+.erp-panel-body {
+  padding: 1.5rem;
+}
+
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+}
+
+.form-control,
+.form-select {
+  min-height: 42px;
+}
+
+.info-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #6c757d;
+  font-size: 0.85rem;
+}
+
+.info-value {
+  font-weight: 500;
+}
+
+.valor-devolucion {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  font-weight: 600;
+}
+
+.table th {
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+.btn {
+  min-height: 40px;
+}

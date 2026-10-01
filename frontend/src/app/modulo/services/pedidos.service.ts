@@ -1,6 +1,15 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api';
 
+export interface FiltrosPedidos {
+  pedidoID?: string;
+  cliente?: string;
+  estado?: string;
+  usuario?: string;
+  fechaDesde?: string;
+  fechaHasta?: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })

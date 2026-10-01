@@ -20,14 +20,27 @@ import { Roles } from '../auth/roles.decorator';
 export class VentasController {
   constructor(private readonly ventasService: VentasService) {}
 
+  @Get('consulta')
+  consultarVentas(@Req() req: any) {
+    return this.ventasService.consultarVentas({
+      ventaID: req.query.ventaID,
+      cliente: req.query.cliente,
+      fechaDesde: req.query.fechaDesde,
+      fechaHasta: req.query.fechaHasta,
+      estado: req.query.estado,
+      tipoVenta: req.query.tipoVenta,
+      metodoPago: req.query.metodoPago,
+    });
+  }
+
+  @Get(':id/devolucion')
+  obtenerVentaParaDevolucion(@Param('id') id: string) {
+    return this.ventasService.obtenerVentaParaDevolucion(Number(id));
+  }
   // ✅ facturar
   @Post(':id/facturar')
   facturar(@Param('id') id: string, @Body() data: any, @Req() req: any) {
-    console.log('usuario en token:', req.user); // 👈 Ver el contenido del token
-    return this.ventasService.facturarPedido(
-      Number(id),
-      data,
-      req.user.sub, // 👈 cajero del token
-    );
+    console.log('usuario en token:', req.user);
+    return this.ventasService.facturarPedido(Number(id), data, req.user.sub);
   }
 }

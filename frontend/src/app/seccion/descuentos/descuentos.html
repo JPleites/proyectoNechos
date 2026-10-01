@@ -15,14 +15,14 @@
 
       <!-- NAV -->
       <nav class="sidebar-nav">
-        <button class="nav-item" routerLink="crear" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-          <i class="fas fa-user-plus nav-icon"></i>
-          <span class="nav-label" *ngIf="sidebarOpen">Nuevo Cliente</span>
+        <button class="nav-item" routerLink="crear" routerLinkActive="active">
+          <i class="fas fa-percentage nav-icon"></i>
+          <span class="nav-label" *ngIf="sidebarOpen">Nuevo Descuento</span>
         </button>
 
-        <button class="nav-item" routerLink="consulta" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-          <i class="fas fa-users nav-icon"></i>
-          <span class="nav-label" *ngIf="sidebarOpen">Consultar Clientes</span>
+        <button class="nav-item" routerLink="consulta" routerLinkActive="active">
+          <i class="fas fa-list nav-icon"></i>
+          <span class="nav-label" *ngIf="sidebarOpen">Consultar Descuentos</span>
         </button>
       </nav>
 

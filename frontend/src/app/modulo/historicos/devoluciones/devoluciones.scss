@@ -1,0 +1,159 @@
+.page-wrapper {
+  min-height: 100vh;
+}
+
+.modulo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modulo-contenido {
+  min-height: 0;
+}
+
+.panel-scroll {
+  overflow: hidden;
+}
+
+.table-responsive {
+  min-height: 0;
+  overflow: auto;
+}
+
+.table {
+  min-width: 1100px;
+}
+
+.table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  white-space: nowrap;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.table tbody td {
+  font-size: 0.88rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.table tbody tr:hover {
+  cursor: default;
+}
+
+.form-label {
+  margin-bottom: 0.35rem;
+}
+
+.form-control,
+.form-select {
+  min-height: 38px;
+  border-radius: 0.5rem;
+}
+
+.btn {
+  border-radius: 0.5rem;
+}
+
+.badge {
+  font-weight: 500;
+  padding: 0.45rem 0.65rem;
+}
+
+.empty-state {
+  padding: 2rem;
+}
+
+.empty-state i {
+  font-size: 2.5rem;
+  color: #adb5bd;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modal-backdrop-custom {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 1rem;
+
+  background: rgba(0, 0, 0, 0.45);
+
+  overflow-y: auto;
+}
+
+.modal-dialog {
+  width: 100%;
+  max-width: 800px;
+}
+
+.modal-content {
+  background: #fff;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+
+  padding: 0.85rem 1rem;
+
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 0.75rem;
+}
+
+.detail-item span {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.detail-item strong {
+  font-size: 0.9rem;
+  color: #212529;
+}
+
+.detail-item.highlight {
+  background: #f8f9fa;
+}
+
+.detail-item.highlight strong {
+  font-size: 1.05rem;
+}
+
+@media (max-width: 768px) {
+
+  .modulo-header {
+    align-items: flex-start;
+  }
+
+  .table {
+    min-width: 1000px;
+  }
+
+  .modal-backdrop-custom {
+    align-items: flex-start;
+    padding-top: 2rem;
+  }
+
+}

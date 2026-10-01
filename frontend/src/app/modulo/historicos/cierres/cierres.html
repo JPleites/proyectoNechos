@@ -1,0 +1,480 @@
+<div class="page-wrapper">
+  <!-- ENCABEZADO -->
+  <header class="modulo-header">
+    <div>
+      <h2 class="mb-1">
+        <i class="fas fa-cash-register me-2"></i>
+        Consulta de Cierres
+      </h2>
+      <p class="text-muted mb-0">Consulta y revisión de los cierres de caja registrados.</p>
+    </div>
+  </header>
+
+  <main class="modulo-contenido">
+    <section class="erp-panel h-100 d-flex flex-column">
+      <!-- FILTROS -->
+      <div class="card-body border-bottom py-3 flex-shrink-0 bg-white">
+        <form class="row g-2 align-items-end" (ngSubmit)="buscar()">
+          <!-- CIERRE -->
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold"> Cierre </label>
+
+            <div class="input-group">
+              <span class="input-group-text bg-white">
+                <i class="fas fa-hashtag"></i>
+              </span>
+
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Ej. C00001"
+                [(ngModel)]="filtros.cierreID"
+                name="cierreID"
+              />
+            </div>
+          </div>
+
+          <!-- USUARIO -->
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold"> Usuario </label>
+
+            <div class="input-group">
+              <span class="input-group-text bg-white">
+                <i class="fas fa-user"></i>
+              </span>
+
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Código de usuario"
+                [(ngModel)]="filtros.usuario"
+                name="usuario"
+              />
+            </div>
+          </div>
+
+          <!-- FECHA DESDE -->
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold"> Fecha desde </label>
+
+            <input
+              type="date"
+              class="form-control"
+              [(ngModel)]="filtros.fechaDesde"
+              name="fechaDesde"
+            />
+          </div>
+
+          <!-- FECHA HASTA -->
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold"> Fecha hasta </label>
+
+            <input
+              type="date"
+              class="form-control"
+              [(ngModel)]="filtros.fechaHasta"
+              name="fechaHasta"
+            />
+          </div>
+
+          <!-- BOTONES -->
+          <div class="col-md-2 d-flex gap-2">
+            <button type="submit" class="btn btn-primary flex-fill">
+              <i class="fas fa-search me-1"></i>
+              Buscar
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="limpiarFiltros()"
+              title="Limpiar filtros"
+            >
+              <i class="fas fa-eraser"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- CONTENIDO -->
+      <div class="card-body d-flex flex-column flex-grow-1 p-0">
+        <!-- CABECERA RESULTADOS -->
+        <div
+          class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom bg-light"
+        >
+          <span class="small text-muted">
+            <i class="fas fa-list me-1"></i>
+            {{ cierresFiltrados.length }}
+            {{ cierresFiltrados.length === 1 ? 'cierre encontrado' : 'cierres encontrados' }}
+          </span>
+
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-primary"
+            (click)="cargarCierres()"
+            [disabled]="cargando"
+          >
+            <i class="fas fa-sync-alt me-1" [class.fa-spin]="cargando"></i>
+            Actualizar
+          </button>
+        </div>
+
+        <!-- CARGANDO -->
+        <div *ngIf="cargando" class="flex-grow-1 d-flex justify-content-center align-items-center">
+          <div class="text-center text-muted">
+            <div class="spinner-border mb-2" role="status"></div>
+
+            <div>Cargando cierres...</div>
+          </div>
+        </div>
+
+        <!-- SIN RESULTADOS -->
+        <div
+          *ngIf="!cargando && cierresFiltrados.length === 0"
+          class="flex-grow-1 d-flex justify-content-center align-items-center"
+        >
+          <div class="text-center text-muted py-5">
+            <i class="fas fa-cash-register fa-3x mb-3 opacity-50"></i>
+
+            <h5 class="mb-1">No se encontraron cierres</h5>
+
+            <p class="mb-0 small">
+              No existen cierres que coincidan con los filtros seleccionados.
+            </p>
+          </div>
+        </div>
+
+        <!-- TABLA -->
+        <div
+          *ngIf="!cargando && cierresFiltrados.length > 0"
+          class="table-responsive panel-scroll flex-grow-1"
+        >
+          <table class="table table-hover align-middle mb-0 cierres-table">
+            <thead class="table-light sticky-top">
+              <tr>
+                <th>Cierre</th>
+                <th>Fecha</th>
+                <th>Usuario</th>
+                <th class="text-end">Efectivo</th>
+                <th class="text-end">BAC</th>
+                <th class="text-end">Ficohsa</th>
+                <th class="text-end">Davivienda</th>
+                <th class="text-end">Transferencias</th>
+                <th class="text-end">Total</th>
+                <th class="text-end">Diferencia</th>
+                <th class="text-center">Acciones</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let cierre of cierresFiltrados">
+                <!-- CIERRE -->
+                <td>
+                  <span class="fw-semibold">
+                    {{ cierre.cierreID }}
+                  </span>
+                </td>
+
+                <!-- FECHA -->
+                <td>
+                  <div class="fw-medium">
+                    {{ cierre.fecha | date: 'dd/MM/yyyy' }}
+                  </div>
+
+                  <small class="text-muted">
+                    {{ cierre.fecha | date: 'HH:mm' }}
+                  </small>
+                </td>
+
+                <!-- USUARIO -->
+                <td>
+                  <div class="fw-medium">Usuario {{ cierre.usuarioCodigo }}</div>
+
+                  <small class="text-muted text-uppercase">
+                    {{ cierre.usuario.rol || '—' }}
+                  </small>
+                </td>
+
+                <!-- EFECTIVO -->
+                <td class="text-end">
+                  L {{ numero(cierre.totalEfectivo || 0) | number: '1.2-2' }}
+                </td>
+
+                <!-- BAC -->
+                <td class="text-end">L {{ numero(cierre.totalBac || 0) | number: '1.2-2' }}</td>
+
+                <!-- FICOHSA -->
+                <td class="text-end">L {{ numero(cierre.totalFicohsa || 0) | number: '1.2-2' }}</td>
+
+                <!-- DAVIVIENDA -->
+                <td class="text-end">
+                  L {{ numero(cierre.totalDavivienda || 0) | number: '1.2-2' }}
+                </td>
+
+                <!-- TRANSFERENCIAS -->
+                <td class="text-end">
+                  L {{ numero(cierre.totalTransferencias || 0) | number: '1.2-2' }}
+                </td>
+
+                <!-- TOTAL -->
+                <td class="text-end fw-semibold">
+                  L {{ totalMediosPago(cierre) | number: '1.2-2' }}
+                </td>
+
+                <!-- DIFERENCIA -->
+                <td class="text-end">
+                  <span
+                    class="diferencia-badge"
+                    [ngClass]="claseDiferencia(numero(cierre.diferencia || 0))"
+                  >
+                    L {{ numero(cierre.diferencia || 0) | number: '1.2-2' }}
+                  </span>
+                </td>
+
+                <!-- ACCIONES -->
+                <td class="text-center">
+                  <div class="d-flex justify-content-center gap-1">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-primary"
+                      title="Ver detalle"
+                      (click)="verDetalle(cierre)"
+                    >
+                      <i class="fas fa-eye"></i>
+                    </button>
+
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-danger"
+                      title="Ver PDF"
+                      (click)="abrirPdf(cierre)"
+                    >
+                      <i class="fas fa-file-pdf"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ========================================================= -->
+<!-- MODAL DETALLE DEL CIERRE                                  -->
+<!-- ========================================================= -->
+
+<div *ngIf="cierreSeleccionado" class="modal-backdrop-custom" (click)="cerrarDetalle()">
+  <div class="modal-custom" (click)="$event.stopPropagation()">
+    <!-- HEADER -->
+    <div class="modal-custom-header">
+      <div>
+        <h5 class="mb-1">
+          <i class="fas fa-cash-register me-2"></i>
+          Detalle del cierre
+        </h5>
+
+        <small class="text-muted">
+          {{ cierreSeleccionado.cierreID }}
+        </small>
+      </div>
+
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Cerrar"
+        (click)="cerrarDetalle()"
+      ></button>
+    </div>
+
+    <!-- BODY -->
+    <div class="modal-custom-body">
+      <!-- INFORMACIÓN GENERAL -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <div class="detalle-info">
+            <span class="detalle-label"> Cierre </span>
+
+            <span class="detalle-value">
+              {{ cierreSeleccionado.cierreID }}
+            </span>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="detalle-info">
+            <span class="detalle-label"> Fecha </span>
+
+            <span class="detalle-value">
+              {{ cierreSeleccionado.fecha | date: 'dd/MM/yyyy HH:mm' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="detalle-info">
+            <span class="detalle-label"> Usuario </span>
+
+            <span class="detalle-value">
+              {{ cierreSeleccionado.usuarioCodigo }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- MEDIOS DE PAGO -->
+      <div class="detalle-section">
+        <div class="detalle-section-title">
+          <i class="fas fa-money-bill-wave me-2"></i>
+          Medios de pago
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-sm align-middle mb-0">
+            <tbody>
+              <tr>
+                <td>Efectivo</td>
+                <td class="text-end fw-semibold">
+                  L {{ numero(cierreSeleccionado.totalEfectivo || 0) | number: '1.2-2' }}
+                </td>
+              </tr>
+
+              <tr>
+                <td>BAC</td>
+                <td class="text-end fw-semibold">
+                  L {{ numero(cierreSeleccionado.totalBac || 0) | number: '1.2-2' }}
+                </td>
+              </tr>
+
+              <tr>
+                <td>Ficohsa</td>
+                <td class="text-end fw-semibold">
+                  L {{ numero(cierreSeleccionado.totalFicohsa || 0) | number: '1.2-2' }}
+                </td>
+              </tr>
+
+              <tr>
+                <td>Davivienda</td>
+                <td class="text-end fw-semibold">
+                  L {{ numero(cierreSeleccionado.totalDavivienda || 0) | number: '1.2-2' }}
+                </td>
+              </tr>
+
+              <tr>
+                <td>Transferencias</td>
+                <td class="text-end fw-semibold">
+                  L {{ numero(cierreSeleccionado.totalTransferencias || 0) | number: '1.2-2' }}
+                </td>
+              </tr>
+
+              <tr class="table-light border-top">
+                <td class="fw-bold">Total sistema</td>
+
+                <td class="text-end fw-bold">
+                  L {{ totalMediosPago(cierreSeleccionado) | number: '1.2-2' }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- RESUMEN -->
+      <div class="detalle-section mt-4">
+        <div class="detalle-section-title">
+          <i class="fas fa-chart-line me-2"></i>
+          Resumen
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="resumen-card">
+              <span> Total sistema </span>
+
+              <strong> L {{ totalMediosPago(cierreSeleccionado) | number: '1.2-2' }} </strong>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="resumen-card">
+              <span> Total recibido </span>
+
+              <strong>
+                L {{ numero(cierreSeleccionado.totalRecibido || 0) | number: '1.2-2' }}
+              </strong>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div
+              class="resumen-card"
+              [ngClass]="claseDiferencia(numero(cierreSeleccionado.diferencia || 0))"
+            >
+              <span> Diferencia </span>
+
+              <strong>
+                L {{ numero(cierreSeleccionado.diferencia || 0) | number: '1.2-2' }}
+              </strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OTROS DATOS -->
+      <div class="detalle-section mt-4">
+        <div class="detalle-section-title">
+          <i class="fas fa-info-circle me-2"></i>
+          Otros datos
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="detalle-info">
+              <span class="detalle-label"> Retiros </span>
+
+              <span class="detalle-value">
+                L {{ numero(cierreSeleccionado.totalRetiros || 0) | number: '1.2-2' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="detalle-info">
+              <span class="detalle-label"> Devoluciones </span>
+
+              <span class="detalle-value">
+                L {{ numero(cierreSeleccionado.totalDevoluciones || 0) | number: '1.2-2' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="detalle-info">
+              <span class="detalle-label"> Total facturado </span>
+
+              <span class="detalle-value">
+                L {{ numero(cierreSeleccionado.totalFacturado || 0) | number: '1.2-2' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="modal-custom-footer">
+      <button type="button" class="btn btn-outline-secondary" (click)="cerrarDetalle()">
+        <i class="fas fa-times me-1"></i>
+        Cerrar
+      </button>
+
+      <button type="button" class="btn btn-danger" (click)="abrirPdf(cierreSeleccionado)">
+        <i class="fas fa-file-pdf me-1"></i>
+        Ver PDF
+      </button>
+    </div>
+  </div>
+</div>
+```

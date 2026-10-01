@@ -1,0 +1,405 @@
+<div class="container-fluid vh-100 d-flex flex-column p-3 bg-light page-wrapper">
+  <div class="modulo-header mb-3 flex-shrink-0">
+    <div>
+      <h4 class="fw-bold mb-1">Consulta de Devoluciones</h4>
+
+      <p class="text-muted mb-0">Consulta y seguimiento de devoluciones realizadas</p>
+    </div>
+  </div>
+  <div class="modulo-contenido panel-scroll flex-grow-1">
+    <div
+      class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100 d-flex flex-column"
+    >
+      <div class="card-body border-bottom py-3 flex-shrink-0 bg-white">
+        <form class="row g-2" (ngSubmit)="buscar()">
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold text-muted"> Devolución </label>
+
+            <input
+              type="text"
+              class="form-control"
+              placeholder="DEV1..."
+              [(ngModel)]="filtros.devolucionID"
+              name="devolucionID"
+            />
+          </div>
+
+          <!-- Venta -->
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold text-muted"> Venta </label>
+
+            <input
+              type="text"
+              class="form-control"
+              placeholder="VEN1..."
+              [(ngModel)]="filtros.ventaID"
+              name="ventaID"
+            />
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold text-muted"> Cliente </label>
+
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Nombre, ID o RTN"
+              [(ngModel)]="filtros.cliente"
+              name="cliente"
+            />
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold text-muted"> Producto </label>
+
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Código o nombre"
+              [(ngModel)]="filtros.producto"
+              name="producto"
+            />
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold text-muted"> Desde </label>
+
+            <input
+              type="date"
+              class="form-control"
+              [(ngModel)]="filtros.fechaDesde"
+              name="fechaDesde"
+            />
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold text-muted"> Hasta </label>
+
+            <input
+              type="date"
+              class="form-control"
+              [(ngModel)]="filtros.fechaHasta"
+              name="fechaHasta"
+            />
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold text-muted"> Estado de la devolución </label>
+
+            <select class="form-select" [(ngModel)]="filtros.fueUsada" name="fueUsada">
+              <option value="">Todas</option>
+
+              <option value="false">Disponibles</option>
+
+              <option value="true">Utilizadas</option>
+            </select>
+          </div>
+
+          <div class="col-md-9 d-flex align-items-end justify-content-end gap-2">
+            <button
+              type="button"
+              class="btn btn-light border px-4"
+              (click)="limpiarFiltros()"
+              [disabled]="cargando"
+            >
+              <i class="fas fa-eraser me-2"></i>
+              Limpiar
+            </button>
+
+            <button type="submit" class="btn btn-primary px-4" [disabled]="cargando">
+              <span *ngIf="cargando" class="spinner-border spinner-border-sm me-2"></span>
+
+              <i *ngIf="!cargando" class="fas fa-search me-2"></i>
+
+              Buscar
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="table-responsive flex-grow-1">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light sticky-top">
+            <tr>
+              <th>Devolución</th>
+              <th>Fecha</th>
+              <th>Venta</th>
+              <th>Cliente</th>
+              <th>Producto</th>
+              <th class="text-center">Cantidad</th>
+              <th class="text-end">Valor</th>
+              <th class="text-center">Estado</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngIf="cargando">
+              <td colspan="9" class="text-center py-5">
+                <div class="spinner-border text-primary mb-3"></div>
+
+                <div class="text-muted">Consultando devoluciones...</div>
+              </td>
+            </tr>
+
+            <tr *ngIf="!cargando && devoluciones.length === 0">
+              <td colspan="9" class="text-center py-5">
+                <div class="empty-state">
+                  <i class="fas fa-undo-alt"></i>
+
+                  <h6 class="fw-semibold mt-3">No se encontraron devoluciones</h6>
+
+                  <p class="text-muted mb-0">Prueba modificando los filtros de búsqueda.</p>
+                </div>
+              </td>
+            </tr>
+
+            <tr *ngFor="let devolucion of devoluciones">
+              <td>
+                <span class="fw-semibold">
+                  {{ devolucion.devolucionID }}
+                </span>
+              </td>
+
+              <td class="text-muted">
+                {{ formatearFecha(devolucion.fecha) }}
+              </td>
+
+              <td>
+                <span class="badge bg-light text-dark border">
+                  {{ devolucion.ventaID || devolucion.ventaId }}
+                </span>
+              </td>
+
+              <td>
+                {{ devolucion.cliente }}
+              </td>
+
+              <td>
+                <div class="fw-semibold">
+                  {{ devolucion.producto }}
+                </div>
+
+                <small class="text-muted">
+                  {{ devolucion.productoCodigo }}
+                </small>
+              </td>
+
+              <td class="text-center">
+                {{ devolucion.cantidad }}
+              </td>
+
+              <td class="text-end fw-semibold">
+                L {{ formatearMoneda(devolucion.valorDevolucion) }}
+              </td>
+
+              <td class="text-center">
+                <span
+                  class="badge"
+                  [class.bg-success-subtle]="!devolucion.fueUsada"
+                  [class.text-success]="!devolucion.fueUsada"
+                  [class.bg-secondary-subtle]="devolucion.fueUsada"
+                  [class.text-secondary]="devolucion.fueUsada"
+                >
+                  <i
+                    class="fas me-1"
+                    [class.fa-check-circle]="!devolucion.fueUsada"
+                    [class.fa-check-double]="devolucion.fueUsada"
+                  ></i>
+
+                  {{ getEstadoUso(devolucion) }}
+                </span>
+              </td>
+
+              <td class="text-center">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-light border"
+                  title="Ver detalle"
+                  (click)="verDetalle(devolucion)"
+                >
+                  <i class="fas fa-eye"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card-footer bg-white border-top py-2 flex-shrink-0">
+        <div class="d-flex justify-content-between align-items-center">
+          <small class="text-muted">
+            Mostrando
+            <strong>{{ devoluciones.length }}</strong>
+            devolución(es)
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    *ngIf="mostrarModal && devolucionSeleccionada"
+    class="modal-backdrop-custom"
+    (click)="cerrarModal()"
+  >
+    <div class="modal-dialog modal-lg modal-dialog-centered" (click)="$event.stopPropagation()">
+      <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+        <!-- Header -->
+        <div class="modal-header border-bottom">
+          <div>
+            <h5 class="modal-title fw-bold mb-1">Detalle de devolución</h5>
+
+            <small class="text-muted">
+              {{ devolucionSeleccionada.devolucionID }}
+            </small>
+          </div>
+
+          <button
+            type="button"
+            class="btn-close"
+            aria-label="Cerrar"
+            (click)="cerrarModal()"
+          ></button>
+        </div>
+
+        <!-- Body -->
+        <div class="modal-body">
+          <div class="row g-3">
+            <!-- Devolución -->
+            <div class="col-md-6">
+              <div class="detail-item">
+                <span> Devolución </span>
+
+                <strong>
+                  {{ devolucionSeleccionada.devolucionID }}
+                </strong>
+              </div>
+            </div>
+
+            <!-- Fecha -->
+            <div class="col-md-6">
+              <div class="detail-item">
+                <span> Fecha </span>
+
+                <strong>
+                  {{ formatearFecha(devolucionSeleccionada.fecha) }}
+                </strong>
+              </div>
+            </div>
+
+            <!-- Venta -->
+            <div class="col-md-6">
+              <div class="detail-item">
+                <span> Venta </span>
+
+                <strong>
+                  {{ devolucionSeleccionada.ventaID || devolucionSeleccionada.ventaId }}
+                </strong>
+              </div>
+            </div>
+
+            <!-- Cliente -->
+            <div class="col-md-6">
+              <div class="detail-item">
+                <span> Cliente </span>
+
+                <strong>
+                  {{ devolucionSeleccionada.cliente }}
+                </strong>
+              </div>
+            </div>
+
+            <!-- Producto -->
+            <div class="col-md-8">
+              <div class="detail-item">
+                <span> Producto </span>
+
+                <strong>
+                  {{ devolucionSeleccionada.producto }}
+                </strong>
+
+                <small class="text-muted">
+                  Código: {{ devolucionSeleccionada.productoCodigo }}
+                </small>
+              </div>
+            </div>
+
+            <!-- Cantidad -->
+            <div class="col-md-4">
+              <div class="detail-item">
+                <span> Cantidad </span>
+
+                <strong>
+                  {{ devolucionSeleccionada.cantidad }}
+                </strong>
+              </div>
+            </div>
+
+            <!-- Precio histórico -->
+            <div class="col-md-6">
+              <div class="detail-item">
+                <span> Precio unitario </span>
+
+                <strong> L {{ formatearMoneda(devolucionSeleccionada.PrecioUnitario) }} </strong>
+
+                <small class="text-muted"> Precio registrado en la venta </small>
+              </div>
+            </div>
+
+            <!-- Valor -->
+            <div class="col-md-6">
+              <div class="detail-item highlight">
+                <span> Valor de devolución </span>
+
+                <strong> L {{ formatearMoneda(devolucionSeleccionada.valorDevolucion) }} </strong>
+              </div>
+            </div>
+
+            <!-- Motivo -->
+            <div class="col-12">
+              <div class="detail-item">
+                <span> Motivo </span>
+
+                <strong>
+                  {{ devolucionSeleccionada.motivo }}
+                </strong>
+              </div>
+            </div>
+
+            <!-- Usuario -->
+            <div class="col-md-6">
+              <div class="detail-item">
+                <span> Registrada por </span>
+
+                <strong>
+                  {{ devolucionSeleccionada.usuario }}
+                </strong>
+              </div>
+            </div>
+
+            <!-- Estado -->
+            <div class="col-md-6">
+              <div class="detail-item">
+                <span> Estado </span>
+
+                <strong
+                  [class.text-success]="!devolucionSeleccionada.fueUsada"
+                  [class.text-secondary]="devolucionSeleccionada.fueUsada"
+                >
+                  {{ getEstadoUso(devolucionSeleccionada) }}
+                </strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer border-top">
+          <button type="button" class="btn btn-secondary px-4" (click)="cerrarModal()">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

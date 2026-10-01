@@ -346,4 +346,289 @@ export class VentasService {
       };
     });
   }
+
+  // =========================================================
+  // OBTENER VENTA PARA DEVOLUCIÓN
+  // =========================================================
+  async obtenerVentaParaDevolucion(ventaId: number) {
+    const venta = await this.prisma.ventas.findUnique({
+      where: {
+        id: ventaId,
+      },
+      include: {
+        cliente: true,
+        detalles: {
+          include: {
+            producto: true,
+          },
+        },
+      },
+    });
+
+    if (!venta) {
+      throw new BadRequestException('Venta no encontrada');
+    }
+
+    if (venta.estado !== 'FACTURADA') {
+      throw new BadRequestException(
+        'La venta no está facturada y no puede tener devoluciones',
+      );
+    }
+
+    if (!venta.detalles.length) {
+      throw new BadRequestException('La venta no contiene productos');
+    }
+
+    // Obtener las devoluciones ya realizadas
+    const devoluciones = await this.prisma.devoluciones.findMany({
+      where: {
+        ventaId: venta.id,
+      },
+      select: {
+        productoCodigo: true,
+        cantidad: true,
+      },
+    });
+
+    // Calcular cuánto se ha devuelto de cada producto
+    const cantidadesDevueltas = new Map<string, number>();
+
+    for (const devolucion of devoluciones) {
+      const cantidadActual =
+        cantidadesDevueltas.get(devolucion.productoCodigo) ?? 0;
+
+      cantidadesDevueltas.set(
+        devolucion.productoCodigo,
+        cantidadActual + devolucion.cantidad,
+      );
+    }
+
+    return {
+      id: venta.id,
+      ventaID: venta.ventaID,
+      clienteID: venta.clienteID,
+      cliente: venta.cliente,
+      fecha: venta.fecha,
+      estado: venta.estado,
+      tipoVenta: venta.tipoVenta,
+      subtotal: venta.subtotal,
+      impuesto: venta.impuesto,
+      descuento: venta.descuento,
+      total: venta.total,
+
+      detalles: venta.detalles.map((detalle) => {
+        const cantidadDevuelta =
+          cantidadesDevueltas.get(detalle.productoCodigo) ?? 0;
+
+        const cantidadDisponible = detalle.cantidad - cantidadDevuelta;
+
+        return {
+          id: detalle.id,
+          productoCodigo: detalle.productoCodigo,
+          nombreProducto: detalle.nombreProducto,
+          cantidad: detalle.cantidad,
+          cantidadDevuelta,
+          cantidadDisponible,
+          precioUnitario: detalle.precioUnitario,
+          subtotal: detalle.subtotal,
+          descuento: detalle.descuento,
+          producto: detalle.producto,
+        };
+      }),
+    };
+  }
+
+  // =========================================================
+  // CONSULTA DE VENTAS
+  // =========================================================
+  async consultarVentas(filtros: {
+    ventaID?: string;
+    cliente?: string;
+    fechaDesde?: string;
+    fechaHasta?: string;
+    estado?: string;
+    tipoVenta?: string;
+    metodoPago?: string;
+  }) {
+    const {
+      ventaID,
+      cliente,
+      fechaDesde,
+      fechaHasta,
+      estado,
+      tipoVenta,
+      metodoPago,
+    } = filtros;
+
+    const where: any = {};
+
+    // =====================================================
+    // FILTRO POR NÚMERO DE VENTA
+    // =====================================================
+
+    if (ventaID?.trim()) {
+      where.ventaID = {
+        contains: ventaID.trim(),
+        mode: 'insensitive',
+      };
+    }
+
+    // =====================================================
+    // FILTRO POR CLIENTE
+    // =====================================================
+
+    if (cliente?.trim()) {
+      where.cliente = {
+        OR: [
+          {
+            nombre: {
+              contains: cliente.trim(),
+              mode: 'insensitive',
+            },
+          },
+          {
+            clienteID: {
+              contains: cliente.trim(),
+              mode: 'insensitive',
+            },
+          },
+          {
+            rtn: {
+              contains: cliente.trim(),
+              mode: 'insensitive',
+            },
+          },
+        ],
+      };
+    }
+
+    // =====================================================
+    // FILTRO POR FECHA
+    // =====================================================
+
+    if (fechaDesde || fechaHasta) {
+      where.fecha = {};
+
+      if (fechaDesde) {
+        const desde = new Date(`${fechaDesde}T00:00:00`);
+
+        if (isNaN(desde.getTime())) {
+          throw new BadRequestException('Fecha desde no válida');
+        }
+
+        where.fecha.gte = desde;
+      }
+
+      if (fechaHasta) {
+        const hasta = new Date(`${fechaHasta}T23:59:59.999`);
+
+        if (isNaN(hasta.getTime())) {
+          throw new BadRequestException('Fecha hasta no válida');
+        }
+
+        where.fecha.lte = hasta;
+      }
+    }
+
+    // =====================================================
+    // FILTRO POR ESTADO
+    // =====================================================
+
+    if (estado?.trim()) {
+      where.estado = estado.trim();
+    }
+
+    // =====================================================
+    // FILTRO POR TIPO DE VENTA
+    // =====================================================
+
+    if (tipoVenta?.trim()) {
+      where.tipoVenta = tipoVenta.trim();
+    }
+
+    // =====================================================
+    // FILTRO POR MÉTODO DE PAGO
+    // =====================================================
+
+    if (metodoPago?.trim()) {
+      where.metodoPago = metodoPago.trim();
+    }
+
+    // =====================================================
+    // CONSULTA
+    // =====================================================
+
+    const ventas = await this.prisma.ventas.findMany({
+      where,
+
+      orderBy: {
+        fecha: 'desc',
+      },
+
+      include: {
+        cliente: true,
+
+        usuario: {
+          include: {
+            perfil: true,
+          },
+        },
+
+        detalles: {
+          include: {
+            producto: true,
+          },
+        },
+      },
+    });
+
+    // =====================================================
+    // RESPUESTA PREPARADA PARA FRONTEND
+    // =====================================================
+
+    return ventas.map((venta) => ({
+      id: venta.id,
+      ventaID: venta.ventaID,
+      fecha: venta.fecha,
+      estado: venta.estado,
+      tipoVenta: venta.tipoVenta,
+
+      cliente: {
+        id: venta.cliente.id,
+        clienteID: venta.cliente.clienteID,
+        nombre: venta.cliente.nombre,
+        rtn: venta.cliente.rtn,
+      },
+
+      usuario: {
+        codigo: venta.usuario.codigo,
+        nombre: venta.usuario.perfil.nombre,
+        cargo: venta.usuario.perfil.cargo,
+      },
+
+      subtotal: venta.subtotal,
+      impuesto: venta.impuesto,
+      descuento: venta.descuento,
+      total: venta.total,
+
+      metodoPago: venta.metodoPago,
+      totalRecibido: venta.totalRecibido,
+      cambio: venta.cambio,
+
+      detalles: venta.detalles.map((detalle) => ({
+        id: detalle.id,
+        productoCodigo: detalle.productoCodigo,
+        nombreProducto: detalle.nombreProducto,
+        cantidad: detalle.cantidad,
+        precioUnitario: detalle.precioUnitario,
+        subtotal: detalle.subtotal,
+        descuento: detalle.descuento,
+
+        producto: {
+          codigo: detalle.producto.codigo,
+          producto: detalle.producto.producto,
+        },
+      })),
+    }));
+  }
 }

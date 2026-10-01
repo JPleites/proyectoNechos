@@ -19,7 +19,10 @@ export class CierresService {
     return this.api.get(`/arqueo/hoy/${usuarioCodigo}`);
   }
 
-  getPdfCierre(usuarioCodigo: number) {
-    return this.api.get(`/cierres/pdf/${usuarioCodigo}`);
+  getPdfCierre(id: number): string {
+    return `${this.api.baseUrl}/cierres/pdf/${id}`;
+  }
+  descargarPdfCierre(id: number) {
+    return this.api.get(`/cierres/pdf/${id}`, { headers: { Accept: 'application/pdf' } });
   }
 }

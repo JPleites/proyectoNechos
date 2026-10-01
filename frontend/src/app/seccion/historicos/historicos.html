@@ -15,14 +15,41 @@
 
       <!-- NAV -->
       <nav class="sidebar-nav">
-        <button class="nav-item" routerLink="crear" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-          <i class="fas fa-user-plus nav-icon"></i>
-          <span class="nav-label" *ngIf="sidebarOpen">Nuevo Cliente</span>
+        <button
+          class="nav-item"
+          routerLink="devoluciones"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <i class="fas fa-undo nav-icon"></i>
+          <span class="nav-label" *ngIf="sidebarOpen">Devoluciones</span>
         </button>
-
-        <button class="nav-item" routerLink="consulta" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-          <i class="fas fa-users nav-icon"></i>
-          <span class="nav-label" *ngIf="sidebarOpen">Consultar Clientes</span>
+        <button
+          class="nav-item"
+          routerLink="pedidos"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <i class="fas fa-shopping-cart nav-icon"></i>
+          <span class="nav-label" *ngIf="sidebarOpen">Pedidos</span>
+        </button>
+        <button
+          class="nav-item"
+          routerLink="ventas"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <i class="fas fa-dollar-sign nav-icon"></i>
+          <span class="nav-label" *ngIf="sidebarOpen">Ventas</span>
+        </button>
+        <button
+          class="nav-item"
+          routerLink="cierres"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <i class="fas fa-lock nav-icon"></i>
+          <span class="nav-label" *ngIf="sidebarOpen">Cierres</span>
         </button>
       </nav>
 

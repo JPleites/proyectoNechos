@@ -25,19 +25,11 @@ import { ActualizarPedidoDetalleDto } from './dto/actualizar-pedido-detalle.dto'
 export class PedidosController {
   constructor(private readonly service: PedidosService) {}
 
-  // ==========================================
-  // CREAR PEDIDO
-  // ==========================================
-
   @Roles('admin', 'supervisor', 'vendedor')
   @Post()
   crearPedido(@Body() data: CrearPedidoDto, @Req() req: any) {
     return this.service.crearPedido(data, req.user.sub);
   }
-
-  // ==========================================
-  // LISTAR
-  // ==========================================
 
   @Roles('admin', 'supervisor', 'vendedor', 'cajero')
   @Get()
@@ -45,9 +37,18 @@ export class PedidosController {
     return this.service.listarPedidos();
   }
 
-  // ==========================================
-  // PEDIDOS EN CAJA
-  // ==========================================
+  @Roles('admin', 'supervisor', 'vendedor', 'cajero')
+  @Get('consulta')
+  consultarPedidos(@Req() req: any) {
+    return this.service.consultarPedidos({
+      pedidoID: req.query.pedidoID,
+      cliente: req.query.cliente,
+      fechaDesde: req.query.fechaDesde,
+      fechaHasta: req.query.fechaHasta,
+      estado: req.query.estado,
+      usuario: req.query.usuario,
+    });
+  }
 
   @Roles('admin', 'supervisor', 'cajero')
   @Get('en-caja')
@@ -55,28 +56,16 @@ export class PedidosController {
     return this.service.listarPedidosEnCaja();
   }
 
-  // ==========================================
-  // OBTENER UNO
-  // ==========================================
-
   @Get(':id')
   obtener(@Param('id') id: string) {
     return this.service.obtenerPedido(Number(id));
   }
-
-  // ==========================================
-  // AGREGAR PRODUCTO
-  // ==========================================
 
   @Roles('admin', 'supervisor', 'vendedor')
   @Post(':id/detalle')
   agregar(@Param('id') id: string, @Body() data: AgregarPedidoDetalleDto) {
     return this.service.agregarProducto(Number(id), data);
   }
-
-  // ==========================================
-  // ACTUALIZAR CANTIDAD
-  // ==========================================
 
   @Roles('admin', 'supervisor', 'vendedor')
   @Put('detalle/:detalleId')
@@ -87,29 +76,17 @@ export class PedidosController {
     return this.service.actualizarDetalle(Number(detalleId), data.cantidad);
   }
 
-  // ==========================================
-  // ELIMINAR DETALLE
-  // ==========================================
-
   @Roles('admin', 'supervisor', 'vendedor')
   @Delete('detalle/:detalleId')
   eliminarDetalle(@Param('detalleId') detalleId: string) {
     return this.service.eliminarDetalle(Number(detalleId));
   }
 
-  // ==========================================
-  // ENVIAR A CAJA
-  // ==========================================
-
   @Roles('admin', 'supervisor', 'vendedor')
   @Put(':id/caja')
   enviarACaja(@Param('id') id: string) {
     return this.service.enviarACaja(Number(id));
   }
-
-  // ==========================================
-  // CANCELAR
-  // ==========================================
 
   @Roles('admin', 'supervisor', 'vendedor', 'cajero')
   @Delete(':id')

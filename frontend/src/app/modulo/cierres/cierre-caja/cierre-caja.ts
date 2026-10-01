@@ -106,7 +106,7 @@ export class CierreCaja implements OnInit {
         next: () => {
           Swal.fire('Éxito', 'Caja cerrada', 'success');
 
-          this.descargarPdf();
+          // this.descargarPdf();
 
           this.logout();
         },
@@ -121,18 +121,18 @@ export class CierreCaja implements OnInit {
     localStorage.clear();
     location.href = '/login';
   }
+//Corregir esto después
+  // descargarPdf() {
+  //   this.cierresService.getPdfCierre(this.usuarioCodigo).subscribe((res: any) => {
+  //     const blob = new Blob([res], { type: 'application/pdf' });
 
-  descargarPdf() {
-    this.cierresService.getPdfCierre(this.usuarioCodigo).subscribe((res: any) => {
-      const blob = new Blob([res], { type: 'application/pdf' });
+  //     const url = window.URL.createObjectURL(blob);
+  //     const a = document.createElement('a');
+  //     a.href = url;
+  //     a.download = 'cierre-caja.pdf';
+  //     a.click();
 
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'cierre-caja.pdf';
-      a.click();
-
-      window.URL.revokeObjectURL(url);
-    });
-  }
+  //     window.URL.revokeObjectURL(url);
+  //   });
+  // }
 }

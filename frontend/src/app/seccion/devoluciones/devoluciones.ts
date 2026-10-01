@@ -10,7 +10,7 @@ import { Router, RouterOutlet, RouterLinkWithHref, RouterLink, RouterModule } fr
   templateUrl: './devoluciones.html',
   styleUrl: './devoluciones.scss',
 })
-export class Devoluciones {
+export class DevolucionesComponent {
   sidebarOpen = false;
 
   rol = localStorage.getItem('rol');

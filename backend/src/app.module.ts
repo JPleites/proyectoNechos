@@ -29,8 +29,6 @@ import { GeneradorCodigoModule } from './common/services/generador-codigo/genera
 import { MarcaModule } from './componentes/marca/marca.module';
 import { UploadController } from './componentes/upload/upload.controller';
 import { UploadModule } from './componentes/upload/upload.module';
-import { DevolucionesService } from './componentes/devoluciones/devoluciones.service';
-import { DevolucionesController } from './componentes/devoluciones/devoluciones.controller';
 import { DevolucionesModule } from './componentes/devoluciones/devoluciones.module';
 
 ConfigModule.forRoot();
@@ -60,7 +58,7 @@ ConfigModule.forRoot();
     UploadModule,
     DevolucionesModule,
   ],
-  controllers: [AppController, VentasController, MovimientosinventarioController, UploadController, DevolucionesController],
-  providers: [AppService, PrismaService, VentasService, MovimientosinventarioService, DevolucionesService],
+  controllers: [AppController, VentasController, MovimientosinventarioController, UploadController],
+  providers: [AppService, PrismaService, VentasService, MovimientosinventarioService],
 })
 export class AppModule {}

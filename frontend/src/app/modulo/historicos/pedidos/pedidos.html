@@ -1,0 +1,396 @@
+<div class="page-wrapper">
+  <!-- HEADER -->
+
+  <header class="modulo-header">
+    <div>
+      <h1>Consulta de Pedidos</h1>
+      <p>Consulta y seguimiento de los pedidos registrados</p>
+    </div>
+  </header>
+
+  <!-- CONTENIDO -->
+
+  <main class="modulo-contenido">
+    ```
+    <section class="erp-panel">
+      <!-- FILTROS -->
+      <div class="panel-header">
+        <div>
+          <h2>Filtros de búsqueda</h2>
+        </div>
+      </div>
+
+      <div class="panel-body">
+        <form class="row g-3">
+          <!-- PEDIDO -->
+          <div class="col-md-3">
+            <label for="pedidoID" class="form-label"> Pedido </label>
+
+            <input
+              id="pedidoID"
+              type="text"
+              class="form-control"
+              [(ngModel)]="filtros.pedidoID"
+              name="pedidoID"
+              placeholder="Ej. PED15"
+            />
+          </div>
+
+          <!-- CLIENTE -->
+          <div class="col-md-3">
+            <label for="cliente" class="form-label"> Cliente </label>
+
+            <input
+              id="cliente"
+              type="text"
+              class="form-control"
+              [(ngModel)]="filtros.cliente"
+              name="cliente"
+              placeholder="Nombre del cliente"
+            />
+          </div>
+
+          <!-- VENDEDOR -->
+          <div class="col-md-3">
+            <label for="usuario" class="form-label"> Vendedor </label>
+
+            <input
+              id="usuario"
+              type="text"
+              class="form-control"
+              [(ngModel)]="filtros.usuario"
+              name="usuario"
+              placeholder="Nombre del vendedor"
+            />
+          </div>
+
+          <!-- ESTADO -->
+          <div class="col-md-3">
+            <label for="estado" class="form-label"> Estado </label>
+
+            <select id="estado" class="form-select" [(ngModel)]="filtros.estado" name="estado">
+              <option value="">Todos los estados</option>
+
+              <option value="EN_PROCESO">En proceso</option>
+
+              <option value="EN_CAJA">En caja</option>
+
+              <option value="FACTURADO">Facturado</option>
+
+              <option value="CANCELADO">Cancelado</option>
+            </select>
+          </div>
+
+          <!-- FECHA DESDE -->
+          <div class="col-md-3">
+            <label for="fechaDesde" class="form-label"> Fecha desde </label>
+
+            <input
+              id="fechaDesde"
+              type="date"
+              class="form-control"
+              [(ngModel)]="filtros.fechaDesde"
+              name="fechaDesde"
+            />
+          </div>
+
+          <!-- FECHA HASTA -->
+          <div class="col-md-3">
+            <label for="fechaHasta" class="form-label"> Fecha hasta </label>
+
+            <input
+              id="fechaHasta"
+              type="date"
+              class="form-control"
+              [(ngModel)]="filtros.fechaHasta"
+              name="fechaHasta"
+            />
+          </div>
+
+          <!-- BOTONES -->
+          <div class="col-md-6 d-flex align-items-end justify-content-end gap-2">
+            <button type="button" class="btn btn-primary" (click)="buscar()" [disabled]="cargando">
+              <i class="fas fa-search me-2"></i>
+              Buscar
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="limpiarFiltros()"
+              [disabled]="cargando"
+            >
+              <i class="fas fa-eraser me-2"></i>
+              Limpiar
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- CABECERA DE RESULTADOS -->
+      <div class="panel-header border-top">
+        <div>
+          <h2>Pedidos registrados</h2>
+        </div>
+
+        <span class="resultado-count">
+          {{ pedidosFiltrados.length }}
+          {{ pedidosFiltrados.length === 1 ? 'pedido' : 'pedidos' }}
+        </span>
+      </div>
+
+      <!-- TABLA -->
+      <div class="panel-scroll">
+        <!-- CARGANDO -->
+        <div *ngIf="cargando" class="estado-tabla">
+          <i class="fas fa-spinner fa-spin"></i>
+
+          <span> Cargando pedidos... </span>
+        </div>
+
+        <!-- SIN RESULTADOS -->
+        <div *ngIf="!cargando && pedidosFiltrados.length === 0" class="estado-tabla">
+          <i class="fas fa-inbox"></i>
+
+          <span> No se encontraron pedidos. </span>
+        </div>
+
+        <!-- RESULTADOS -->
+        <div *ngIf="!cargando && pedidosFiltrados.length > 0" class="table-responsive">
+          <table class="table erp-table">
+            <thead>
+              <tr>
+                <th>Pedido</th>
+                <th>Fecha</th>
+                <th>Cliente</th>
+                <th>Vendedor</th>
+                <th>Estado</th>
+                <th class="text-end">Total</th>
+                <th class="text-center">Acción</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let pedido of pedidosFiltrados">
+                <!-- PEDIDO -->
+                <td>
+                  <strong>
+                    {{ pedido.pedidoID }}
+                  </strong>
+                </td>
+
+                <!-- FECHA -->
+                <td>
+                  {{ pedido.fecha | date: 'dd/MM/yyyy HH:mm' }}
+                </td>
+
+                <!-- CLIENTE -->
+                <td>
+                  {{ pedido.cliente.nombre }}
+                </td>
+
+                <!-- VENDEDOR -->
+                <td>
+                  {{ pedido.usuario.perfil.nombre }}
+                </td>
+
+                <!-- ESTADO -->
+                <td>
+                  <span [class]="claseEstado(pedido.estado)">
+                    {{ formatearEstado(pedido.estado) }}
+                  </span>
+                </td>
+
+                <!-- TOTAL -->
+                <td class="text-end">
+                  <strong>
+                    L.
+                    {{ pedido.total | number: '1.2-2' }}
+                  </strong>
+                </td>
+
+                <!-- ACCIÓN -->
+                <td class="text-center">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-primary"
+                    title="Ver detalle"
+                    (click)="verDetalle(pedido)"
+                  >
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    ```
+  </main>
+</div>
+
+<!-- ========================================================= -->
+
+<!-- MODAL DETALLE DEL PEDIDO -->
+
+<!-- ========================================================= -->
+
+<div *ngIf="pedidoSeleccionado" class="modal-backdrop-custom" (click)="cerrarDetalle()">
+  <div class="modal-dialog-custom" (click)="$event.stopPropagation()">
+    ```
+    <!-- HEADER MODAL -->
+    <div class="modal-header-custom">
+      <div>
+        <h3>Pedido {{ pedidoSeleccionado.pedidoID }}</h3>
+
+        <span [class]="claseEstado(pedidoSeleccionado.estado)">
+          {{ formatearEstado(pedidoSeleccionado.estado) }}
+        </span>
+      </div>
+
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Cerrar"
+        (click)="cerrarDetalle()"
+      ></button>
+    </div>
+
+    <!-- BODY MODAL -->
+    <div class="modal-body-custom">
+      <!-- INFORMACIÓN DEL PEDIDO -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <div class="info-item">
+            <span> Fecha </span>
+
+            <strong>
+              {{ pedidoSeleccionado.fecha | date: 'dd/MM/yyyy HH:mm' }}
+            </strong>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="info-item">
+            <span> Cliente </span>
+
+            <strong>
+              {{ pedidoSeleccionado.cliente.nombre }}
+            </strong>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="info-item">
+            <span> Vendedor </span>
+
+            <strong>
+              {{ pedidoSeleccionado.usuario.perfil.nombre }}
+            </strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRODUCTOS -->
+      <div class="detalle-section">
+        <h4>Productos del pedido</h4>
+
+        <div class="table-responsive">
+          <table class="table erp-table detalle-table">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Ubicación</th>
+                <th class="text-center">Cantidad</th>
+                <th class="text-end">Precio unitario</th>
+                <th class="text-end">Subtotal</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let detalle of pedidoSeleccionado.detalles">
+                <!-- PRODUCTO -->
+                <td>
+                  <strong>
+                    {{ detalle.producto.producto }}
+                  </strong>
+
+                  <small>
+                    {{ detalle.productoCodigo }}
+                  </small>
+                </td>
+
+                <!-- UBICACIÓN -->
+                <td>
+                  {{ detalle.ubicacion }}
+                </td>
+
+                <!-- CANTIDAD -->
+                <td class="text-center">
+                  {{ detalle.cantidad }}
+                </td>
+
+                <!-- PRECIO -->
+                <td class="text-end">
+                  L.
+                  {{ detalle.precioUnitario | number: '1.2-2' }}
+                </td>
+
+                <!-- SUBTOTAL -->
+                <td class="text-end">
+                  L.
+                  {{ detalle.subtotal | number: '1.2-2' }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TOTALES -->
+      <div class="totales-container">
+        <div class="total-row">
+          <span> Subtotal </span>
+
+          <strong>
+            L.
+            {{ pedidoSeleccionado.subtotal | number: '1.2-2' }}
+          </strong>
+        </div>
+
+        <div class="total-row">
+          <span> ISV </span>
+
+          <strong>
+            L.
+            {{ pedidoSeleccionado.impuesto | number: '1.2-2' }}
+          </strong>
+        </div>
+
+        <div class="total-row">
+          <span> Descuento </span>
+
+          <strong>
+            L.
+            {{ pedidoSeleccionado.descuento | number: '1.2-2' }}
+          </strong>
+        </div>
+
+        <div class="total-row total-final">
+          <span> Total </span>
+
+          <strong>
+            L.
+            {{ pedidoSeleccionado.total | number: '1.2-2' }}
+          </strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER MODAL -->
+    <div class="modal-footer-custom">
+      <button type="button" class="btn btn-secondary" (click)="cerrarDetalle()">Cerrar</button>
+    </div>
+  </div>
+</div>
