@@ -85,16 +85,23 @@
                     <th class="erp-th ps-3">Producto</th>
                     <th class="erp-th text-center">Cant.</th>
                     <th class="erp-th text-end">Precio</th>
+                    <th class="erp-th text-end">Descuento</th>
                     <th class="erp-th text-end pe-3">Subtotal</th>
                     <th class="erp-th text-center col-min"></th>
                   </tr>
                 </thead>
+
                 <tbody>
                   <tr *ngFor="let d of pedidoSeleccionado.detalles">
                     <td class="ps-3 fw-medium text-dark">
                       <i class="fas fa-box text-muted me-2 small"></i>
                       {{ d.producto.producto }}
+
+                      <div class="small text-muted ms-4">
+                        {{ d.producto.codigo }}
+                      </div>
                     </td>
+
                     <td class="text-center">
                       <div class="d-flex justify-content-center align-items-center gap-2">
                         <button
@@ -103,7 +110,11 @@
                         >
                           −
                         </button>
-                        <span class="fw-semibold px-1 text-dark small">{{ d.cantidad }}</span>
+
+                        <span class="fw-semibold px-1 text-dark small">
+                          {{ d.cantidad }}
+                        </span>
+
                         <button
                           class="btn btn-light btn-counter rounded-2"
                           (click)="actualizarCantidad(d, d.cantidad + 1)"
@@ -112,10 +123,35 @@
                         </button>
                       </div>
                     </td>
-                    <td class="text-end text-muted">L {{ d.precioUnitario | number: '1.2-2' }}</td>
-                    <td class="text-end fw-semibold text-dark pe-3">
+
+                    <!-- PRECIO -->
+                    <td class="text-end text-muted text-nowrap">
+                      L {{ d.precioUnitario | number: '1.2-2' }}
+                    </td>
+
+                    <!-- DESCUENTO -->
+                    <td class="text-end text-nowrap">
+                      <ng-container *ngIf="d.descuento > 0; else sinDescuento">
+                        <div class="text-danger fw-semibold">
+                          - L {{ d.descuento | number: '1.2-2' }}
+                        </div>
+
+                        <small class="text-muted">
+                          {{ (d.descuento / d.precioUnitario) * 100 | number: '1.2-2' }}%
+                        </small>
+                      </ng-container>
+
+                      <ng-template #sinDescuento>
+                        <span class="text-muted">—</span>
+                      </ng-template>
+                    </td>
+
+                    <!-- SUBTOTAL -->
+                    <td class="text-end fw-semibold text-dark pe-3 text-nowrap">
                       L {{ d.subtotal | number: '1.2-2' }}
                     </td>
+
+                    <!-- ELIMINAR -->
                     <td class="text-center">
                       <button
                         class="btn btn-light border btn-sm btn-accion"
@@ -127,12 +163,15 @@
                     </td>
                   </tr>
                 </tbody>
+
                 <tfoot>
                   <tr class="table-light">
-                    <th colspan="3" class="text-end erp-th py-3">Total General</th>
+                    <th colspan="4" class="text-end erp-th py-3">Total General</th>
+
                     <th class="text-end text-success fw-bold fs-6 py-3 pe-3">
                       L {{ pedidoSeleccionado.total | number: '1.2-2' }}
                     </th>
+
                     <th></th>
                   </tr>
                 </tfoot>

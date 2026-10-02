@@ -30,6 +30,7 @@ import { MarcaModule } from './componentes/marca/marca.module';
 import { UploadController } from './componentes/upload/upload.controller';
 import { UploadModule } from './componentes/upload/upload.module';
 import { DevolucionesModule } from './componentes/devoluciones/devoluciones.module';
+import { SolicitudDescuentoModule } from './componentes/descuentos/solicitud-descuento/solicitud-descuento.module';
 
 ConfigModule.forRoot();
 
@@ -57,8 +58,19 @@ ConfigModule.forRoot();
     MarcaModule,
     UploadModule,
     DevolucionesModule,
+    SolicitudDescuentoModule,
   ],
-  controllers: [AppController, VentasController, MovimientosinventarioController, UploadController],
-  providers: [AppService, PrismaService, VentasService, MovimientosinventarioService],
+  controllers: [
+    AppController,
+    VentasController,
+    MovimientosinventarioController,
+    UploadController,
+  ],
+  providers: [
+    AppService,
+    PrismaService,
+    VentasService,
+    MovimientosinventarioService,
+  ],
 })
 export class AppModule {}

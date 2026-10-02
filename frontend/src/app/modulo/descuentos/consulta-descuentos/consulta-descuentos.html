@@ -1,1 +1,355 @@
-<p>consulta-descuentos works!</p>
+<div class="container-fluid vh-100 d-flex flex-column p-3 bg-light page-wrapper">
+  <!-- ENCABEZADO -->
+
+  <header class="modulo-header mb-3 flex-shrink-0">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+      <div>
+        <h4 class="mb-1 fw-semibold text-dark">Solicitudes de descuento</h4>
+
+        <small class="text-muted"> Gestión y aprobación de descuentos especiales </small>
+      </div>
+
+      <button
+        type="button"
+        class="btn btn-light border rounded-3 px-3 fw-medium btn-actualizar"
+        (click)="cargarSolicitudes()"
+        [disabled]="cargando"
+      >
+        <i class="fas fa-sync-alt me-2" [class.fa-spin]="cargando"></i>
+
+        Actualizar
+      </button>
+    </div>
+    ```
+  </header>
+
+  <!-- CONTENIDO -->
+
+  <div class="modulo-contenido panel-scroll flex-grow-1 w-100">
+    ```
+    <!-- RESUMEN -->
+    <section class="row g-3 mb-3">
+      <!-- PENDIENTES -->
+      <div class="col-md-4">
+        <article class="card border-0 shadow-sm rounded-4 bg-white h-100 resumen-card">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <small class="text-muted text-uppercase fw-semibold resumen-label">
+                  Pendientes
+                </small>
+
+                <h3 class="mb-0 mt-2 fw-bold text-dark">
+                  {{ totalPendientes }}
+                </h3>
+              </div>
+
+              <div class="resumen-icon resumen-icon-warning">
+                <i class="fas fa-clock"></i>
+              </div>
+            </div>
+
+            <small class="text-muted d-block mt-2"> Solicitudes esperando revisión </small>
+          </div>
+        </article>
+      </div>
+
+      <!-- SUPERVISOR / ADMIN -->
+      <div class="col-md-4">
+        <article class="card border-0 shadow-sm rounded-4 bg-white h-100 resumen-card">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <small class="text-muted text-uppercase fw-semibold resumen-label">
+                  Supervisor / Admin
+                </small>
+
+                <h3 class="mb-0 mt-2 fw-bold text-dark">
+                  {{ totalSupervisorAdmin }}
+                </h3>
+              </div>
+
+              <div class="resumen-icon resumen-icon-primary">
+                <i class="fas fa-user-shield"></i>
+              </div>
+            </div>
+
+            <small class="text-muted d-block mt-2"> Pueden ser aprobadas por ambos roles </small>
+          </div>
+        </article>
+      </div>
+
+      <!-- SOLO ADMIN -->
+      <div class="col-md-4">
+        <article class="card border-0 shadow-sm rounded-4 bg-white h-100 resumen-card">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <small class="text-muted text-uppercase fw-semibold resumen-label">
+                  Solo administrador
+                </small>
+
+                <h3 class="mb-0 mt-2 fw-bold text-dark">
+                  {{ totalAdmin }}
+                </h3>
+              </div>
+
+              <div class="resumen-icon resumen-icon-danger">
+                <i class="fas fa-user-lock"></i>
+              </div>
+            </div>
+
+            <small class="text-muted d-block mt-2"> Requieren autorización administrativa </small>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- PANEL PRINCIPAL -->
+    <article class="card border-0 shadow-sm rounded-4 bg-white erp-panel mb-4">
+      <!-- CABECERA DEL PANEL -->
+      <div class="card-body p-4 pb-3">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+          <div>
+            <h6
+              class="erp-section-title fw-semibold text-secondary small text-uppercase mb-1 letter-spacing"
+            >
+              Solicitudes pendientes
+            </h6>
+
+            <small class="text-muted">
+              Revisa y gestiona los descuentos que requieren autorización.
+            </small>
+          </div>
+
+          <span class="badge bg-light text-secondary border px-3 py-2 rounded-3">
+            {{ solicitudesFiltradas.length }}
+            {{ solicitudesFiltradas.length === 1 ? 'solicitud' : 'solicitudes' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- FILTROS -->
+      <div class="card-body px-4 py-3 border-top border-bottom bg-light bg-opacity-50">
+        <div class="row g-2 align-items-center">
+          <!-- BUSCAR -->
+          <div class="col-lg-6">
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0">
+                <i class="fas fa-search text-muted"></i>
+              </span>
+
+              <input
+                type="text"
+                class="form-control erp-input border-start-0"
+                placeholder="Buscar pedido, producto, código o vendedor..."
+                [(ngModel)]="busqueda"
+                (ngModelChange)="aplicarFiltros()"
+              />
+            </div>
+          </div>
+
+          <!-- NIVEL -->
+          <div class="col-md-4 col-lg-3">
+            <select
+              class="form-select erp-input"
+              [(ngModel)]="filtroNivel"
+              (ngModelChange)="aplicarFiltros()"
+            >
+              <option value="">Todos los niveles</option>
+
+              <option value="SUPERVISOR_ADMIN">Supervisor / Admin</option>
+
+              <option value="ADMIN">Solo Admin</option>
+            </select>
+          </div>
+
+          <!-- LIMPIAR -->
+          <div class="col-md-4 col-lg-3">
+            <button
+              type="button"
+              class="btn btn-light border w-100 rounded-3 btn-limpiar"
+              (click)="limpiarFiltros()"
+            >
+              <i class="fas fa-eraser me-2"></i>
+              Limpiar filtros
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLA -->
+      <div class="card-body p-0">
+        <div class="table-responsive table-container-solicitudes">
+          <table class="table table-hover align-middle mb-0 erp-table-solicitudes">
+            <thead class="table-light">
+              <tr>
+                <th>Solicitud</th>
+
+                <th>Pedido</th>
+
+                <th>Producto</th>
+
+                <th>Vendedor</th>
+
+                <th class="text-end">Precio</th>
+
+                <th class="text-end">Descuento</th>
+
+                <th class="text-end">% Desc.</th>
+
+                <th class="text-end">Precio final</th>
+
+                <th>Nivel</th>
+
+                <th class="text-end">Acciones</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <!-- CARGANDO -->
+              <tr *ngIf="cargando">
+                <td colspan="10" class="text-center py-5">
+                  <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+
+                  <span class="text-muted small"> Cargando solicitudes... </span>
+                </td>
+              </tr>
+
+              <!-- SOLICITUDES -->
+              <tr *ngFor="let solicitud of solicitudesFiltradas" class="fila-solicitud">
+                <!-- SOLICITUD -->
+                <td>
+                  <div class="fw-semibold text-dark">
+                    {{ solicitud.solicitudID }}
+                  </div>
+
+                  <small class="text-muted">
+                    {{ solicitud.fecha | date: 'dd/MM/yyyy HH:mm' }}
+                  </small>
+                </td>
+
+                <!-- PEDIDO -->
+                <td>
+                  <span class="badge bg-light text-dark border px-2 py-1">
+                    {{ solicitud.pedido?.pedidoID || '—' }}
+                  </span>
+                </td>
+
+                <!-- PRODUCTO -->
+                <td>
+                  <div class="fw-semibold text-dark">
+                    {{ solicitud.producto?.producto || '—' }}
+                  </div>
+
+                  <small class="text-muted">
+                    Código: {{ solicitud.producto?.codigo || solicitud.productoCodigo }}
+                  </small>
+                </td>
+
+                <!-- VENDEDOR -->
+                <td>
+                  <div class="fw-medium text-dark">
+                    {{ solicitud.vendedor?.perfil?.nombre || '—' }}
+                  </div>
+
+                  <small class="text-muted">
+                    Código: {{ solicitud.vendedor?.codigo || solicitud.vendedorCodigo }}
+                  </small>
+                </td>
+
+                <!-- PRECIO -->
+                <td class="text-end text-nowrap">
+                  Lps.
+                  {{ formatearNumero(solicitud.precioLista) }}
+                </td>
+
+                <!-- DESCUENTO -->
+                <td class="text-end text-nowrap">
+                  <span class="fw-semibold text-danger">
+                    - Lps.
+                    {{ formatearNumero(solicitud.descuentoSolicitado) }}
+                  </span>
+                </td>
+
+                <!-- PORCENTAJE -->
+                <td class="text-end">
+                  <span class="badge descuento-badge">
+                    {{ formatearNumero(solicitud.porcentajeSolicitado) }}%
+                  </span>
+                </td>
+
+                <!-- PRECIO FINAL -->
+                <td class="text-end text-nowrap">
+                  <span class="fw-semibold text-dark">
+                    Lps.
+                    {{ formatearNumero(solicitud.precioFinal) }}
+                  </span>
+                </td>
+
+                <!-- NIVEL -->
+                <td>
+                  <span
+                    *ngIf="solicitud.nivelAprobacion === 'SUPERVISOR_ADMIN'"
+                    class="badge nivel-badge nivel-supervisor"
+                  >
+                    <i class="fas fa-user-shield me-1"></i>
+                    Supervisor / Admin
+                  </span>
+
+                  <span
+                    *ngIf="solicitud.nivelAprobacion === 'ADMIN'"
+                    class="badge nivel-badge nivel-admin"
+                  >
+                    <i class="fas fa-user-lock me-1"></i>
+                    Solo Admin
+                  </span>
+                </td>
+
+                <!-- ACCIONES -->
+                <td class="text-end">
+                  <div class="d-flex justify-content-end gap-2">
+                    <button
+                      type="button"
+                      class="btn btn-light border btn-sm rounded-3 btn-aprobar"
+                      title="Aprobar solicitud"
+                      (click)="aprobarSolicitud(solicitud)"
+                    >
+                      <i class="fas fa-check text-success"></i>
+                    </button>
+
+                    <button
+                      type="button"
+                      class="btn btn-light border btn-sm rounded-3 btn-rechazar"
+                      title="Rechazar solicitud"
+                      (click)="rechazarSolicitud(solicitud)"
+                    >
+                      <i class="fas fa-times text-danger"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- SIN RESULTADOS -->
+              <tr *ngIf="!cargando && solicitudesFiltradas.length === 0">
+                <td colspan="10" class="text-center py-5">
+                  <div class="estado-vacio">
+                    <div class="estado-vacio-icon mb-3">
+                      <i class="fas fa-check-circle"></i>
+                    </div>
+
+                    <h6 class="fw-semibold text-dark mb-1">No hay solicitudes pendientes</h6>
+
+                    <small class="text-muted">
+                      No existen solicitudes que coincidan con los filtros seleccionados.
+                    </small>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </article>
+  </div>
+</div>

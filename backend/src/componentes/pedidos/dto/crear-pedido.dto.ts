@@ -5,6 +5,7 @@ import {
   IsNumber,
   IsOptional,
   IsPositive,
+  Min,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -20,6 +21,12 @@ export class CrearPedidoDetalleDto {
   @IsInt()
   @IsPositive()
   cantidad!: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  descuento?: number;
 }
 
 export class CrearPedidoDto {

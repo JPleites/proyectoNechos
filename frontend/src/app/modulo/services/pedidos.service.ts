@@ -36,8 +36,11 @@ export class PedidosService {
     return this.api.delete(`/pedidos/detalle/${detalleId}`);
   }
 
-  actualizarDetalle(detalleId: number, cantidad: number) {
-    return this.api.put(`/pedidos/detalle/${detalleId}`, { cantidad });
+  actualizarDetalle(detalleId: number, cantidad: number, descuento?: number) {
+    return this.api.put(`/pedidos/detalle/${detalleId}`, {
+      cantidad,
+      descuento,
+    });
   }
 
   deletePedido(id: number) {

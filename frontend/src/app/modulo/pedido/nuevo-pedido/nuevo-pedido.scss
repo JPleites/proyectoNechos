@@ -1,4 +1,7 @@
-// ─── Contenedores Principales ─────────────────────────────────────────────────
+/* ─────────────────────────────────────────────────────────────
+CONTENEDORES PRINCIPALES
+───────────────────────────────────────────────────────────── */
+
 .page-wrapper {
   overflow: hidden;
   height: 100vh;
@@ -8,17 +11,18 @@
   flex-shrink: 0;
 }
 
-// Scroll inteligente para todo el formulario completo
 .modulo-contenido.panel-scroll {
   overflow-y: auto;
   scrollbar-width: thin;
-  
+
   &::-webkit-scrollbar {
     width: 5px;
   }
+
   &::-webkit-scrollbar-track {
     background: transparent;
   }
+
   &::-webkit-scrollbar-thumb {
     background: #dddfe2;
     border-radius: 4px;
@@ -29,14 +33,12 @@
   letter-spacing: 0.04em;
 }
 
-// Línea punteada decorativa para separar los datos extras del producto hallado
-.border-dashed {
-  border-style: dashed !important;
-  border-color: #dee2e6 !important;
-}
+/* ─────────────────────────────────────────────────────────────
+INPUTS ERP
+───────────────────────────────────────────────────────────── */
 
-// ─── Focus y Diseño Premium de Inputs ─────────────────────────────────────────
-.erp-input.form-control, .erp-input.form-select {
+.erp-input.form-control,
+.erp-input.form-select {
   border-color: #dee2e6;
   padding: 10px 14px;
   font-size: 14px;
@@ -49,13 +51,48 @@
   }
 }
 
-// ─── Tabla del Carrito de Compras ────────────────────────────────────────────
+/* Input de descuento */
+
+.input-group {
+  .input-group-text {
+    border-color: #dee2e6;
+    font-size: 14px;
+    color: #6c757d;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .erp-input {
+    border-left: 0;
+
+    &:focus {
+      border-left: 0;
+    }
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+SEPARADOR DEL PRODUCTO ENCONTRADO
+───────────────────────────────────────────────────────────── */
+
+.border-dashed {
+  border-style: dashed !important;
+  border-color: #dee2e6 !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+TABLA DEL PEDIDO
+───────────────────────────────────────────────────────────── */
+
 .table-container-pedido {
   margin-top: 10px;
+  width: 100%;
+  overflow-x: auto;
 }
 
 .erp-table-pedido {
   width: 100%;
+  min-width: 950px;
 
   thead th {
     background-color: #f8f9fa;
@@ -66,27 +103,87 @@
     letter-spacing: 0.05em;
     padding: 12px 14px;
     border-bottom: 2px solid #dee2e6;
+    white-space: nowrap;
   }
 
   tbody td {
     padding: 12px 14px;
     font-size: 14px;
     border-bottom: 1px solid #edf2f7;
+    vertical-align: middle;
+  }
+
+  tbody tr {
+    transition: background-color 0.15s ease;
+  }
+
+  tbody tr:hover {
+    background-color: #fafbfc;
   }
 }
 
-// ─── Interactividad de Botones ───────────────────────────────────────────────
+/* ─────────────────────────────────────────────────────────────
+DESCUENTO
+───────────────────────────────────────────────────────────── */
+
+.erp-table-pedido {
+  td:nth-child(5) {
+    min-width: 145px;
+  }
+
+  td:nth-child(6),
+  td:nth-child(7) {
+    white-space: nowrap;
+  }
+}
+
+.text-danger {
+  font-weight: 600;
+}
+
+/* ─────────────────────────────────────────────────────────────
+BADGE DE APROBACIÓN
+───────────────────────────────────────────────────────────── */
+
+.erp-table-pedido {
+  .badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 5px 7px;
+    white-space: nowrap;
+  }
+
+  .bg-warning-subtle {
+    background-color: #fff8e1 !important;
+  }
+
+  .text-warning-emphasis {
+    color: #946200 !important;
+  }
+
+  .border-warning-subtle {
+    border-color: #ffe08a !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+BOTONES
+───────────────────────────────────────────────────────────── */
+
 .btn-secundario-erp {
   padding: 10px 14px;
   transition: all 0.15s ease;
+
   &:hover {
     background-color: #f8f9fa;
     border-color: #ced4da !important;
   }
 }
 
-.btn-guardar-erp, .btn-salvar-pedido {
+.btn-guardar-erp,
+.btn-salvar-pedido {
   transition: all 0.2s ease;
+
   &:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15);
@@ -95,6 +192,7 @@
 
 .btn-cancelar-erp {
   transition: background-color 0.15s ease;
+
   &:hover {
     background-color: #f8f9fa;
     border-color: #ced4da !important;
@@ -104,27 +202,68 @@
 .btn-eliminar-item {
   background-color: #ffffff;
   transition: all 0.15s ease;
+
   &:hover {
     background-color: #fff5f5;
     border-color: #f8d7da !important;
   }
 }
 
-// Suave animación para cuando aparezca el bloque secundario del producto
+/* ─────────────────────────────────────────────────────────────
+RESUMEN TOTAL
+───────────────────────────────────────────────────────────── */
+
+.text-nowrap {
+  white-space: nowrap;
+}
+
+/* ─────────────────────────────────────────────────────────────
+ANIMACIÓN
+───────────────────────────────────────────────────────────── */
+
 .animated {
   animation-duration: 0.3s;
   animation-fill-mode: both;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .fadeIn {
   animation-name: fadeIn;
 }
 
-.text-nowrap {
-  white-space: nowrap;
+/* ─────────────────────────────────────────────────────────────
+RESPONSIVE
+───────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .erp-table-pedido {
+    min-width: 900px;
+  }
+
+  .erp-panel {
+    padding: 1rem !important;
+  }
+
+  .erp-table-pedido {
+    thead th {
+      padding: 10px;
+      font-size: 10px;
+    }
+
+    tbody td {
+      padding: 10px;
+      font-size: 13px;
+    }
+  }
 }

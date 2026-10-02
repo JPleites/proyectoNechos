@@ -39,6 +39,7 @@ export class NuevoPedidoComponent implements OnInit {
       productoCodigo: [''],
       ubicacion: [''],
       cantidad: [1],
+      descuento: [0],
     });
   }
 
@@ -138,7 +139,7 @@ export class NuevoPedidoComponent implements OnInit {
 
   // ➕ AGREGAR AL CARRITO
   agregarProducto() {
-    const { productoCodigo, ubicacion, cantidad } = this.form.value;
+    const { productoCodigo, ubicacion, cantidad, descuento } = this.form.value;
 
     const producto = this.productos.find(
       (p) => String(p.codigo).trim() === String(productoCodigo).trim(),
@@ -150,23 +151,53 @@ export class NuevoPedidoComponent implements OnInit {
     }
 
     const precioUnitario = Number(producto.precio);
-    const subtotal = Number(cantidad) * precioUnitario;
+    const descuentoUnitario = Number(descuento ?? 0);
+
+    if (!Number.isFinite(descuentoUnitario) || descuentoUnitario < 0) {
+      Swal.fire(
+        'Descuento inválido',
+        'El descuento debe ser un valor igual o mayor a 0.',
+        'warning',
+      );
+      return;
+    }
+
+    if (descuentoUnitario >= precioUnitario) {
+      Swal.fire(
+        'Descuento inválido',
+        'El descuento no puede ser igual o mayor al precio del producto.',
+        'warning',
+      );
+      return;
+    }
+
+    const porcentajeDescuento = precioUnitario > 0 ? (descuentoUnitario / precioUnitario) * 100 : 0;
+
+    const precioFinal = precioUnitario - descuentoUnitario;
+
+    const subtotal = Number(cantidad) * precioFinal;
 
     this.carrito.push({
       productoCodigo: producto.codigo,
       nombreProducto: producto.producto,
       ubicacion,
       cantidad: Number(cantidad),
+
       precioUnitario,
+
+      descuentoUnitario,
+      porcentajeDescuento,
+      precioFinal,
+
       subtotal,
     });
 
-    // Limpiar campos del producto
     this.form.patchValue({
       codigoBarra: '',
       productoCodigo: '',
       ubicacion: '',
       cantidad: 1,
+      descuento: 0,
       almacenId: '',
     });
 
@@ -198,6 +229,7 @@ export class NuevoPedidoComponent implements OnInit {
         productoCodigo: item.productoCodigo,
         ubicacion: item.ubicacion,
         cantidad: item.cantidad,
+        descuento: item.descuentoUnitario,
       })),
     };
 

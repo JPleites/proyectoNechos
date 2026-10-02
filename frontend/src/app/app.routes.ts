@@ -200,13 +200,6 @@ export const routes: Routes = [
                 (m) => m.ConsultaDescuentos,
               ),
           },
-          {
-            path: 'crear',
-            loadComponent: () =>
-              import('./modulo/descuentos/crear-descuento/crear-descuento').then(
-                (m) => m.CrearDescuento,
-              ),
-          },
         ],
       },
       {
@@ -230,7 +223,8 @@ export const routes: Routes = [
       },
       {
         path: 'historicos',
-        loadComponent: () => import('./seccion/historicos/historicos').then((m) => m.HistoricosComponent),
+        loadComponent: () =>
+          import('./seccion/historicos/historicos').then((m) => m.HistoricosComponent),
         children: [
           {
             path: '',
@@ -243,9 +237,9 @@ export const routes: Routes = [
               import('./modulo/historicos/cierres/cierres').then((m) => m.Cierres),
           },
           {
-          path: 'devoluciones',
-          loadComponent: () =>
-            import('./modulo/historicos/devoluciones/devoluciones').then((m) => m.Devoluciones),
+            path: 'devoluciones',
+            loadComponent: () =>
+              import('./modulo/historicos/devoluciones/devoluciones').then((m) => m.Devoluciones),
           },
           {
             path: 'pedidos',
@@ -254,10 +248,9 @@ export const routes: Routes = [
           },
           {
             path: 'ventas',
-            loadComponent: () =>
-              import('./modulo/historicos/ventas/ventas').then((m) => m.Ventas),
-          }
-        ]
+            loadComponent: () => import('./modulo/historicos/ventas/ventas').then((m) => m.Ventas),
+          },
+        ],
       },
       {
         path: 'pedido',

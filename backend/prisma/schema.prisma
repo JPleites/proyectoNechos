@@ -232,7 +232,7 @@ model SolicitudDescuento {
   productoCodigo       String
   vendedorCodigo       Int
   precioLista          Decimal
-  costoVenta           Decimal
+  costoCompra          Decimal
   porcentajeSolicitado Decimal
   descuentoSolicitado  Decimal
   precioFinal          Decimal
@@ -240,12 +240,12 @@ model SolicitudDescuento {
   estado               String        @default("PENDIENTE")
   motivo               String?
   fecha                DateTime      @default(now())
-  aprobadoPorCodigo    Int?
-  aprobadoPor          Usuarios?     @relation("Aprobaciones", fields: [aprobadoPorCodigo], references: [codigo])
+  resueltoPorCodigo    Int?
   pedidoDetalle        PedidoDetalle @relation(fields: [pedidoDetalleId], references: [id])
   pedido               Pedidos       @relation(fields: [pedidoId], references: [id])
   producto             Productos     @relation(fields: [productoCodigo], references: [codigo])
   vendedor             Usuarios      @relation(fields: [vendedorCodigo], references: [codigo])
+  resueltoPor          Usuarios?     @relation("SolicitudDescuento_resueltoPorCodigoToUsuarios", fields: [resueltoPorCodigo], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "resueltoPor")
 }
 
 model Ubicaciones {
@@ -262,19 +262,19 @@ model Ubicaciones {
 }
 
 model Usuarios {
-  codigo                      Int                     @id @default(autoincrement())
-  contrasena                  String
-  rol                         String
-  perfilId                    Int                     @unique
-  arqueos                     Arqueo[]
-  cierres                     Cierres[]
-  Devoluciones                Devoluciones[]
-  movimientos                 MovimientosInventario[]
-  pedidos                     Pedidos[]
-  solicitudDescuentoAprobador SolicitudDescuento[]    @relation("Aprobaciones")
-  solicitudDescuentoVendedor  SolicitudDescuento[]
-  perfil                      Perfil                  @relation(fields: [perfilId], references: [id])
-  ventas                      Ventas[]
+  codigo                     Int                     @id @default(autoincrement())
+  contrasena                 String
+  rol                        String
+  perfilId                   Int                     @unique
+  arqueos                    Arqueo[]
+  cierres                    Cierres[]
+  Devoluciones               Devoluciones[]
+  movimientos                MovimientosInventario[]
+  pedidos                    Pedidos[]
+  solicitudDescuentoVendedor SolicitudDescuento[]
+  SolicitudesResueltas       SolicitudDescuento[]    @relation("SolicitudDescuento_resueltoPorCodigoToUsuarios")
+  perfil                     Perfil                  @relation(fields: [perfilId], references: [id])
+  ventas                     Ventas[]
 }
 
 model CategoriaProveedores {

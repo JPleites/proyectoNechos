@@ -1,43 +1,23 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { GeneradorCodigoService } from '../../common/services/generador-codigo/generador-codigo.service';
 import { ActualizarPedidoDetalleDto } from './dto/actualizar-pedido-detalle.dto';
 import { AgregarPedidoDetalleDto } from './dto/agregar-pedido-detalle.dto';
 import { CrearPedidoDto } from './dto/crear-pedido.dto';
 import { Prisma } from '../../generated/prisma/client';
+import { SolicitudDescuentoService } from '../descuentos/solicitud-descuento/solicitud-descuento.service';
 
 @Injectable()
 export class PedidosService {
   constructor(
     private prisma: PrismaService,
     private codeGen: GeneradorCodigoService,
+    private solicitudDescuentoService: SolicitudDescuentoService,
   ) {}
-
-  private calcularTotales(detalles: { subtotal: any }[], descuento = 0) {
-    const subtotal = detalles.reduce(
-      (sum, detalle) => sum + Number(detalle.subtotal),
-      0,
-    );
-
-    const descuentoNumerico = Number(descuento);
-
-    if (!Number.isFinite(descuentoNumerico) || descuentoNumerico < 0) {
-      throw new BadRequestException('El descuento no es válido');
-    }
-
-    const baseImponible = Math.max(subtotal - descuentoNumerico, 0);
-
-    const impuesto = baseImponible * 0.15;
-
-    const total = baseImponible + impuesto;
-
-    return {
-      subtotal,
-      impuesto,
-      descuento: descuentoNumerico,
-      total,
-    };
-  }
 
   // =========================================================
   // GENERAR ID INTERNO
@@ -102,7 +82,7 @@ export class PedidosService {
     }
 
     // =======================================================
-    // GENERAR PEDIDO DENTRO DE LA TRANSACCIÓN
+    // TRANSACCIÓN
     // =======================================================
     return this.prisma.$transaction(
       async (tx) => {
@@ -120,13 +100,14 @@ export class PedidosService {
         const pedidoID = this.codeGen.generate('PED', nextNumber);
 
         // =====================================================
-        // VARIABLES PARA CALCULAR TOTALES
+        // VARIABLES
         // =====================================================
-        let subtotal = 0;
-        let descuento = 0;
+        let subtotalBruto = 0;
+        let descuentoTotal = 0;
+
+        let requiereAprobacion = false;
 
         const detallesCrear: {
-          pedidoID: number;
           productoCodigo: string;
           ubicacion: string;
           cantidad: number;
@@ -136,7 +117,7 @@ export class PedidosService {
         }[] = [];
 
         // =====================================================
-        // VALIDAR Y RESERVAR CADA PRODUCTO
+        // VALIDAR Y RESERVAR PRODUCTOS
         // =====================================================
         for (const detalle of detalles) {
           const productoCodigo = String(detalle.productoCodigo ?? '').trim();
@@ -144,6 +125,8 @@ export class PedidosService {
           const ubicacion = String(detalle.ubicacion ?? '').trim();
 
           const cantidad = Number(detalle.cantidad);
+
+          const descuentoUnitario = Number(detalle.descuento ?? 0);
 
           // ---------------------------------------------------
           // VALIDAR PRODUCTO
@@ -215,11 +198,10 @@ export class PedidosService {
           }
 
           // ---------------------------------------------------
-          // STOCK RESERVADO
+          // VALIDAR RESERVA
           // ---------------------------------------------------
-          const cantidadReservada = inventario.cantidadReservada ?? 0;
+          const cantidadReservada = Number(inventario.cantidadReservada ?? 0);
 
-          // Protección contra datos inconsistentes
           if (
             cantidadReservada < 0 ||
             cantidadReservada > inventario.cantidad
@@ -230,13 +212,10 @@ export class PedidosService {
           }
 
           // ---------------------------------------------------
-          // CALCULAR STOCK DISPONIBLE
+          // STOCK DISPONIBLE
           // ---------------------------------------------------
           const stockDisponible = inventario.cantidad - cantidadReservada;
 
-          // ---------------------------------------------------
-          // VALIDAR STOCK DISPONIBLE
-          // ---------------------------------------------------
           if (stockDisponible < cantidad) {
             throw new BadRequestException(
               `Stock insuficiente para ${productoCodigo} en ${ubicacion}. ` +
@@ -245,27 +224,64 @@ export class PedidosService {
           }
 
           // ---------------------------------------------------
-          // PRECIO: SIEMPRE DESDE PRODUCTOS
+          // PRECIO DESDE BASE DE DATOS
           // ---------------------------------------------------
           const precioUnitario = Number(producto.precio);
 
-          if (!Number.isFinite(precioUnitario) || precioUnitario < 0) {
+          if (!Number.isFinite(precioUnitario) || precioUnitario <= 0) {
             throw new BadRequestException(
               `El precio del producto ${productoCodigo} no es válido`,
             );
           }
 
           // ---------------------------------------------------
-          // CALCULAR SUBTOTAL
+          // VALIDAR DESCUENTO
           // ---------------------------------------------------
-          const subtotalDetalle = precioUnitario * cantidad;
+          if (!Number.isFinite(descuentoUnitario) || descuentoUnitario < 0) {
+            throw new BadRequestException(
+              `El descuento de ${productoCodigo} no es válido`,
+            );
+          }
 
-          // Por ahora no aceptamos descuentos enviados
-          // desde Angular.
-          const descuentoDetalle = 0;
+          if (descuentoUnitario >= precioUnitario) {
+            throw new BadRequestException(
+              `El descuento de ${productoCodigo} debe ser menor que el precio de venta`,
+            );
+          }
 
-          subtotal += subtotalDetalle;
-          descuento += descuentoDetalle;
+          // ---------------------------------------------------
+          // CALCULAR DESCUENTO
+          // ---------------------------------------------------
+          const porcentajeDescuento =
+            (descuentoUnitario / precioUnitario) * 100;
+
+          const precioFinal = precioUnitario - descuentoUnitario;
+
+          // ---------------------------------------------------
+          // DETERMINAR APROBACIÓN
+          // ---------------------------------------------------
+          let nivelAprobacion: string | null = null;
+
+          if (porcentajeDescuento > 50) {
+            requiereAprobacion = true;
+
+            if (precioFinal < Number(producto.costoCompra)) {
+              nivelAprobacion = 'ADMIN';
+            } else {
+              nivelAprobacion = 'SUPERVISOR_ADMIN';
+            }
+          }
+
+          // ---------------------------------------------------
+          // TOTALES DEL DETALLE
+          // ---------------------------------------------------
+          const descuentoDetalle = descuentoUnitario * cantidad;
+
+          const subtotalDetalle =
+            (precioUnitario - descuentoUnitario) * cantidad;
+
+          subtotalBruto += precioUnitario * cantidad;
+          descuentoTotal += descuentoDetalle;
 
           // ---------------------------------------------------
           // RESERVAR INVENTARIO
@@ -282,10 +298,9 @@ export class PedidosService {
           });
 
           // ---------------------------------------------------
-          // PREPARAR DETALLE
+          // GUARDAR INFORMACIÓN DEL DETALLE
           // ---------------------------------------------------
           detallesCrear.push({
-            pedidoID: 0, // Se asignará después de crear pedido
             productoCodigo,
             ubicacion,
             cantidad,
@@ -293,18 +308,33 @@ export class PedidosService {
             subtotal: subtotalDetalle,
             descuento: descuentoDetalle,
           });
+
+          // Guardamos temporalmente el nivel para crear
+          // posteriormente la solicitud.
+          (detalle as any)._nivelAprobacion = nivelAprobacion;
+          (detalle as any)._porcentajeDescuento = porcentajeDescuento;
+          (detalle as any)._precioFinal = precioFinal;
+          (detalle as any)._descuentoUnitario = descuentoUnitario;
         }
 
         // =====================================================
-        // CALCULAR IMPUESTOS Y TOTAL
+        // TOTAL FINAL CON ISV INCLUIDO
         // =====================================================
 
-        // 15% de impuesto
-        const impuesto = subtotal / 1.15;
+        const totalBruto = subtotalBruto - descuentoTotal;
 
-        subtotal = subtotal - impuesto;
+        const subtotal = totalBruto / 1.15;
 
-        const total = subtotal + impuesto - descuento;
+        const impuesto = totalBruto - subtotal;
+
+        const total = totalBruto;
+
+        // =====================================================
+        // ESTADO DEL PEDIDO
+        // =====================================================
+        const estadoPedido = requiereAprobacion
+          ? 'PENDIENTE_APROBACION'
+          : 'EN_PROCESO';
 
         // =====================================================
         // CREAR PEDIDO
@@ -315,31 +345,83 @@ export class PedidosService {
             clienteID: clienteId,
             usuarioCodigo,
             fecha: new Date(),
-            estado: 'EN_PROCESO',
+            estado: estadoPedido,
 
             subtotal,
             impuesto,
-            descuento,
+            descuento: descuentoTotal,
             total,
 
-            aprobado: false,
+            aprobado: !requiereAprobacion,
           },
         });
 
         // =====================================================
-        // CREAR DETALLES
+        // CREAR DETALLES Y SOLICITUDES
         // =====================================================
-        await tx.pedidoDetalle.createMany({
-          data: detallesCrear.map((detalle) => ({
-            pedidoID: pedido.id,
-            productoCodigo: detalle.productoCodigo,
-            ubicacion: detalle.ubicacion,
-            cantidad: detalle.cantidad,
-            precioUnitario: detalle.precioUnitario,
-            subtotal: detalle.subtotal,
-            descuento: detalle.descuento,
-          })),
-        });
+        for (let i = 0; i < detallesCrear.length; i++) {
+          const detalleCrear = detallesCrear[i];
+          const detalleOriginal = detalles[i];
+
+          const pedidoDetalle = await tx.pedidoDetalle.create({
+            data: {
+              pedidoID: pedido.id,
+              productoCodigo: detalleCrear.productoCodigo,
+              ubicacion: detalleCrear.ubicacion,
+              cantidad: detalleCrear.cantidad,
+              precioUnitario: detalleCrear.precioUnitario,
+              subtotal: detalleCrear.subtotal,
+              descuento: detalleCrear.descuento,
+            },
+          });
+
+          const nivelAprobacion = detalleOriginal._nivelAprobacion;
+
+          // ---------------------------------------------------
+          // CREAR SOLICITUD SI SUPERA 50%
+          // ---------------------------------------------------
+          if (nivelAprobacion) {
+            const producto = await tx.productos.findUnique({
+              where: {
+                codigo: detalleCrear.productoCodigo,
+              },
+            });
+
+            if (!producto) {
+              throw new BadRequestException(
+                `El producto ${detalleCrear.productoCodigo} no existe`,
+              );
+            }
+
+            const solicitudID = this.codeGen.generate('SOL', pedidoDetalle.id);
+
+            await tx.solicitudDescuento.create({
+              data: {
+                solicitudID,
+
+                pedidoDetalleId: pedidoDetalle.id,
+                pedidoId: pedido.id,
+                productoCodigo: detalleCrear.productoCodigo,
+
+                vendedorCodigo: usuarioCodigo,
+
+                precioLista: detalleCrear.precioUnitario,
+
+                costoCompra: Number(producto.costoCompra),
+
+                porcentajeSolicitado: detalleOriginal._porcentajeDescuento,
+
+                descuentoSolicitado: detalleOriginal._descuentoUnitario,
+
+                precioFinal: detalleOriginal._precioFinal,
+
+                nivelAprobacion,
+
+                estado: 'PENDIENTE',
+              },
+            });
+          }
+        }
 
         // =====================================================
         // RETORNAR PEDIDO COMPLETO
@@ -350,13 +432,18 @@ export class PedidosService {
           },
           include: {
             cliente: true,
-            usuario: true,
+            usuario: {
+              include: {
+                perfil: true,
+              },
+            },
             detalles: {
               include: {
                 producto: true,
                 ubicacionRel: true,
               },
             },
+            solicitudDescuento: true,
           },
         });
       },
@@ -429,689 +516,787 @@ export class PedidosService {
   // AGREGAR PRODUCTO AL PEDIDO
   // =========================================================
   async agregarProducto(pedidoId: number, detalle: any) {
-    const { productoCodigo, ubicacion, cantidad } = detalle;
+    return this.prisma.$transaction(
+      async (tx) => {
+        // =====================================================
+        // BUSCAR PEDIDO
+        // =====================================================
+        const pedido = await tx.pedidos.findUnique({
+          where: {
+            id: pedidoId,
+          },
+        });
 
-    // =====================================================
-    // VALIDACIONES BÁSICAS
-    // =====================================================
+        if (!pedido) {
+          throw new NotFoundException('El pedido no existe');
+        }
 
-    if (!productoCodigo) {
-      throw new BadRequestException('El código del producto es obligatorio');
-    }
+        if (pedido.estado !== 'EN_PROCESO') {
+          throw new BadRequestException(
+            'Solo se pueden agregar productos a pedidos en proceso',
+          );
+        }
 
-    if (!ubicacion) {
-      throw new BadRequestException('La ubicación es obligatoria');
-    }
+        const productoCodigo = String(detalle.productoCodigo ?? '').trim();
 
-    const cantidadNumerica = Number(cantidad);
+        const ubicacion = String(detalle.ubicacion ?? '').trim();
 
-    if (!Number.isInteger(cantidadNumerica) || cantidadNumerica <= 0) {
-      throw new BadRequestException(
-        'La cantidad debe ser un número entero mayor que 0',
-      );
-    }
+        const cantidad = Number(detalle.cantidad);
 
-    // =====================================================
-    // BUSCAR PEDIDO
-    // =====================================================
+        const descuentoUnitario = Number(detalle.descuento ?? 0);
 
-    const pedido = await this.prisma.pedidos.findUnique({
-      where: {
-        id: pedidoId,
-      },
-    });
+        // =====================================================
+        // VALIDACIONES
+        // =====================================================
+        if (!productoCodigo) {
+          throw new BadRequestException(
+            'El código del producto es obligatorio',
+          );
+        }
 
-    if (!pedido) {
-      throw new BadRequestException('Pedido no encontrado');
-    }
+        if (!ubicacion) {
+          throw new BadRequestException('La ubicación es obligatoria');
+        }
 
-    if (pedido.estado !== 'EN_PROCESO') {
-      throw new BadRequestException('No se puede modificar este pedido');
-    }
+        if (!Number.isInteger(cantidad) || cantidad <= 0) {
+          throw new BadRequestException(
+            'La cantidad debe ser un entero mayor que 0',
+          );
+        }
 
-    // =====================================================
-    // BUSCAR PRODUCTO
-    // =====================================================
+        const producto = await tx.productos.findUnique({
+          where: {
+            codigo: productoCodigo,
+          },
+        });
 
-    const producto = await this.prisma.productos.findUnique({
-      where: {
-        codigo: productoCodigo,
-      },
-    });
+        if (!producto) {
+          throw new NotFoundException(
+            `El producto ${productoCodigo} no existe`,
+          );
+        }
 
-    if (!producto) {
-      throw new BadRequestException('Producto no encontrado');
-    }
+        // =====================================================
+        // INVENTARIO
+        // =====================================================
+        const inventario = await tx.inventario.findUnique({
+          where: {
+            productoCodigo_ubicacion: {
+              productoCodigo,
+              ubicacion,
+            },
+          },
+        });
 
-    // =====================================================
-    // TRANSACCIÓN
-    // =====================================================
+        if (!inventario) {
+          throw new BadRequestException(
+            `No existe inventario de ${productoCodigo} en ${ubicacion}`,
+          );
+        }
 
-    return this.prisma.$transaction(async (tx) => {
-      // ===================================================
-      // BUSCAR INVENTARIO
-      // ===================================================
+        const cantidadReservada = Number(inventario.cantidadReservada ?? 0);
 
-      const inventario = await tx.inventario.findUnique({
-        where: {
-          productoCodigo_ubicacion: {
+        const stockDisponible = inventario.cantidad - cantidadReservada;
+
+        if (stockDisponible < cantidad) {
+          throw new BadRequestException(
+            `Stock insuficiente. Disponible: ${stockDisponible}`,
+          );
+        }
+
+        // =====================================================
+        // PRECIO
+        // =====================================================
+        const precioUnitario = Number(producto.precio);
+
+        if (!Number.isFinite(precioUnitario) || precioUnitario <= 0) {
+          throw new BadRequestException(
+            `El precio del producto ${productoCodigo} no es válido`,
+          );
+        }
+
+        // =====================================================
+        // DESCUENTO
+        // =====================================================
+        if (!Number.isFinite(descuentoUnitario) || descuentoUnitario < 0) {
+          throw new BadRequestException('El descuento no es válido');
+        }
+
+        if (descuentoUnitario >= precioUnitario) {
+          throw new BadRequestException(
+            'El descuento debe ser menor que el precio de venta',
+          );
+        }
+
+        const porcentajeDescuento = (descuentoUnitario / precioUnitario) * 100;
+
+        const precioFinal = precioUnitario - descuentoUnitario;
+
+        let nivelAprobacion: string | null = null;
+
+        if (porcentajeDescuento > 50) {
+          nivelAprobacion =
+            precioFinal < Number(producto.costoCompra)
+              ? 'ADMIN'
+              : 'SUPERVISOR_ADMIN';
+        }
+
+        // =====================================================
+        // CREAR DETALLE
+        // =====================================================
+        const descuentoDetalle = descuentoUnitario * cantidad;
+
+        const subtotalDetalle = (precioUnitario - descuentoUnitario) * cantidad;
+
+        const pedidoDetalle = await tx.pedidoDetalle.create({
+          data: {
+            pedidoID: pedido.id,
             productoCodigo,
             ubicacion,
+            cantidad,
+            precioUnitario,
+            subtotal: subtotalDetalle,
+            descuento: descuentoDetalle,
           },
-        },
-      });
+        });
 
-      if (!inventario) {
-        throw new BadRequestException(
-          `No existe inventario del producto ${productoCodigo} en la ubicación ${ubicacion}`,
-        );
-      }
-
-      // ===================================================
-      // STOCK DISPONIBLE
-      // ===================================================
-
-      const reservadoActual = inventario.cantidadReservada ?? 0;
-
-      const stockDisponible = inventario.cantidad - reservadoActual;
-
-      if (stockDisponible < cantidadNumerica) {
-        throw new BadRequestException(
-          `Stock disponible insuficiente. Disponible: ${stockDisponible}`,
-        );
-      }
-
-      // ===================================================
-      // PRECIO REAL DEL PRODUCTO
-      // ===================================================
-
-      const precioUnitario = Number(producto.precio);
-
-      if (!Number.isFinite(precioUnitario) || precioUnitario < 0) {
-        throw new BadRequestException('El producto tiene un precio inválido');
-      }
-
-      // ===================================================
-      // CALCULAR SUBTOTAL
-      // ===================================================
-
-      const subtotal = cantidadNumerica * precioUnitario;
-
-      // ===================================================
-      // CREAR DETALLE
-      // ===================================================
-
-      const nuevoDetalle = await tx.pedidoDetalle.create({
-        data: {
-          pedidoID: pedidoId,
-          productoCodigo,
-          ubicacion,
-          cantidad: cantidadNumerica,
-          precioUnitario,
-          subtotal,
-        },
-        include: {
-          producto: true,
-          ubicacionRel: true,
-        },
-      });
-
-      // ===================================================
-      // RESERVAR INVENTARIO
-      // ===================================================
-
-      await tx.inventario.update({
-        where: {
-          id: inventario.id,
-        },
-        data: {
-          cantidadReservada: {
-            increment: cantidadNumerica,
+        // =====================================================
+        // RESERVAR INVENTARIO
+        // =====================================================
+        await tx.inventario.update({
+          where: {
+            id: inventario.id,
           },
-        },
-      });
+          data: {
+            cantidadReservada: {
+              increment: cantidad,
+            },
+          },
+        });
 
-      // ===================================================
-      // RECALCULAR PEDIDO
-      // ===================================================
+        // =====================================================
+        // CREAR SOLICITUD SI ES NECESARIO
+        // =====================================================
+        if (nivelAprobacion) {
+          const solicitudID = this.codeGen.generate('SOL', pedidoDetalle.id);
 
-      const detalles = await tx.pedidoDetalle.findMany({
-        where: {
-          pedidoID: pedidoId,
-        },
-      });
+          await tx.solicitudDescuento.create({
+            data: {
+              solicitudID,
+              pedidoDetalleId: pedidoDetalle.id,
+              pedidoId: pedido.id,
+              productoCodigo,
+              vendedorCodigo: pedido.usuarioCodigo,
 
-      const subtotalPedido = detalles.reduce(
-        (total, d) => total + Number(d.subtotal),
-        0,
-      );
+              precioLista: precioUnitario,
+              costoCompra: Number(producto.costoCompra),
+              porcentajeSolicitado: porcentajeDescuento,
+              descuentoSolicitado: descuentoUnitario,
+              precioFinal,
 
-      // Por ahora mantenemos la misma lógica de IVA
-      // que estás utilizando actualmente: 15%.
-      const impuesto = subtotalPedido * 0.15;
+              nivelAprobacion,
+              estado: 'PENDIENTE',
+            },
+          });
+        }
 
-      const descuento = Number(pedido.descuento ?? 0);
+        // =====================================================
+        // RECALCULAR PEDIDO
+        // =====================================================
+        const detalles = await tx.pedidoDetalle.findMany({
+          where: {
+            pedidoID: pedido.id,
+          },
+        });
 
-      const total = subtotalPedido + impuesto - descuento;
+        const subtotalBruto = detalles.reduce(
+          (sum, d) => sum + Number(d.precioUnitario) * Number(d.cantidad),
+          0,
+        );
 
-      // ===================================================
-      // ACTUALIZAR TOTALES DEL PEDIDO
-      // ===================================================
+        const descuentoTotal = detalles.reduce(
+          (sum, d) => sum + Number(d.descuento),
+          0,
+        );
 
-      const pedidoActualizado = await tx.pedidos.update({
-        where: {
-          id: pedidoId,
-        },
-        data: {
-          subtotal: subtotalPedido,
-          impuesto,
-          descuento,
-          total,
-        },
-      });
+        const totalBruto = subtotalBruto - descuentoTotal;
 
-      // ===================================================
-      // RESPUESTA
-      // ===================================================
+        const subtotal = totalBruto / 1.15;
 
-      return {
-        mensaje: 'Producto agregado y stock reservado correctamente',
+        const impuesto = totalBruto - subtotal;
 
-        detalle: nuevoDetalle,
+        const total = totalBruto;
 
-        reserva: {
-          productoCodigo,
-          ubicacion,
-          cantidadReservada: cantidadNumerica,
-          stockDisponibleAnterior: stockDisponible,
-          stockDisponibleNuevo: stockDisponible - cantidadNumerica,
-        },
+        // =====================================================
+        // VERIFICAR SOLICITUDES PENDIENTES
+        // =====================================================
+        const solicitudesPendientes = await tx.solicitudDescuento.count({
+          where: {
+            pedidoId: pedido.id,
+            estado: 'PENDIENTE',
+          },
+        });
 
-        pedido: {
-          id: pedidoActualizado.id,
-          pedidoID: pedidoActualizado.pedidoID,
-          subtotal: pedidoActualizado.subtotal,
-          impuesto: pedidoActualizado.impuesto,
-          descuento: pedidoActualizado.descuento,
-          total: pedidoActualizado.total,
-        },
-      };
-    });
+        const aprobado = solicitudesPendientes === 0;
+
+        await tx.pedidos.update({
+          where: {
+            id: pedido.id,
+          },
+          data: {
+            subtotal,
+            impuesto,
+            descuento: descuentoTotal,
+            total,
+            aprobado,
+            estado: aprobado ? 'EN_PROCESO' : 'PENDIENTE_APROBACION',
+          },
+        });
+
+        return tx.pedidos.findUnique({
+          where: {
+            id: pedido.id,
+          },
+          include: {
+            cliente: true,
+            usuario: {
+              include: {
+                perfil: true,
+              },
+            },
+            detalles: {
+              include: {
+                producto: true,
+                ubicacionRel: true,
+              },
+            },
+            solicitudDescuento: true,
+          },
+        });
+      },
+      {
+        isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+      },
+    );
   }
 
   // =========================================================
   // ELIMINAR DETALLE
   // =========================================================
   async eliminarDetalle(detalleId: number) {
-    // =====================================================
-    // BUSCAR DETALLE
-    // =====================================================
-
-    const detalle = await this.prisma.pedidoDetalle.findUnique({
-      where: {
-        id: detalleId,
-      },
-    });
-
-    if (!detalle) {
-      throw new BadRequestException('Detalle no encontrado');
-    }
-
-    // =====================================================
-    // BUSCAR PEDIDO
-    // =====================================================
-
-    const pedido = await this.prisma.pedidos.findUnique({
-      where: {
-        id: detalle.pedidoID,
-      },
-    });
-
-    if (!pedido) {
-      throw new BadRequestException('Pedido no encontrado');
-    }
-
-    // =====================================================
-    // VALIDAR ESTADO
-    // =====================================================
-
-    if (pedido.estado !== 'EN_PROCESO') {
-      throw new BadRequestException(
-        'Solo se pueden eliminar productos de pedidos en proceso',
-      );
-    }
-
-    // =====================================================
-    // TRANSACCIÓN
-    // =====================================================
-
-    return this.prisma.$transaction(async (tx) => {
-      // ===================================================
-      // BUSCAR INVENTARIO
-      // ===================================================
-
-      const inventario = await tx.inventario.findUnique({
-        where: {
-          productoCodigo_ubicacion: {
-            productoCodigo: detalle.productoCodigo,
-            ubicacion: detalle.ubicacion,
+    return this.prisma.$transaction(
+      async (tx) => {
+        // =====================================================
+        // BUSCAR DETALLE
+        // =====================================================
+        const detalle = await tx.pedidoDetalle.findUnique({
+          where: {
+            id: detalleId,
           },
-        },
-      });
-
-      if (!inventario) {
-        throw new BadRequestException(
-          `No existe inventario del producto ${detalle.productoCodigo} en la ubicación ${detalle.ubicacion}`,
-        );
-      }
-
-      // ===================================================
-      // CANTIDAD RESERVADA
-      // ===================================================
-
-      const cantidadReservada = inventario.cantidadReservada ?? 0;
-
-      // ===================================================
-      // VALIDAR QUE LA RESERVA SEA CONSISTENTE
-      // ===================================================
-
-      if (cantidadReservada < detalle.cantidad) {
-        throw new BadRequestException(
-          `La reserva del inventario es inconsistente para ${detalle.productoCodigo} en ${detalle.ubicacion}`,
-        );
-      }
-
-      // ===================================================
-      // LIBERAR RESERVA
-      // ===================================================
-
-      await tx.inventario.update({
-        where: {
-          id: inventario.id,
-        },
-        data: {
-          cantidadReservada: {
-            decrement: detalle.cantidad,
+          include: {
+            pedido: true,
           },
-        },
-      });
+        });
 
-      // ===================================================
-      // ELIMINAR DETALLE
-      // ===================================================
+        if (!detalle) {
+          throw new NotFoundException('El detalle del pedido no existe');
+        }
 
-      await tx.pedidoDetalle.delete({
-        where: {
-          id: detalleId,
-        },
-      });
+        // =====================================================
+        // VALIDAR ESTADO DEL PEDIDO
+        // =====================================================
+        if (detalle.pedido.estado !== 'EN_PROCESO') {
+          throw new BadRequestException(
+            'Solo se pueden eliminar productos de pedidos en proceso',
+          );
+        }
 
-      // ===================================================
-      // OBTENER DETALLES RESTANTES
-      // ===================================================
+        // =====================================================
+        // BUSCAR INVENTARIO
+        // =====================================================
+        const inventario = await tx.inventario.findUnique({
+          where: {
+            productoCodigo_ubicacion: {
+              productoCodigo: detalle.productoCodigo,
+              ubicacion: detalle.ubicacion,
+            },
+          },
+        });
 
-      const detallesRestantes = await tx.pedidoDetalle.findMany({
-        where: {
-          pedidoID: detalle.pedidoID,
-        },
-      });
+        if (!inventario) {
+          throw new BadRequestException(
+            `No existe inventario de ${detalle.productoCodigo} en ${detalle.ubicacion}`,
+          );
+        }
 
-      // ===================================================
-      // RECALCULAR SUBTOTAL
-      // ===================================================
+        // =====================================================
+        // VALIDAR RESERVA
+        // =====================================================
+        const cantidadReservada = Number(inventario.cantidadReservada ?? 0);
 
-      const subtotalPedido = detallesRestantes.reduce(
-        (total, d) => total + Number(d.subtotal),
-        0,
-      );
+        if (cantidadReservada < detalle.cantidad) {
+          throw new BadRequestException(
+            `La reserva de ${detalle.productoCodigo} es insuficiente`,
+          );
+        }
 
-      // ===================================================
-      // CALCULAR IMPUESTO
-      // =====================================================
+        // =====================================================
+        // LIBERAR RESERVA
+        // =====================================================
+        const nuevaReserva = cantidadReservada - detalle.cantidad;
 
-      const impuesto = subtotalPedido * 0.15;
+        await tx.inventario.update({
+          where: {
+            id: inventario.id,
+          },
+          data: {
+            cantidadReservada: nuevaReserva,
+          },
+        });
 
-      // ===================================================
-      // MANTENER DESCUENTO DEL PEDIDO
-      // ===================================================
+        // =====================================================
+        // ELIMINAR SOLICITUD DE DESCUENTO
+        // =====================================================
+        await tx.solicitudDescuento.deleteMany({
+          where: {
+            pedidoDetalleId: detalle.id,
+          },
+        });
 
-      const descuento = Number(pedido.descuento ?? 0);
+        // =====================================================
+        // ELIMINAR DETALLE
+        // =====================================================
+        await tx.pedidoDetalle.delete({
+          where: {
+            id: detalle.id,
+          },
+        });
 
-      // ===================================================
-      // CALCULAR TOTAL
-      // ===================================================
+        // =====================================================
+        // OBTENER DETALLES RESTANTES
+        // =====================================================
+        const detalles = await tx.pedidoDetalle.findMany({
+          where: {
+            pedidoID: detalle.pedido.id,
+          },
+        });
 
-      const total = subtotalPedido + impuesto - descuento;
+        // =====================================================
+        // SI NO QUEDAN PRODUCTOS
+        // =====================================================
+        if (detalles.length === 0) {
+          await tx.pedidos.update({
+            where: {
+              id: detalle.pedido.id,
+            },
+            data: {
+              subtotal: 0,
+              impuesto: 0,
+              descuento: 0,
+              total: 0,
+              aprobado: false,
+            },
+          });
 
-      // ===================================================
-      // ACTUALIZAR PEDIDO
-      // ===================================================
+          return tx.pedidos.findUnique({
+            where: {
+              id: detalle.pedido.id,
+            },
+            include: {
+              cliente: true,
+              usuario: {
+                include: {
+                  perfil: true,
+                },
+              },
+              detalles: {
+                include: {
+                  producto: true,
+                  ubicacionRel: true,
+                },
+              },
+              solicitudDescuento: true,
+            },
+          });
+        }
 
-      const pedidoActualizado = await tx.pedidos.update({
-        where: {
-          id: detalle.pedidoID,
-        },
-        data: {
-          subtotal: subtotalPedido,
-          impuesto,
-          descuento,
-          total,
-        },
-      });
+        // =====================================================
+        // RECALCULAR TOTALES
+        // =====================================================
+        const subtotalBruto = detalles.reduce(
+          (sum, d) => sum + Number(d.precioUnitario) * Number(d.cantidad),
+          0,
+        );
 
-      // ===================================================
-      // RESPUESTA
-      // ===================================================
+        const descuentoTotal = detalles.reduce(
+          (sum, d) => sum + Number(d.descuento),
+          0,
+        );
 
-      return {
-        mensaje: 'Detalle eliminado y reserva liberada correctamente',
+        const totalBruto = subtotalBruto - descuentoTotal;
 
-        detalleEliminado: {
-          id: detalle.id,
-          productoCodigo: detalle.productoCodigo,
-          ubicacion: detalle.ubicacion,
-          cantidad: detalle.cantidad,
-        },
+        const subtotal = totalBruto / 1.15;
 
-        reservaLiberada: {
-          productoCodigo: detalle.productoCodigo,
-          ubicacion: detalle.ubicacion,
-          cantidad: detalle.cantidad,
+        const impuesto = totalBruto - subtotal;
 
-          cantidadReservadaAnterior: cantidadReservada,
+        const total = totalBruto;
 
-          cantidadReservadaNueva: cantidadReservada - detalle.cantidad,
-        },
+        // =====================================================
+        // VERIFICAR SOLICITUDES PENDIENTES
+        // =====================================================
+        const solicitudesPendientes = await tx.solicitudDescuento.count({
+          where: {
+            pedidoId: detalle.pedido.id,
+            estado: 'PENDIENTE',
+          },
+        });
 
-        pedido: {
-          id: pedidoActualizado.id,
-          pedidoID: pedidoActualizado.pedidoID,
-          subtotal: pedidoActualizado.subtotal,
-          impuesto: pedidoActualizado.impuesto,
-          descuento: pedidoActualizado.descuento,
-          total: pedidoActualizado.total,
-        },
-      };
-    });
+        const solicitudesRechazadas = await tx.solicitudDescuento.count({
+          where: {
+            pedidoId: detalle.pedido.id,
+            estado: 'RECHAZADA',
+          },
+        });
+
+        const aprobado =
+          solicitudesPendientes === 0 && solicitudesRechazadas === 0;
+
+        // =====================================================
+        // ACTUALIZAR PEDIDO
+        // =====================================================
+        await tx.pedidos.update({
+          where: {
+            id: detalle.pedido.id,
+          },
+          data: {
+            subtotal,
+            impuesto,
+            descuento: descuentoTotal,
+            total,
+            aprobado,
+            estado: aprobado ? 'EN_PROCESO' : 'PENDIENTE_APROBACION',
+          },
+        });
+
+        // =====================================================
+        // RETORNAR PEDIDO
+        // =====================================================
+        return tx.pedidos.findUnique({
+          where: {
+            id: detalle.pedido.id,
+          },
+          include: {
+            cliente: true,
+            usuario: {
+              include: {
+                perfil: true,
+              },
+            },
+            detalles: {
+              include: {
+                producto: true,
+                ubicacionRel: true,
+              },
+            },
+            solicitudDescuento: true,
+          },
+        });
+      },
+      {
+        isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+      },
+    );
   }
 
   // =========================================================
   // ACTUALIZAR CANTIDAD DE DETALLE
   // =========================================================
-  async actualizarDetalle(detalleId: number, cantidad: number) {
-    // =====================================================
-    // VALIDAR CANTIDAD
-    // =====================================================
-
-    const nuevaCantidad = Number(cantidad);
-
-    if (!Number.isInteger(nuevaCantidad) || nuevaCantidad <= 0) {
-      throw new BadRequestException(
-        'La cantidad debe ser un número entero mayor que 0',
-      );
-    }
-
-    // =====================================================
-    // BUSCAR DETALLE
-    // =====================================================
-
-    const detalle = await this.prisma.pedidoDetalle.findUnique({
-      where: {
-        id: detalleId,
-      },
-    });
-
-    if (!detalle) {
-      throw new BadRequestException('Detalle no encontrado');
-    }
-
-    // =====================================================
-    // BUSCAR PEDIDO
-    // =====================================================
-
-    const pedido = await this.prisma.pedidos.findUnique({
-      where: {
-        id: detalle.pedidoID,
-      },
-    });
-
-    if (!pedido) {
-      throw new BadRequestException('Pedido no encontrado');
-    }
-
-    // =====================================================
-    // VALIDAR ESTADO
-    // =====================================================
-
-    if (pedido.estado !== 'EN_PROCESO') {
-      throw new BadRequestException('No se puede modificar este pedido');
-    }
-
-    // =====================================================
-    // BUSCAR PRODUCTO
-    // =====================================================
-
-    const producto = await this.prisma.productos.findUnique({
-      where: {
-        codigo: detalle.productoCodigo,
-      },
-    });
-
-    if (!producto) {
-      throw new BadRequestException('Producto no encontrado');
-    }
-
-    // =====================================================
-    // DIFERENCIA DE CANTIDAD
-    // =====================================================
-
-    const cantidadAnterior = detalle.cantidad;
-
-    const diferencia = nuevaCantidad - cantidadAnterior;
-
-    // =====================================================
-    // TRANSACCIÓN
-    // =====================================================
-
-    return this.prisma.$transaction(async (tx) => {
-      // ===================================================
-      // BUSCAR INVENTARIO
-      // ===================================================
-
-      const inventario = await tx.inventario.findUnique({
-        where: {
-          productoCodigo_ubicacion: {
-            productoCodigo: detalle.productoCodigo,
-            ubicacion: detalle.ubicacion,
+  async actualizarDetalle(
+    detalleId: number,
+    data: {
+      cantidad: number;
+      descuento?: number;
+    },
+  ) {
+    return this.prisma.$transaction(
+      async (tx) => {
+        // =====================================================
+        // BUSCAR DETALLE
+        // =====================================================
+        const detalle = await tx.pedidoDetalle.findUnique({
+          where: {
+            id: detalleId,
           },
-        },
-      });
+          include: {
+            pedido: true,
+            producto: true,
+          },
+        });
 
-      if (!inventario) {
-        throw new BadRequestException(
-          `No existe inventario del producto ${detalle.productoCodigo} en la ubicación ${detalle.ubicacion}`,
+        if (!detalle) {
+          throw new NotFoundException('El detalle del pedido no existe');
+        }
+
+        if (detalle.pedido.estado !== 'EN_PROCESO') {
+          throw new BadRequestException(
+            'Solo se pueden modificar detalles de pedidos en proceso',
+          );
+        }
+
+        const nuevaCantidad = Number(data.cantidad);
+
+        const nuevoDescuento = Number(data.descuento ?? 0);
+
+        // =====================================================
+        // VALIDAR CANTIDAD
+        // =====================================================
+        if (!Number.isInteger(nuevaCantidad) || nuevaCantidad <= 0) {
+          throw new BadRequestException(
+            'La cantidad debe ser un entero mayor que 0',
+          );
+        }
+
+        // =====================================================
+        // PRECIO
+        // =====================================================
+        const precioUnitario = Number(detalle.producto.precio);
+
+        if (!Number.isFinite(precioUnitario) || precioUnitario <= 0) {
+          throw new BadRequestException('El precio del producto no es válido');
+        }
+
+        // =====================================================
+        // VALIDAR DESCUENTO
+        // =====================================================
+        if (!Number.isFinite(nuevoDescuento) || nuevoDescuento < 0) {
+          throw new BadRequestException('El descuento no es válido');
+        }
+
+        if (nuevoDescuento >= precioUnitario) {
+          throw new BadRequestException(
+            'El descuento debe ser menor que el precio de venta',
+          );
+        }
+
+        // =====================================================
+        // CALCULAR STOCK
+        // =====================================================
+        const diferencia = nuevaCantidad - detalle.cantidad;
+
+        if (diferencia !== 0) {
+          const inventario = await tx.inventario.findUnique({
+            where: {
+              productoCodigo_ubicacion: {
+                productoCodigo: detalle.productoCodigo,
+                ubicacion: detalle.ubicacion,
+              },
+            },
+          });
+
+          if (!inventario) {
+            throw new BadRequestException(
+              'No existe inventario para este producto y ubicación',
+            );
+          }
+
+          const cantidadReservada = Number(inventario.cantidadReservada ?? 0);
+
+          if (diferencia > 0) {
+            const stockDisponible = inventario.cantidad - cantidadReservada;
+
+            if (stockDisponible < diferencia) {
+              throw new BadRequestException(
+                `Stock insuficiente. Disponible: ${stockDisponible}`,
+              );
+            }
+
+            await tx.inventario.update({
+              where: {
+                id: inventario.id,
+              },
+              data: {
+                cantidadReservada: {
+                  increment: diferencia,
+                },
+              },
+            });
+          } else {
+            const cantidadLiberar = Math.abs(diferencia);
+
+            if (cantidadReservada < cantidadLiberar) {
+              throw new BadRequestException(
+                'La reserva de inventario es insuficiente',
+              );
+            }
+
+            await tx.inventario.update({
+              where: {
+                id: inventario.id,
+              },
+              data: {
+                cantidadReservada: {
+                  decrement: cantidadLiberar,
+                },
+              },
+            });
+          }
+        }
+
+        // =====================================================
+        // CALCULAR DESCUENTO
+        // =====================================================
+        const porcentajeDescuento = (nuevoDescuento / precioUnitario) * 100;
+
+        const precioFinal = precioUnitario - nuevoDescuento;
+
+        let nivelAprobacion: string | null = null;
+
+        if (porcentajeDescuento > 50) {
+          nivelAprobacion =
+            precioFinal < Number(detalle.producto.costoCompra)
+              ? 'ADMIN'
+              : 'SUPERVISOR_ADMIN';
+        }
+
+        // =====================================================
+        // ELIMINAR SOLICITUD ANTERIOR
+        // =====================================================
+        await tx.solicitudDescuento.deleteMany({
+          where: {
+            pedidoDetalleId: detalle.id,
+          },
+        });
+
+        // =====================================================
+        // ACTUALIZAR DETALLE
+        // =====================================================
+        const nuevoDescuentoTotal = nuevoDescuento * nuevaCantidad;
+
+        const nuevoSubtotal = (precioUnitario - nuevoDescuento) * nuevaCantidad;
+
+        await tx.pedidoDetalle.update({
+          where: {
+            id: detalle.id,
+          },
+          data: {
+            cantidad: nuevaCantidad,
+            precioUnitario,
+            subtotal: nuevoSubtotal,
+            descuento: nuevoDescuentoTotal,
+          },
+        });
+
+        // =====================================================
+        // CREAR NUEVA SOLICITUD
+        // =====================================================
+        if (nivelAprobacion) {
+          const solicitudID = this.codeGen.generate('SOL', detalle.id);
+
+          await tx.solicitudDescuento.create({
+            data: {
+              solicitudID,
+
+              pedidoDetalleId: detalle.id,
+              pedidoId: detalle.pedido.id,
+              productoCodigo: detalle.productoCodigo,
+
+              vendedorCodigo: detalle.pedido.usuarioCodigo,
+
+              precioLista: precioUnitario,
+
+              costoCompra: Number(detalle.producto.costoCompra),
+
+              porcentajeSolicitado: porcentajeDescuento,
+
+              descuentoSolicitado: nuevoDescuento,
+
+              precioFinal,
+
+              nivelAprobacion,
+
+              estado: 'PENDIENTE',
+            },
+          });
+        }
+
+        // =====================================================
+        // RECALCULAR PEDIDO
+        // =====================================================
+        const detalles = await tx.pedidoDetalle.findMany({
+          where: {
+            pedidoID: detalle.pedido.id,
+          },
+        });
+
+        const subtotalBruto = detalles.reduce(
+          (sum, d) => sum + Number(d.precioUnitario) * Number(d.cantidad),
+          0,
         );
-      }
 
-      // ===================================================
-      // RESERVA ACTUAL
-      // ===================================================
+        const descuentoTotal = detalles.reduce(
+          (sum, d) => sum + Number(d.descuento),
+          0,
+        );
 
-      const cantidadReservada = inventario.cantidadReservada ?? 0;
+        const totalBruto = subtotalBruto - descuentoTotal;
 
-      // ===================================================
-      // SI AUMENTA LA CANTIDAD
-      // ===================================================
+        const subtotal = totalBruto / 1.15;
 
-      if (diferencia > 0) {
-        const stockDisponible = inventario.cantidad - cantidadReservada;
+        const impuesto = totalBruto - subtotal;
 
-        if (stockDisponible < diferencia) {
-          throw new BadRequestException(
-            `Stock disponible insuficiente. Disponible para reservar: ${stockDisponible}`,
-          );
-        }
+        const total = totalBruto;
 
-        await tx.inventario.update({
+        // =====================================================
+        // SOLICITUDES PENDIENTES
+        // =====================================================
+        const pendientes = await tx.solicitudDescuento.count({
           where: {
-            id: inventario.id,
-          },
-          data: {
-            cantidadReservada: {
-              increment: diferencia,
-            },
+            pedidoId: detalle.pedido.id,
+            estado: 'PENDIENTE',
           },
         });
-      }
 
-      // ===================================================
-      // SI DISMINUYE LA CANTIDAD
-      // =====================================================
+        const aprobado = pendientes === 0;
 
-      if (diferencia < 0) {
-        const cantidadLiberar = Math.abs(diferencia);
-
-        if (cantidadReservada < cantidadLiberar) {
-          throw new BadRequestException(
-            'La reserva del inventario no es suficiente para reducir este detalle',
-          );
-        }
-
-        await tx.inventario.update({
+        await tx.pedidos.update({
           where: {
-            id: inventario.id,
+            id: detalle.pedido.id,
           },
           data: {
-            cantidadReservada: {
-              decrement: cantidadLiberar,
-            },
+            subtotal,
+            impuesto,
+            descuento: descuentoTotal,
+            total,
+            aprobado,
+            estado: aprobado ? 'EN_PROCESO' : 'PENDIENTE_APROBACION',
           },
         });
-      }
 
-      // ===================================================
-      // PRECIO
-      // ===================================================
-
-      const precioUnitario = Number(producto.precio);
-
-      if (!Number.isFinite(precioUnitario) || precioUnitario < 0) {
-        throw new BadRequestException('El producto tiene un precio inválido');
-      }
-
-      // ===================================================
-      // NUEVO SUBTOTAL DEL DETALLE
-      // ===================================================
-
-      const nuevoSubtotal = nuevaCantidad * precioUnitario;
-
-      // ===================================================
-      // ACTUALIZAR DETALLE
-      // ===================================================
-
-      const detalleActualizado = await tx.pedidoDetalle.update({
-        where: {
-          id: detalleId,
-        },
-        data: {
-          cantidad: nuevaCantidad,
-          precioUnitario,
-          subtotal: nuevoSubtotal,
-        },
-        include: {
-          producto: true,
-          ubicacionRel: true,
-        },
-      });
-
-      // ===================================================
-      // RECALCULAR TODOS LOS DETALLES
-      // ===================================================
-
-      const detalles = await tx.pedidoDetalle.findMany({
-        where: {
-          pedidoID: detalle.pedidoID,
-        },
-      });
-
-      const subtotalPedido = detalles.reduce(
-        (total, d) => total + Number(d.subtotal),
-        0,
-      );
-
-      // ===================================================
-      // CALCULAR IMPUESTO
-      // ===================================================
-
-      const impuesto = subtotalPedido * 0.15;
-
-      // ===================================================
-      // DESCUENTO EXISTENTE DEL PEDIDO
-      // ===================================================
-
-      const descuento = Number(pedido.descuento ?? 0);
-
-      // ===================================================
-      // TOTAL
-      // ===================================================
-
-      const total = subtotalPedido + impuesto - descuento;
-
-      // ===================================================
-      // ACTUALIZAR PEDIDO
-      // ===================================================
-
-      const pedidoActualizado = await tx.pedidos.update({
-        where: {
-          id: detalle.pedidoID,
-        },
-        data: {
-          subtotal: subtotalPedido,
-          impuesto,
-          descuento,
-          total,
-        },
-      });
-
-      // ===================================================
-      // RESPUESTA
-      // ===================================================
-
-      return {
-        mensaje: 'Cantidad actualizada correctamente',
-
-        detalle: detalleActualizado,
-
-        reserva: {
-          productoCodigo: detalle.productoCodigo,
-
-          ubicacion: detalle.ubicacion,
-
-          cantidadAnterior,
-
-          cantidadNueva: nuevaCantidad,
-
-          diferencia,
-
-          cantidadReservadaAnterior: cantidadReservada,
-
-          cantidadReservadaNueva: cantidadReservada + diferencia,
-        },
-
-        pedido: {
-          id: pedidoActualizado.id,
-          pedidoID: pedidoActualizado.pedidoID,
-
-          subtotal: pedidoActualizado.subtotal,
-
-          impuesto: pedidoActualizado.impuesto,
-
-          descuento: pedidoActualizado.descuento,
-
-          total: pedidoActualizado.total,
-        },
-      };
-    });
+        return tx.pedidos.findUnique({
+          where: {
+            id: detalle.pedido.id,
+          },
+          include: {
+            cliente: true,
+            usuario: {
+              include: {
+                perfil: true,
+              },
+            },
+            detalles: {
+              include: {
+                producto: true,
+                ubicacionRel: true,
+              },
+            },
+            solicitudDescuento: true,
+          },
+        });
+      },
+      {
+        isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+      },
+    );
   }
 
   // =========================================================
@@ -1222,128 +1407,145 @@ export class PedidosService {
   // ENVIAR PEDIDO A CAJA
   // =========================================================
   async enviarACaja(id: number) {
-    return this.prisma.$transaction(async (tx) => {
-      // =====================================================
-      // BUSCAR PEDIDO CON SUS DETALLES
-      // =====================================================
-
-      const pedido = await tx.pedidos.findUnique({
-        where: {
-          id,
-        },
-        include: {
-          detalles: true,
-        },
-      });
-
-      if (!pedido) {
-        throw new BadRequestException('Pedido no encontrado');
-      }
-
-      // =====================================================
-      // VALIDAR ESTADO
-      // =====================================================
-
-      if (pedido.estado !== 'EN_PROCESO') {
-        throw new BadRequestException(
-          `El pedido no puede enviarse a caja porque se encuentra en estado ${pedido.estado}`,
-        );
-      }
-
-      // =====================================================
-      // VALIDAR QUE TENGA PRODUCTOS
-      // =====================================================
-
-      if (!pedido.detalles.length) {
-        throw new BadRequestException(
-          'No se puede enviar a caja un pedido sin productos',
-        );
-      }
-
-      // =====================================================
-      // VALIDAR TODAS LAS RESERVAS
-      // =====================================================
-
-      for (const detalle of pedido.detalles) {
-        const inventario = await tx.inventario.findUnique({
+    return this.prisma.$transaction(
+      async (tx) => {
+        // =====================================================
+        // BUSCAR PEDIDO
+        // =====================================================
+        const pedido = await tx.pedidos.findUnique({
           where: {
-            productoCodigo_ubicacion: {
-              productoCodigo: detalle.productoCodigo,
-              ubicacion: detalle.ubicacion,
-            },
+            id,
+          },
+          include: {
+            detalles: true,
+            solicitudDescuento: true,
           },
         });
 
-        // ---------------------------------------------------
-        // EL INVENTARIO DEBE EXISTIR
-        // ---------------------------------------------------
+        if (!pedido) {
+          throw new NotFoundException('El pedido no existe');
+        }
 
-        if (!inventario) {
+        // =====================================================
+        // VALIDAR ESTADO
+        // =====================================================
+        if (pedido.estado !== 'EN_PROCESO') {
           throw new BadRequestException(
-            `El inventario del producto ${detalle.productoCodigo} ya no existe en la ubicación ${detalle.ubicacion}`,
+            'Solo se pueden enviar a caja pedidos en proceso',
           );
         }
 
-        // ---------------------------------------------------
-        // OBTENER RESERVA
-        // ---------------------------------------------------
+        // =====================================================
+        // VALIDAR APROBACIÓN
+        // =====================================================
+        if (!pedido.aprobado) {
+          throw new BadRequestException('El pedido aún no ha sido aprobado');
+        }
 
-        const cantidadReservada = inventario.cantidadReservada ?? 0;
+        // =====================================================
+        // VALIDAR SOLICITUDES DE DESCUENTO
+        // =====================================================
+        const solicitudesPendientes = pedido.solicitudDescuento.filter(
+          (solicitud) => solicitud.estado === 'PENDIENTE',
+        );
 
-        // ---------------------------------------------------
-        // VALIDAR QUE LA RESERVA SEA SUFICIENTE
-        // ---------------------------------------------------
-
-        if (cantidadReservada < detalle.cantidad) {
+        if (solicitudesPendientes.length > 0) {
           throw new BadRequestException(
-            `La reserva del producto ${detalle.productoCodigo} en ${detalle.ubicacion} es insuficiente. Reservado: ${cantidadReservada}, requerido: ${detalle.cantidad}`,
+            'El pedido tiene solicitudes de descuento pendientes de aprobación',
           );
         }
 
-        // ---------------------------------------------------
-        // VALIDAR QUE EL STOCK FÍSICO SIGA EXISTIENDO
-        // ---------------------------------------------------
+        const solicitudesRechazadas = pedido.solicitudDescuento.filter(
+          (solicitud) => solicitud.estado === 'RECHAZADA',
+        );
 
-        if (inventario.cantidad < detalle.cantidad) {
+        if (solicitudesRechazadas.length > 0) {
           throw new BadRequestException(
-            `El stock físico del producto ${detalle.productoCodigo} en ${detalle.ubicacion} es insuficiente`,
+            'El pedido contiene solicitudes de descuento rechazadas',
           );
         }
-      }
 
-      // =====================================================
-      // CAMBIAR ESTADO
-      // =====================================================
+        // =====================================================
+        // VALIDAR DETALLES
+        // =====================================================
+        if (!pedido.detalles || pedido.detalles.length === 0) {
+          throw new BadRequestException('El pedido no contiene productos');
+        }
 
-      const pedidoActualizado = await tx.pedidos.update({
-        where: {
-          id,
-        },
-        data: {
-          estado: 'EN_CAJA',
-        },
-        include: {
-          cliente: true,
-          usuario: true,
-          detalles: {
-            include: {
-              producto: true,
-              ubicacionRel: true,
+        // =====================================================
+        // VALIDAR RESERVAS
+        // =====================================================
+        for (const detalle of pedido.detalles) {
+          const inventario = await tx.inventario.findUnique({
+            where: {
+              productoCodigo_ubicacion: {
+                productoCodigo: detalle.productoCodigo,
+                ubicacion: detalle.ubicacion,
+              },
             },
+          });
+
+          if (!inventario) {
+            throw new BadRequestException(
+              `No existe inventario para ${detalle.productoCodigo} en ${detalle.ubicacion}`,
+            );
+          }
+
+          const cantidadReservada = Number(inventario.cantidadReservada ?? 0);
+
+          if (cantidadReservada < detalle.cantidad) {
+            throw new BadRequestException(
+              `La reserva de ${detalle.productoCodigo} es insuficiente`,
+            );
+          }
+
+          if (inventario.cantidad < detalle.cantidad) {
+            throw new BadRequestException(
+              `El stock físico de ${detalle.productoCodigo} es insuficiente`,
+            );
+          }
+        }
+
+        // =====================================================
+        // ENVIAR A CAJA
+        // =====================================================
+        await tx.pedidos.update({
+          where: {
+            id,
           },
-        },
-      });
+          data: {
+            estado: 'EN_CAJA',
+          },
+        });
 
-      // =====================================================
-      // RESPUESTA
-      // =====================================================
-
-      return {
-        mensaje: 'Pedido enviado a caja correctamente',
-
-        pedido: pedidoActualizado,
-      };
-    });
+        // =====================================================
+        // RETORNAR PEDIDO
+        // =====================================================
+        return tx.pedidos.findUnique({
+          where: {
+            id,
+          },
+          include: {
+            cliente: true,
+            usuario: {
+              include: {
+                perfil: true,
+              },
+            },
+            detalles: {
+              include: {
+                producto: true,
+                ubicacionRel: true,
+              },
+            },
+            solicitudDescuento: true,
+          },
+        });
+      },
+      {
+        isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+      },
+    );
   }
 
   // =========================================================

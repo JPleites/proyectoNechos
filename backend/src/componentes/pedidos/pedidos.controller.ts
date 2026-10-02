@@ -73,7 +73,10 @@ export class PedidosController {
     @Param('detalleId') detalleId: string,
     @Body() data: ActualizarPedidoDetalleDto,
   ) {
-    return this.service.actualizarDetalle(Number(detalleId), data.cantidad);
+    return this.service.actualizarDetalle(Number(detalleId), {
+      cantidad: Number(data.cantidad),
+      descuento: data.descuento,
+    });
   }
 
   @Roles('admin', 'supervisor', 'vendedor')
