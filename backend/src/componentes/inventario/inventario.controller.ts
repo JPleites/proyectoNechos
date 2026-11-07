@@ -76,26 +76,31 @@ export class InventarioController {
   }
 
   @Get('ubicaciones-disponibles')
-  getUbicacionesDisponibles(
+  getUbicacionesDisponibles(@Query('almacenId') almacenId: number) {
+    return this.inventarioService.getUbicacionesDisponibles(Number(almacenId));
+  }
+
+  @Get('ubicaciones-producto')
+  getUbicacionesProducto(
     @Query('almacenId') almacenId: number,
     @Query('productoCodigo') productoCodigo: string,
   ) {
-    return this.inventarioService.getUbicacionesDisponibles(
+    return this.inventarioService.getUbicacionesProducto(
       Number(almacenId),
       productoCodigo,
     );
   }
 
   @Get('ubicaciones-transferencia')
-getUbicacionesTransferencia(
-  @Query('almacenId') almacenId: number,
-  @Query('productoCodigo') productoCodigo: string,
-) {
-  return this.inventarioService.getUbicacionesTransferencia(
-    productoCodigo,
-    Number(almacenId),
-  );
-}
+  getUbicacionesTransferencia(
+    @Query('almacenId') almacenId: number,
+    @Query('productoCodigo') productoCodigo: string,
+  ) {
+    return this.inventarioService.getUbicacionesTransferencia(
+      productoCodigo,
+      Number(almacenId),
+    );
+  }
 
   //ingreso al inventario
   @Post('ingreso')

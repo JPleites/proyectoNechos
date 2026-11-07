@@ -30,7 +30,7 @@ export class IngresoProducto implements OnInit {
     private inventarioService: InventarioService,
     private almacenService: AlmacenesService,
     private productoService: ProductosService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {
     this.form = this.fb.group({
       productoCodigo: ['', Validators.required],
@@ -38,6 +38,7 @@ export class IngresoProducto implements OnInit {
       cantidad: [0, [Validators.required, Validators.min(1)]],
       almacen: ['', Validators.required],
       referencia: ['', Validators.required],
+      tipoUbicaciones: ['producto', Validators.required],
     });
   }
   ngOnInit() {
@@ -45,7 +46,7 @@ export class IngresoProducto implements OnInit {
       next: (res) => (this.almacenes = res),
       error: (err) => {
         console.error(err);
-      }
+      },
     });
     this.cdr.detectChanges();
   }
@@ -90,14 +91,28 @@ export class IngresoProducto implements OnInit {
   }
 
   cargarUbicaciones() {
-    const almacenId = this.form.get('almacen')?.value;
+    const almacenId = Number(this.form.get('almacen')?.value);
     const codigo = this.form.get('productoCodigo')?.value;
+    const tipo = this.form.get('tipoUbicaciones')?.value;
+
+    this.ubicaciones = [];
+    this.form.get('ubicacion')?.setValue('');
 
     if (!almacenId || !this.productoValido) return;
 
-    this.inventarioService.getUbicacionesDisponibles(Number(almacenId), codigo).subscribe({
+    const solicitud =
+      tipo === 'producto'
+        ? this.inventarioService.getUbicacionesProducto(almacenId, codigo)
+        : this.inventarioService.getUbicacionesDisponibles(almacenId);
+
+    solicitud.subscribe({
       next: (res) => {
         this.ubicaciones = res;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error(err);
+        Swal.fire('Error', 'No se pudieron cargar las ubicaciones', 'error');
       },
     });
   }

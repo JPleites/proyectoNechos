@@ -130,22 +130,33 @@ export class InventarioService {
     return this.apiService.get<any>('/inventario/kardex', { params });
   }
 
-  getUbicacionesDisponibles(almacenId: number, codigo: string): Observable<UbicacionDisponible[]> {
+  getUbicacionesDisponibles(almacenId: number): Observable<UbicacionDisponible[]> {
     return this.apiService.get<UbicacionDisponible[]>('/inventario/ubicaciones-disponibles', {
       params: {
-        productoCodigo: codigo,
         almacenId,
+      },
+    });
+  }
+
+  getUbicacionesProducto(
+    almacenId: number,
+    productoCodigo: string,
+  ): Observable<UbicacionTransferencia[]> {
+    return this.apiService.get<UbicacionTransferencia[]>('/inventario/ubicaciones-producto', {
+      params: {
+        almacenId,
+        productoCodigo,
       },
     });
   }
 
   getUbicacionesTransferencia(
     almacenId: number,
-    codigo: string,
+    productoCodigo: string,
   ): Observable<UbicacionTransferencia[]> {
     return this.apiService.get<UbicacionTransferencia[]>('/inventario/ubicaciones-transferencia', {
       params: {
-        productoCodigo: codigo,
+        productoCodigo,
         almacenId,
       },
     });

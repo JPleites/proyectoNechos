@@ -83,7 +83,7 @@ export class ConsultaInventario implements OnInit {
       return;
     }
 
-    this.inventarioService.getUbicacionesDisponibles(almacenId, '').subscribe({
+    this.inventarioService.getUbicacionesDisponibles(almacenId).subscribe({
       next: (res: any) => {
         this.ubicaciones = res;
         this.cdr.detectChanges();

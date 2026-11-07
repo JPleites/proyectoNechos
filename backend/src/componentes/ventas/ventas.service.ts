@@ -211,29 +211,27 @@ export class VentasService {
         // Si el stock queda en 0
         // ================================================
 
-        if (nuevaCantidad === 0) {
-          if (nuevaCantidadReservada !== 0) {
-            throw new BadRequestException(
-              `No se puede eliminar el inventario de ${detalle.productoCodigo} porque aún existen unidades reservadas`,
-            );
-          }
+        
+        // ================================================
+        // Actualizar inventario sin eliminar el registro
+        // ================================================
 
-          await tx.inventario.delete({
-            where: {
-              id: inventario.id,
-            },
-          });
-        } else {
-          await tx.inventario.update({
-            where: {
-              id: inventario.id,
-            },
-            data: {
-              cantidad: nuevaCantidad,
-              cantidadReservada: nuevaCantidadReservada,
-            },
-          });
+        if (nuevaCantidadReservada < 0) {
+          throw new BadRequestException(
+            `La reserva de ${detalle.productoCodigo} en ${detalle.ubicacion} no puede ser negativa`,
+          );
         }
+
+        await tx.inventario.update({
+          where: {
+            id: inventario.id,
+          },
+          data: {
+            cantidad: nuevaCantidad,
+            cantidadReservada: nuevaCantidadReservada,
+          },
+        });
+
 
         // ================================================
         // Registrar salida

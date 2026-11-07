@@ -19,11 +19,15 @@ export class NuevoProducto implements OnInit {
   imagePreview: string | ArrayBuffer | null = null;
   selectedFile: File | null = null;
   categorias: any[] = [];
+  categoriasFiltradas: any[] = [];
   proveedores: any[] = [];
   proveedoresFiltrados: any[] = [];
+  marcas: any[] = [];
   marcasFiltradas: any[] = [];
   subCategorias: any[] = [];
+  subCategoriasFiltradas: any[] = [];
   guardando: boolean = false;
+  ganancia: number = 0;
 
   constructor(
     private fb: FormBuilder,
@@ -35,7 +39,7 @@ export class NuevoProducto implements OnInit {
     private marcaService: MarcaService,
   ) {
     this.form = this.fb.group({
-      codigo: [''],
+      codigo: ['', Validators.required],
       codigoProveedor: [''],
       codigoProducto: [''],
       producto: ['', Validators.required],
@@ -53,7 +57,7 @@ export class NuevoProducto implements OnInit {
 
   ngOnInit() {
     this.cargarCategorias();
-    this.cargarProveedores();
+    // this.cargarProveedores();
   }
 
   async guardar() {
@@ -116,6 +120,13 @@ export class NuevoProducto implements OnInit {
 
   limpiarFormulario() {
     this.form.reset();
+    this.ganancia = 0;
+    this.subCategorias = [];
+    this.subCategoriasFiltradas = [];
+    this.proveedores = [];
+    this.proveedoresFiltrados = [];
+    this.marcas = [];
+    this.marcasFiltradas = [];
     this.imagePreview = null;
     this.selectedFile = null;
   }
@@ -130,6 +141,13 @@ export class NuevoProducto implements OnInit {
         error: (err) => reject(err),
       });
     });
+  }
+
+  onGananciaChange() {
+    const costoCompra = this.form.get('costoCompra')?.value || 0;
+    const precio = this.form.get('precio')?.value || 0;
+
+    this.ganancia = precio - costoCompra;
   }
 
   onImageSelected(event: any) {
@@ -150,29 +168,35 @@ export class NuevoProducto implements OnInit {
   cargarCategorias() {
     this.categoriasService.getCategorias().subscribe((data: any) => {
       this.categorias = data;
+      this.categoriasFiltradas = data;
       this.cdr.detectChanges();
     });
   }
 
-  cargarProveedores() {
-    this.proveedoresService.getProveedores().subscribe((data: any) => {
-      this.proveedores = data;
-      this.cdr.detectChanges();
-    });
-  }
+  // cargarProveedores() {
+  //   this.proveedoresService.getProveedores().subscribe((data: any) => {
+  //     this.proveedores = data;
+  //     this.cdr.detectChanges();
+  //   });
+  // }
 
   onCategoriaChange() {
     const categoriaId = this.form.get('categoria')?.value;
     const categoria = this.categorias.find((c) => Number(c.id) === Number(categoriaId));
 
     if (!categoria) return;
+    this.proveedores = [];
+    this.proveedoresFiltrados = [];
 
-    this.proveedoresFiltrados = categoria.CategoriaProveedores.map((cp: any) => cp.proveedor);
+    this.proveedores = categoria.CategoriaProveedores.map((cp: any) => cp.proveedor);
     this.form.patchValue({ proveedor: '', subCategoria: '' });
+
     this.subCategorias = [];
+    this.subCategoriasFiltradas = [];
 
     this.categoriasService.getSubCategorias(Number(categoriaId)).subscribe((data: any) => {
       this.subCategorias = data ?? [];
+      this.subCategoriasFiltradas = [...this.subCategorias];
       this.cdr.detectChanges();
     });
 
@@ -186,9 +210,39 @@ export class NuevoProducto implements OnInit {
 
     // 🔥 pedir al backend las marcas reales
     this.marcaService.getMarcasPorProveedor(proveedorId).subscribe((data: any) => {
-      this.marcasFiltradas = data ?? [];
+      this.marcas = data ?? [];
       this.form.patchValue({ marca: '' });
       this.cdr.detectChanges();
     });
+  }
+
+  // --- MÉTODOS DE FILTRADO PARA LOS INPUTS ---
+
+  filtrarCategorias(event: any) {
+    const texto = event.target.value.toLowerCase();
+    this.categoriasFiltradas = this.categorias.filter((c) =>
+      c.nombre.toLowerCase().includes(texto),
+    );
+  }
+
+  filtrarSubCategorias(event: any) {
+    const texto = event.target.value.toLowerCase();
+    this.subCategoriasFiltradas = this.subCategorias.filter((s: any) =>
+      s.nombre.toLowerCase().includes(texto),
+    );
+  }
+
+  filtrarProveedores(event: any) {
+    const texto = event.target.value.toLowerCase();
+    this.proveedoresFiltrados = this.proveedores.filter((p: any) =>
+      p.proveedor.toLowerCase().includes(texto),
+    );
+  }
+
+  filtrarMarcas(event: any) {
+    const texto = event.target.value.toLowerCase();
+    this.marcasFiltradas = this.marcas.filter((m: any) =>
+      m.nombre.toLowerCase().includes(texto),
+    );
   }
 }

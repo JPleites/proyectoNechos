@@ -136,7 +136,15 @@
                       formControlName="precio"
                       class="form-control"
                       placeholder="0.00"
+                      (change)="onGananciaChange()"
                     />
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Margen de ganancia</label>
+                  <div class="input-group erp-input-group">
+                    <span class="input-group-text bg-white text-muted">L</span>
+                    <label class="form-control">{{ ganancia | number: '1.2-2' }}</label>
                   </div>
                 </div>
               </div>
@@ -148,34 +156,59 @@
               </h6>
 
               <div class="row g-3">
+                <!-- CATEGORÍA -->
                 <div class="col-md-4">
                   <label class="form-label">Categoría</label>
+                  <input
+                    type="text"
+                    class="form-control mb-1 form-control-sm"
+                    placeholder="Filtrar categoría..."
+                    (input)="filtrarCategorias($event)"
+                  />
                   <select
                     formControlName="categoria"
                     class="form-select"
                     (change)="onCategoriaChange()"
                   >
                     <option value="">Seleccione categoría</option>
-                    <option *ngFor="let c of categorias" [value]="c.id">
+                    <option *ngFor="let c of categoriasFiltradas" [value]="c.id">
                       {{ c.nombre }}
                     </option>
                   </select>
                 </div>
 
+                <!-- SUBCATEGORÍA (La dejamos tal cual como la tenías) -->
                 <div class="col-md-4" *ngIf="subCategorias.length > 0">
-                  <label class="form-label"
-                    >Subcategoría <small class="text-muted">(opcional)</small></label
-                  >
+                  <label class="form-label">
+                    Subcategoría <small class="text-muted">(opcional)</small>
+                  </label>
+
+                  <!-- Input de búsqueda para subcategorías -->
+                  <input
+                    type="text"
+                    class="form-control mb-1 form-control-sm"
+                    placeholder="Filtrar subcategoría..."
+                    (input)="filtrarSubCategorias($event)"
+                  />
+
+                  <!-- Select tradicional que guarda el ID en el form -->
                   <select formControlName="subCategoria" class="form-select">
                     <option value="">Sin subcategoría</option>
-                    <option *ngFor="let s of subCategorias" [value]="s.id">
+                    <option *ngFor="let s of subCategoriasFiltradas" [value]="s.id">
                       {{ s.nombre }}
                     </option>
                   </select>
                 </div>
 
+                <!-- PROVEEDOR -->
                 <div class="col-md-4">
                   <label class="form-label">Proveedor autorizado</label>
+                  <input
+                    type="text"
+                    class="form-control mb-1 form-control-sm"
+                    placeholder="Filtrar proveedor..."
+                    (input)="filtrarProveedores($event)"
+                  />
                   <select
                     formControlName="proveedor"
                     class="form-select"
@@ -188,8 +221,15 @@
                   </select>
                 </div>
 
+                <!-- MARCA -->
                 <div class="col-md-4">
                   <label class="form-label">Marca</label>
+                  <input
+                    type="text"
+                    class="form-control mb-1 form-control-sm"
+                    placeholder="Filtrar marca..."
+                    (input)="filtrarMarcas($event)"
+                  />
                   <select formControlName="marca" class="form-select">
                     <option value="">Seleccione marca</option>
                     <option *ngFor="let m of marcasFiltradas" [value]="m.id">

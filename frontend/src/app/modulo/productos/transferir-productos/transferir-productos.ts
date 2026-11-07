@@ -198,7 +198,7 @@ export class TransferirProductos implements OnInit {
       return;
     }
 
-    this.inventarioService.getUbicacionesDisponibles(Number(almacenId), codigo).subscribe({
+    this.inventarioService.getUbicacionesDisponibles(Number(almacenId)).subscribe({
       next: (res: UbicacionDestino[]) => {
         this.ubicacionesDestino = res;
 

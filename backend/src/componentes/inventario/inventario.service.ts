@@ -456,10 +456,24 @@ export class InventarioService {
   // ==============================
   // 📍 UBICACIONES DISPONIBLES
   // ==============================
-  async getUbicacionesDisponibles(almacenId: number, productoCodigo: string) {
+  async getUbicacionesDisponibles(almacenId: number) {
     return this.prisma.ubicaciones.findMany({
       where: {
         almacenId,
+      },
+      orderBy: [{ estante: 'asc' }, { nivel: 'asc' }, { deposito: 'asc' }],
+    });
+  }
+
+  getUbicacionesProducto(almacenId: number, productoCodigo: string) {
+    return this.prisma.ubicaciones.findMany({
+      where: {
+        almacenId,
+        inventario: {
+          some: {
+            productoCodigo,
+          },
+        },
       },
       orderBy: [{ estante: 'asc' }, { nivel: 'asc' }, { deposito: 'asc' }],
     });

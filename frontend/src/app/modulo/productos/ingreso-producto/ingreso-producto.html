@@ -62,7 +62,7 @@
 
             <div class="row g-3">
               <div class="col-md-6 col-lg-3">
-                <label class="form-label"> Almacén de Destino </label>
+                <label class="form-label">Almacén de destino</label>
                 <select
                   formControlName="almacen"
                   class="form-select"
@@ -76,13 +76,32 @@
               </div>
 
               <div class="col-md-6 col-lg-3">
-                <label class="form-label"> Ubicación / Pasillo </label>
+                <label class="form-label">Buscar ubicaciones</label>
+                <select
+                  formControlName="tipoUbicaciones"
+                  class="form-select"
+                  (change)="cargarUbicaciones()"
+                >
+                  <option value="producto">Ubicaciones del producto</option>
+                  <option value="todas">Todas las ubicaciones</option>
+                </select>
+              </div>
+
+              <div class="col-md-6 col-lg-3">
+                <label class="form-label">Ubicación / Pasillo</label>
                 <select formControlName="ubicacion" class="form-select">
                   <option value="">Seleccione ubicación</option>
                   <option *ngFor="let u of ubicaciones" [value]="u.ubicacion">
                     (E{{ u.estante }}-N{{ u.nivel }}-D{{ u.deposito }})
                   </option>
                 </select>
+
+                <small
+                  *ngIf="form.get('almacen')?.value && ubicaciones.length === 0"
+                  class="text-muted"
+                >
+                  No hay ubicaciones para mostrar con este criterio.
+                </small>
               </div>
 
               <div class="col-md-6 col-lg-3">
