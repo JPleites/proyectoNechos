@@ -84,6 +84,8 @@
           <button type="button" class="btn btn-primary" (click)="buscar()">Buscar</button>
 
           <button type="button" class="btn btn-secondary" (click)="limpiar()">Limpiar</button>
+          <button type="button" class="btn btn-warning" (click)="exportar()">Exportar</button>
+          
         </div>
       </div>
     </div>
@@ -122,11 +124,13 @@
     <!-- TABLA -->
     <div class="card shadow-sm flex-grow-1 overflow-auto">
       <div class="card-body p-0">
-        <table class="table table-hover align-middle mb-0">
+        <table class="table table-hover align-middle mb-0" #tablaExportar>
           <thead class="table-light">
             <tr>
               <th>Código</th>
               <th>Producto</th>
+              <th>Categoría</th>
+              <th>Subcategoría</th>
               <th>Almacén</th>
               <th>Ubicación</th>
               <th class="text-end">Cantidad</th>
@@ -138,6 +142,10 @@
               <td>{{ item.productoCodigo }}</td>
 
               <td>{{ item.producto?.producto }}</td>
+              
+              <td> {{ item.categoriaNombre }}</td>
+
+              <td>{{ item.subCategoriaNombre }}</td>
 
               <td>{{ item.ubicacionRel?.almacen?.almacen }}</td>
 

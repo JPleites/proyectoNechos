@@ -1,7 +1,8 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+import * as XLSX from 'xlsx-js-style';
 
 import { PedidosService } from '../../services/pedidos.service';
 
@@ -205,5 +206,71 @@ export class Pedidos {
       default:
         return 'badge-estado';
     }
+  }
+
+  @ViewChild('tablaExportar', { static: false }) tablaExportar!: ElementRef;
+
+  exportar(): void {
+    //Convertimos la tabla HTML en una hoja de trabajo
+    const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(this.tablaExportar.nativeElement);
+
+    //Recorremos todas las celdas para limpiar, centrar, quitar la última columna y blindar fechas/números
+    if (ws['!ref']) {
+      const range = XLSX.utils.decode_range(ws['!ref']);
+      
+      if (range.e.c > range.s.c) {
+        range.e.c = range.e.c - 1;
+        ws['!ref'] = XLSX.utils.encode_range(range);
+      }
+
+      // Obtenemos las filas reales del elemento DOM de la tabla para leer el texto exacto que ve el usuario
+      const tableElement: HTMLTableElement = this.tablaExportar.nativeElement;
+      const rows = tableElement.querySelectorAll('tr');
+
+      for (let R = range.s.r; R <= range.e.r; ++R) {
+        // Intentamos leer el texto directo de la celda en el HTML si existe la fila
+        const tr = rows[R];
+        
+        for (let C = range.s.c; C <= range.e.c; ++C) {
+          const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+          const cell = ws[cellAddress];
+          
+          if (cell) {
+            if (!cell.s) {
+              cell.s = {};
+            }
+
+            // Centramos todo (horizontal y verticalmente)
+            cell.s.alignment = {
+              horizontal: 'center',
+              vertical: 'center'
+            };
+
+            if (tr && tr.cells[C]) {
+              const textoVisual = tr.cells[C].innerText.trim();
+              if (textoVisual !== '') {
+                cell.t = 's'; // Forzamos a que Excel lo guarde estrictamente como TEXTO plano
+                cell.v = textoVisual;
+              }
+            } else if (cell.v !== undefined && cell.v !== null) {
+              // Respaldo 
+              const valorStr = String(cell.v).trim();
+              const esFecha = valorStr.includes('-') || valorStr.includes('/');
+              const esNumeroLargo = /^\d{6,}$/.test(valorStr) || (typeof cell.v === 'number' && valorStr.length > 5);
+
+              if (esFecha || esNumeroLargo) {
+                cell.t = 's';
+                cell.v = valorStr;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    //Creamos el libro de trabajo y guardamos el archivo
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Pedidos');
+    XLSX.writeFile(wb, 'reporte_pedidos.xlsx');
   }
 }

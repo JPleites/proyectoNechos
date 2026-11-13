@@ -1,8 +1,9 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { DevolucionesService, Devolucion, FiltrosDevoluciones } from '../../services/devoluciones';
+import * as XLSX from 'xlsx-js-style';
 
 @Component({
   selector: 'app-devoluciones',
@@ -15,10 +16,6 @@ export class Devoluciones {
 
   cargando = false;
 
-  // =========================================================
-  // FILTROS
-  // =========================================================
-
   filtros: FiltrosDevoluciones = {
     devolucionID: '',
     ventaID: '',
@@ -28,15 +25,13 @@ export class Devoluciones {
     fechaHasta: '',
     fueUsada: '',
   };
-
-  // =========================================================
-  // MODAL
-  // =========================================================
-
   devolucionSeleccionada: Devolucion | null = null;
   mostrarModal = false;
 
-  constructor(private readonly devolucionesService: DevolucionesService, private readonly cdr: ChangeDetectorRef) {}
+  constructor(
+    private readonly devolucionesService: DevolucionesService,
+    private readonly cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit(): void {
     this.buscar();
@@ -121,4 +116,61 @@ export class Devoluciones {
   getEstadoUso(devolucion: Devolucion): string {
     return devolucion.fueUsada ? 'Utilizada' : 'Disponible';
   }
+
+  @ViewChild('tablaExportar', { static: false }) tablaExportar!: ElementRef;
+
+  exportar(): void {
+      //Convertimos la tabla HTML en una hoja de trabajo
+      const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(this.tablaExportar.nativeElement);
+  
+      //Recorremos todas las celdas para dar formato, centrar, quitar la última columna y blindar textos/fechas
+      if (ws['!ref']) {
+        const range = XLSX.utils.decode_range(ws['!ref']);
+        
+        // Ocultamos/eliminamos la última columna (la de "Acciones" que no va en Excel)
+        // Reducimos el índice máximo de columnas (e.c) en 1 para que ignore la última
+        if (range.e.c > range.s.c) {
+          range.e.c = range.e.c - 1;
+          ws['!ref'] = XLSX.utils.encode_range(range); // Actualizamos el rango de la hoja
+        }
+  
+        for (let R = range.s.r; R <= range.e.r; ++R) {
+          for (let C = range.s.c; C <= range.e.c; ++C) {
+            const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+            const cell = ws[cellAddress];
+            
+            if (cell) {
+              // Inicializamos el objeto de estilos si no existe
+              if (!cell.s) {
+                cell.s = {};
+              }
+  
+              // Centramos todo (horizontal y verticalmente)
+              cell.s.alignment = {
+                horizontal: 'center',
+                vertical: 'center'
+              };
+  
+              if (cell.v !== undefined && cell.v !== null) {
+                const valorStr = String(cell.v).trim();
+                
+                // Evitar notación científica en números largos y arreglar FECHAS raras
+                const esFecha = valorStr.includes('-') || valorStr.includes('/');
+                const esNumeroLargo = /^\d{6,}$/.test(valorStr) || (typeof cell.v === 'number' && valorStr.length > 5);
+  
+                if (esFecha || esNumeroLargo) {
+                  cell.t = 's'; // Forzamos a que Excel lo lea estrictamente como Texto
+                  cell.v = valorStr;
+                }
+              }
+            }
+          }
+        }
+      }
+  
+      //Creamos el libro de trabajo y guardamos el archivo
+      const wb: XLSX.WorkBook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Devoluciones');
+      XLSX.writeFile(wb, 'reporte_devoluciones.xlsx');
+    }
 }

@@ -1,8 +1,4 @@
 <div class="container-fluid vh-100 d-flex flex-column p-3 bg-light page-wrapper">
-  <!-- ===================================================== -->
-  <!-- HEADER -->
-  <!-- ===================================================== -->
-
   <div class="modulo-header mb-3 flex-shrink-0">
     <div>
       <h4 class="fw-bold mb-1">Consulta de Ventas</h4>
@@ -11,18 +7,10 @@
     </div>
   </div>
 
-  <!-- ===================================================== -->
-  <!-- CONTENIDO -->
-  <!-- ===================================================== -->
-
   <div class="modulo-contenido panel-scroll flex-grow-1">
     <div
       class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100 d-flex flex-column"
     >
-      <!-- ================================================= -->
-      <!-- FILTROS -->
-      <!-- ================================================= -->
-
       <section class="card-body border-bottom py-3 flex-shrink-0 bg-white">
         <form class="row g-2" (ngSubmit)="buscar()">
           <!-- Venta -->
@@ -146,16 +134,17 @@
 
               {{ cargando ? 'Buscando...' : 'Buscar' }}
             </button>
+
+            <button type="button" class="btn btn-warning px-4" (click)="exportar()" title="Exportar">
+              <i class="fas fa-file-export me-2"></i>
+              Exportar
+            </button>
           </div>
         </form>
       </section>
 
-      <!-- ================================================= -->
-      <!-- TABLA -->
-      <!-- ================================================= -->
-
       <section class="table-responsive flex-grow-1 panel-scroll">
-        <table class="table table-hover align-middle mb-0">
+        <table class="table table-hover align-middle mb-0 " #tablaExportar>
           <thead class="table-light sticky-top">
             <tr>
               <th>Venta</th>

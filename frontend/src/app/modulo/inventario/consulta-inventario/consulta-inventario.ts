@@ -1,9 +1,10 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { InventarioService } from '../../services/inventario.service';
 import { AlmacenesService } from '../../services/almacenes.service';
 import { CommonModule } from '@angular/common';
 import { CategoriasService } from '../../services/categorias.service';
+import * as XLSX from 'xlsx-js-style';
 
 @Component({
   selector: 'app-consulta-inventario',
@@ -19,6 +20,7 @@ export class ConsultaInventario implements OnInit {
   ubicaciones: any[] = [];
   categorias: any[] = [];
   subCategorias: any[] = [];
+  puedeExportar = false;
 
   resumen = {
     registros: 0,
@@ -139,5 +141,54 @@ export class ConsultaInventario implements OnInit {
     this.resumen.stockTotal = this.data.reduce((a, b) => a + (b.cantidad || 0), 0);
     this.resumen.productos = new Set(this.data.map((x) => x.productoCodigo)).size;
     this.resumen.ubicaciones = new Set(this.data.map((x) => x.ubicacion)).size;
+  }
+
+  @ViewChild('tablaExportar', { static: false }) tablaExportar!: ElementRef;
+
+  exportar(): void {
+    //Convertimos la tabla HTML en una hoja de trabajo
+    const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(this.tablaExportar.nativeElement);
+
+    //Recorremos todas las celdas de la hoja para darles formato y centrado
+    if (ws['!ref']) {
+      const range = XLSX.utils.decode_range(ws['!ref']);
+      
+      for (let R = range.s.r; R <= range.e.r; ++R) {
+        for (let C = range.s.c; C <= range.e.c; ++C) {
+          const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+          const cell = ws[cellAddress];
+          
+          if (cell) {
+            // Inicializamos el objeto de estilos si no existe
+            if (!cell.s) {
+              cell.s = {};
+            }
+
+            //Centramos todo (horizontal y verticalmente)
+            cell.s.alignment = {
+              horizontal: 'center',
+              vertical: 'center'
+            };
+
+            // Evitar la notacion cientifica:
+            // Si el valor de la celda parece un número largo o un código, 
+            // le indicamos a Excel explícitamente que lo trate como TEXTO ('s' = string)
+            if (cell.v !== undefined && cell.v !== null) {
+              const valorStr = String(cell.v).trim();
+              
+              if (/^\d{6,}$/.test(valorStr) || typeof cell.v === 'number' && valorStr.length > 5) {
+                cell.t = 's'; // Tipo String (Texto)
+                cell.v = valorStr;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    //Creamos el libro de trabajo y guardamos el archivo
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Inventario');
+    XLSX.writeFile(wb, 'reporte_inventario.xlsx');
   }
 }

@@ -280,7 +280,12 @@ export class InventarioService {
     const inventario = await this.prisma.inventario.findMany({
       where,
       include: {
-        producto: true,
+        producto: {
+          include: {
+            categoriaRel: true,
+            subCategoria: true,
+          }
+        },
         ubicacionRel: {
           include: {
             almacen: true,
@@ -299,6 +304,8 @@ export class InventarioService {
         ...item,
         cantidadReservada,
         cantidadDisponible: Math.max(cantidadDisponible, 0),
+        categoriaNombre: item.producto?.categoriaRel?.nombre ?? 'Sin Categoría',
+        subCategoriaNombre: item.producto?.subCategoria?.nombre ?? 'Sin Subcategoría',
       };
     });
   }
