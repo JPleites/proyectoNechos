@@ -133,6 +133,7 @@
               <th>Subcategoría</th>
               <th>Almacén</th>
               <th>Ubicación</th>
+              <th>Precio</th>
               <th class="text-end">Cantidad</th>
             </tr>
           </thead>
@@ -150,6 +151,8 @@
               <td>{{ item.ubicacionRel?.almacen?.almacen }}</td>
 
               <td>{{ item.ubicacion }}</td>
+
+              <td>{{ item.producto?.precio | currency:'L' }}</td>
 
               <td class="text-end fw-bold">
                 {{ item.cantidad }}
